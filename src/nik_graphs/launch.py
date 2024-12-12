@@ -27,8 +27,7 @@ def main():
 
     # truncates the file, we do want that here (basically a dirty
     # reset)
-    deptxt = f"{inspect.getfile(mod)}\n{__file__}\n"
-    (path / "files.dep").write_text(deptxt)
+    (path / "files.dep").write_text("")
 
     t0 = time.perf_counter()
     mod.run_path(path, outfile)
@@ -36,7 +35,11 @@ def main():
 
     with zipfile.ZipFile(outfile, "a") as zf:
         with zf.open("elapsed_secs.txt", "w") as f:
-            f.write(bytes(str(t1 - t0), "utf-8"))
+            f.write(f"{t1 - t0}".encode())
+
+    deptxt = f"{inspect.getfile(mod)}\n{__file__}\n"
+    with open(path / "files.dep", "a") as f:
+        f.write(deptxt)
 
 
 if __name__ == "__main__":
