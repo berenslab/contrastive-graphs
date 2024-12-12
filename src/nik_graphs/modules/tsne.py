@@ -10,7 +10,7 @@ from ..path_utils import path_to_kwargs
 def run_path(path, outfile):
     zipf = path.parent / "1.zip"
 
-    with open(path / "files.dep", "w") as f:
+    with open(path / "files.dep", "a") as f:
         f.write(f"{zipf}\n")
 
     A = sparse.load_npz(zipf)
