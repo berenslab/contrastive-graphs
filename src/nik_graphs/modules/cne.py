@@ -1,6 +1,8 @@
 import contextlib
+import logging
 import warnings
 import zipfile
+from pathlib import Path
 
 import lightning
 import numpy as np
@@ -27,12 +29,17 @@ def run_path(path, outfile):
 
     A = sparse.load_npz(zipf)
 
-    logger = lightning.pytorch.loggers.CSVLogger(save_dir=path, name=None)
+    logging.getLogger("lightning").setLevel(logging.ERROR)
+    logger = lightning.pytorch.loggers.CSVLogger(
+        save_dir=path, name=None, version=0
+    )
     trainer_kwargs = dict(
         log_every_n_steps=20,
         # val_check_interval=20,
         check_val_every_n_epoch=5,
         precision="bf16-mixed",
+        enable_model_summary=False,
+        enable_checkpointing=False,
     )
 
     name, kwargs = path_to_kwargs(path)
@@ -45,6 +52,11 @@ def run_path(path, outfile):
     with zipfile.ZipFile(outfile, "a") as zf:
         with zf.open("embedding.npy", "w") as f:
             np.save(f, Y)
+
+        for p in Path(logger.log_dir).iterdir():
+            zf.write(p, f"lightning_logs/{p.name}")
+            p.unlink()
+        Path(logger.log_dir).rmdir()
 
 
 def tsimcne_nonparam(
@@ -94,8 +106,7 @@ def tsimcne_nonparam(
                     **kwargs,
                 )
                 trainer = lightning.Trainer(
-                    max_epochs=n_epochs,
-                    logger=logger,
+                    max_epochs=n_epochs, logger=logger, **trainer_kwargs
                 )
                 trainer.fit(mod, datamodule=dm)
                 out_batches = trainer.predict(mod, datamodule=dm)
