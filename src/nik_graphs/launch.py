@@ -27,7 +27,8 @@ def main():
 
     # truncates the file, we do want that here (basically a dirty
     # reset)
-    (path / "files.dep").write_text(inspect.getfile(mod) + "\n")
+    deptxt = f"{inspect.getfile(mod)}\n{__file__}\n"
+    (path / "files.dep").write_text(deptxt)
 
     t0 = time.perf_counter()
     mod.run_path(path, outfile)
