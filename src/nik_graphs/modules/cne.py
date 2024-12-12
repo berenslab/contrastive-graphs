@@ -19,6 +19,7 @@ from ..path_utils import path_to_kwargs
 
 
 def run_path(path, outfile):
+    torch.set_float32_matmul_precision("medium")
     zipf = path.parent / "1.zip"
 
     with open(path / "files.dep", "a") as f:
