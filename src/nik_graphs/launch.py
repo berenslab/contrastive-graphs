@@ -1,6 +1,8 @@
 import argparse
 import importlib
 import inspect
+import time
+import zipfile
 from pathlib import Path
 
 # import nik_graphs
@@ -27,7 +29,13 @@ def main():
     # reset)
     (path / "files.dep").write_text(inspect.getfile(mod) + "\n")
 
+    t0 = time.perf_counter()
     mod.run_path(path, outfile)
+    t1 = time.perf_counter()
+
+    with zipfile.ZipFile(outfile, "a") as zf:
+        with zf.open("elapsed_secs.txt", "w") as f:
+            f.write(bytes(str(t1 - t0), "utf-8"))
 
 
 if __name__ == "__main__":
