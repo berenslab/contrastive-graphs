@@ -529,4 +529,10 @@ poetry.toml
 # LSP config files
 pyrightconfig.json
 
-# End of https://www.toptal.com/developers/gitignore/api/emacs,python,latex
+
+# redo for goredo files and state dir `.redo/`, see
+# http://www.goredo.cypherpunks.ru
+.redo/
+.redo.*.*[0-9][0-9][0-9][0-9][0-9]
+/runs/**/*.zip
+/runs/**/files.dep
