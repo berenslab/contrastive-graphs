@@ -20,6 +20,10 @@ dependencies = [
   "annoy>=1.17.3",
   "matplotlib>=3.9.3",
   "opentsne>=1.0.2",
+  "torch>=2.5.1",
+  # "torchvision>=0.20.0",
+  "tsimcne>=0.4.1",
+  "lightning>=2.4.0",
 ]
 
 [project.urls]
