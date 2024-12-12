@@ -49,7 +49,7 @@ def save_graph(outfile, adjacency_mat, features, labels):
     # opening the zip file and then opening the file pointer within
     # the archive.
     with open(outfile, "xb") as f:
-        sparse.save_npz(f, adjacency_mat.tocsr())
+        sparse.save_npz(f, adjacency_mat)
 
     # need write mode "a" because we have stored `adj` already
     with zipfile.ZipFile(outfile, "a") as zf:
