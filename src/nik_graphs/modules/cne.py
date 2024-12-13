@@ -69,7 +69,7 @@ def tsimcne_nonparam(
     eval_ann=False,
     opt="adam",
     lr=1,
-    anneal_to_dim=128,
+    dim=128,
     warmup_epochs=0,
     **kwargs,
 ):
@@ -98,7 +98,7 @@ def tsimcne_nonparam(
                     lr=lr,
                     weight_decay=0,
                     out_dim=n_dim,
-                    anneal_to_dim=anneal_to_dim,
+                    anneal_to_dim=dim,
                     # save_intermediate_feat=True,
                     batches_per_epoch=len(dm.train_dataloader()),
                     eval_ann=eval_ann,
