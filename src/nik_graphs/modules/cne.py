@@ -28,6 +28,7 @@ def run_path(path, outfile):
         f.write(f"{zipf}\n")
 
     A = sparse.load_npz(zipf)
+    labels = np.load(zipf)["labels"]
 
     logging.getLogger("pytorch_lightning").setLevel(logging.ERROR)
     logger = lightning.pytorch.loggers.CSVLogger(
@@ -45,7 +46,7 @@ def run_path(path, outfile):
     name, kwargs = path_to_kwargs(path)
     assert name == "cne"
     Y = tsimcne_nonparam(
-        A, trainer_kwargs=trainer_kwargs, logger=logger, **kwargs
+        A, labels, trainer_kwargs=trainer_kwargs, logger=logger, **kwargs
     )
     # with zipfile.ZipFile(parent / "1.zip") as zf:
 
@@ -61,6 +62,8 @@ def run_path(path, outfile):
 
 def tsimcne_nonparam(
     A,
+    labels=None,
+    metric="euclidean",
     batch_size="auto",
     trainer_kwargs=None,
     logger=None,
@@ -70,6 +73,7 @@ def tsimcne_nonparam(
     opt="adam",
     lr=1,
     dim=128,
+    weight_decay=0,
     warmup_epochs=0,
     **kwargs,
 ):
@@ -78,7 +82,10 @@ def tsimcne_nonparam(
 
     if batch_size == "auto":
         batch_size = 2**10 if A.shape[0] < 10_000 else 2**13
-    y = torch.zeros(A.shape[0], dtype=int)
+    if labels is None:
+        y = torch.zeros(A.shape[0], dtype=int)
+    else:
+        y = labels
     dm = GraphDM(
         A, labels=y, batch_size=batch_size, drop_last=True, data_on_gpu=True
     )
@@ -92,11 +99,11 @@ def tsimcne_nonparam(
                     n_epochs=n_epochs,
                     batch_size=batch_size,
                     warmup_epochs=warmup_epochs,
-                    metric="cosine",
+                    metric=metric,
                     temperature=temp,
                     optimizer_name=opt,
                     lr=lr,
-                    weight_decay=0,
+                    weight_decay=weight_decay,
                     out_dim=n_dim,
                     anneal_to_dim=dim,
                     # save_intermediate_feat=True,
