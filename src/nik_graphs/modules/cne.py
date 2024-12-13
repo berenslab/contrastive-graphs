@@ -30,7 +30,11 @@ def run_path(path, outfile):
     A = sparse.load_npz(zipf)
     labels = np.load(zipf)["labels"]
 
-    logging.getLogger("pytorch_lightning").setLevel(logging.ERROR)
+    [
+        logging.getLogger(name).setLevel(logging.ERROR)
+        for name in logging.root.manager.loggerDict
+        if "lightning" in name
+    ]
     logger = lightning.pytorch.loggers.CSVLogger(
         save_dir=path, name=None, version=0
     )
