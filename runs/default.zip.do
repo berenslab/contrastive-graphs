@@ -24,17 +24,17 @@ PARTITION=$(grep "__partition__ = " ../src/nik_graphs/modules/${PYNAME}.py \
                 | sed 's/__partition__ = "\(.*\)"/\1/')
 
 # if $PARTITION is not set or if `srun` does not exist, we call `uv` directly
-if [ x$PARTITION == x -o ! $(command -v srun) ]; then
+if [ x$PARTITION == x -o x$(command -v srun) == x ]; then
     uv run python ../src/nik_graphs/launch.py --path $_PATH --outfile $3
-elif [ $PARTITION == "cpu-galvani" ]; then
+elif [ x$PARTITION == "xcpu-galvani" ]; then
     srun --partition $PARTITION \
          uv run python ../src/nik_graphs/launch.py --path $_PATH --outfile $3
 # if PARTITION is a GPU partition, we also need to pass the flag for GPU
-elif [ $PARTITION == "2080-galvani" ]; then
+elif [ x$PARTITION == "x2080-galvani" ]; then
     srun --partition $PARTITION --gres gpu:1 \
          uv run python ../src/nik_graphs/launch.py --path $_PATH --outfile $3
 else
-    echo "Unknown partition" $PARTITION "found in" $_PATH >&2
+    echo "Unknown partition \"$PARTITION\" found in $_PATH" >&2
     exit 1
 fi
 
