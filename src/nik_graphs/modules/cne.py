@@ -1,4 +1,5 @@
 import contextlib
+import inspect
 import logging
 import warnings
 import zipfile
@@ -27,7 +28,25 @@ def run_path(path, outfile):
     zipf = path.parent / "1.zip"
 
     with open(path / "files.dep", "a") as f:
-        f.write(f"{zipf}\n")
+        pyobjs = [
+            contextlib,
+            logging,
+            inspect,
+            warnings,
+            zipfile,
+            Path,
+            lightning,
+            np,
+            torch,
+            tsimcne,
+            sparse,
+            linear_model,
+            model_selection,
+            neighbors,
+            pipeline,
+            preprocessing,
+        ]
+        [f.write(inspect.getfile(x) + "\n") for x in pyobjs]
 
     A = sparse.load_npz(zipf)
     labels = np.load(zipf)["labels"]
