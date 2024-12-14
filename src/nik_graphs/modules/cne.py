@@ -33,7 +33,6 @@ def run_path(path, outfile):
             contextlib,
             logging,
             inspect,
-            sys,
             warnings,
             zipfile,
             Path,
