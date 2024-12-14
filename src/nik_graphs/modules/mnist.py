@@ -28,13 +28,12 @@ def run_path(p, outfile):
 
     adj, annoy_index = make_adj_mat(X, seed=rng.integers(2**32 - 1))
     adj = adj.tocsr().astype("uint8")
-    features = mnist["data"].values.astype("uint8")
     labels = mnist["target"].cat.codes.values
     # will not use `G` here because it's derived from the adjacency matrix
     # G = nx.from_scipy_sparse_array(adj).to_undirected()
 
     assert not Path(outfile).exists(), f"{outfile} must not exist."
-    save_graph(outfile, adj, features, labels)
+    save_graph(outfile, adj, X.astype("float32"), labels)
 
     train_size = 50_000
     test_size = 10_000
