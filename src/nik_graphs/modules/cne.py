@@ -179,11 +179,12 @@ class GraphDM(lightning.LightningDataModule):
         return torch.utils.data.DataLoader(ds, shuffle=False, **kwargs)
 
     def val_dataloader(self):
-        train_dl = self.train_dataloader()
-        train_dl.dataset_len = 1000  # train_dl.batch_size
-        train_dl.n_batches = train_dl.dataset_len // train_dl.batch_size
+        bs = self.kwargs["batch_size"]
+        val_dl = FastTensorDataLoader(
+            self.neigh_mat[:bs], shuffle=False, **self.kwargs
+        )
 
-        return [train_dl, self.predict_dataloader()]
+        return [val_dl, self.predict_dataloader()]
 
 
 # FastTensorDataLoader based on
