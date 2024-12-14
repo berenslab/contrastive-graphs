@@ -22,7 +22,7 @@ dependencies = [
   "opentsne>=1.0.2",
   "torch>=2.4.0",
   # "torchvision>=0.20.0",
-  "tsimcne>=0.4.7",
+  "tsimcne>=0.4.8",
   "lightning>=2.4.0",
 ]
 
