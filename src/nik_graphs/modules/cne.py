@@ -148,7 +148,10 @@ def tsimcne_nonparam(
         trainer = lightning.Trainer(
             max_epochs=n_epochs, logger=logger, **trainer_kwargs
         )
-        trainer.fit(mod, datamodule=dm)
+        with warnings.catch_warnings():
+            msg = r"Trying to infer the `batch_size` from an ambiguous collection\..*"
+            warnings.filterwarnings(action="ignore", message=msg)
+            trainer.fit(mod, datamodule=dm)
         trainer.save_checkpoint(Path(trainer.log_dir) / "cne.ckpt")
         out_batches = trainer.predict(mod, datamodule=dm)
     return torch.vstack([x[0] for x in out_batches]).cpu().numpy()
