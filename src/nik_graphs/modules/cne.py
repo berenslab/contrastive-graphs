@@ -1,6 +1,7 @@
 import contextlib
 import inspect
 import logging
+import subprocess
 import sys
 import warnings
 import zipfile
@@ -33,6 +34,7 @@ def run_path(path, outfile):
             contextlib,
             logging,
             inspect,
+            subprocess,
             warnings,
             zipfile,
             Path,
@@ -159,6 +161,9 @@ class GraphDM(lightning.LightningDataModule):
         self.labels = labels
         self.kwargs = kwargs
 
+        proc = subprocess.run("nproc", capture_output=True, text=True)
+        self.n_procs = int(proc.stdout)
+
     def train_dataloader(self):
         return FastTensorDataLoader(
             self.neigh_mat, shuffle=True, **self.kwargs
@@ -175,7 +180,9 @@ class GraphDM(lightning.LightningDataModule):
         )
 
         ds = [(i, lbl) for i, lbl in zip(range(self.neigh_mat.shape[0]), y)]
-        return torch.utils.data.DataLoader(ds, shuffle=False, **kwargs)
+        return torch.utils.data.DataLoader(
+            ds, shuffle=False, num_workers=self.n_procs, **kwargs
+        )
 
     def val_dataloader(self):
         bs = self.kwargs["batch_size"]
