@@ -98,11 +98,13 @@ def tsimcne_nonparam(
     opt="adam",
     lr=1,
     dim=128,
+    initial_dim=128,
     weight_decay=0,
     warmup_epochs=0,
     drop_last=True,
     **kwargs,
 ):
+    assert initial_dim >= dim
     if trainer_kwargs is None:
         trainer_kwargs = dict()
 
@@ -123,8 +125,8 @@ def tsimcne_nonparam(
         with contextlib.redirect_stderr(f):
             with contextlib.redirect_stdout(f):
                 mod = tsimcne.PLtSimCNE(
-                    backbone=torch.nn.Embedding(len(y), n_dim := 128),
-                    backbone_dim=n_dim,
+                    backbone=torch.nn.Embedding(len(y), initial_dim),
+                    backbone_dim=initial_dim,
                     projection_head=torch.nn.Identity(),
                     n_epochs=n_epochs,
                     batch_size=batch_size,
@@ -134,7 +136,7 @@ def tsimcne_nonparam(
                     optimizer_name=opt,
                     lr=lr,
                     weight_decay=weight_decay,
-                    out_dim=n_dim,
+                    out_dim=initial_dim,
                     anneal_to_dim=dim,
                     # save_intermediate_feat=True,
                     batches_per_epoch=len(dm.train_dataloader()),
