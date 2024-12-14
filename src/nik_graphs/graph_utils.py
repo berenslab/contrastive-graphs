@@ -57,3 +57,12 @@ def save_graph(outfile, adjacency_mat, features, labels):
             np.save(f, features)
         with zf.open("labels.npy", "w") as f:
             np.save(f, labels)
+
+
+def save_dataset_split(outfile, train_ind, test_ind, val_ind):
+
+    inds = dict(train=train_ind, test=test_ind, val=val_ind)
+    for name, ar in inds.items():
+        with zipfile.ZipFile(outfile, "a") as zf:
+            with zf.open(f"split/{name}.npy", "w") as f:
+                np.save(f, ar)

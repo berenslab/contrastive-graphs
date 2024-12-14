@@ -5,7 +5,7 @@ from pathlib import Path
 import numpy as np
 from sklearn import datasets, decomposition
 
-from ..graph_utils import make_adj_mat, save_graph
+from ..graph_utils import make_adj_mat, save_dataset_split, save_graph
 from ..path_utils import path_to_kwargs
 
 
@@ -35,6 +35,15 @@ def run_path(p, outfile):
 
     assert not Path(outfile).exists(), f"{outfile} must not exist."
     save_graph(outfile, adj, features, labels)
+
+    train_size = 50_000
+    test_size = 10_000
+    # val_size = 10_000
+    inds = rng.permutation(X.shape[0]).astype("uint32")
+    train_inds = inds[:train_size]
+    test_inds = inds[train_size : train_size + test_size]
+    val_inds = inds[train_size + test_size :]
+    save_dataset_split(outfile, train_inds, test_inds, val_inds)
 
     with open(p / "files.dep", "a") as f:
         pyobjs = [
