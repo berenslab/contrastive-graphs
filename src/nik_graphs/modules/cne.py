@@ -100,6 +100,7 @@ def tsimcne_nonparam(
     dim=128,
     weight_decay=0,
     warmup_epochs=0,
+    drop_last=True,
     **kwargs,
 ):
     if trainer_kwargs is None:
@@ -112,7 +113,11 @@ def tsimcne_nonparam(
     else:
         y = labels
     dm = GraphDM(
-        A, labels=y, batch_size=batch_size, drop_last=True, data_on_gpu=True
+        A,
+        labels=y,
+        batch_size=batch_size,
+        drop_last=drop_last,
+        data_on_gpu=True,
     )
     with open("/dev/null", "w") as f:
         with contextlib.redirect_stderr(f):
