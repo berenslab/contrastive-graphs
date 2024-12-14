@@ -13,8 +13,9 @@ def run_path(p, outfile):
 
     name, kwargs = path_to_kwargs(p)
     assert name == "mnist"
-    random_state = kwargs.get("random_state", 47**8)
+    random_state = kwargs.pop("random_state", 47**8)
     rng = np.random.default_rng(random_state)
+    assert kwargs == dict()
 
     cache_dir = os.environ.get("XDG_CACHE_DIR", Path.home() / ".cache")
     data_dir = Path(cache_dir) / "scikit_learn_data"
