@@ -1,3 +1,4 @@
+import inspect
 import zipfile
 
 import numpy as np
@@ -6,10 +7,16 @@ from sklearn import neighbors
 
 from ..path_utils import path_to_kwargs
 
+__partition__ = "cpu-galvani"
+
 
 def run_path(path, outfile):
     name, kwargs = path_to_kwargs(path)
     assert name == "recall"
+
+    with open(path / "files.dep", "a") as f:
+        pyobjs = [inspect, zipfile, np, neighbors, path_to_kwargs]
+        [f.write(inspect.getfile(x) + "\n") for x in pyobjs]
 
     # assumption: we have the embedding generated in the direct parent
     # and the dataset is defined on directory above.  This should
