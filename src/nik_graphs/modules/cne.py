@@ -146,6 +146,7 @@ def tsimcne_nonparam(
                     max_epochs=n_epochs, logger=logger, **trainer_kwargs
                 )
                 trainer.fit(mod, datamodule=dm)
+                trainer.save_checkpoint(Path(trainer.log_dir) / "cne.ckpt")
                 out_batches = trainer.predict(mod, datamodule=dm)
     return torch.vstack([x[0] for x in out_batches]).cpu().numpy()
 
