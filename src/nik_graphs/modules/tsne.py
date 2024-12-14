@@ -6,6 +6,8 @@ from scipy import sparse
 
 from ..path_utils import path_to_kwargs
 
+__partition__ = "cpu-galvani"
+
 
 def run_path(path, outfile):
     zipf = path.parent / "1.zip"

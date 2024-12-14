@@ -19,6 +19,8 @@ from sklearn import (
 
 from ..path_utils import path_to_kwargs
 
+__partition__ = "2080-galvani"
+
 
 def run_path(path, outfile):
     torch.set_float32_matmul_precision("medium")
