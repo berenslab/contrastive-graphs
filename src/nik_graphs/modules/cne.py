@@ -1,6 +1,7 @@
 import contextlib
 import inspect
 import logging
+import sys
 import warnings
 import zipfile
 from pathlib import Path
@@ -32,6 +33,7 @@ def run_path(path, outfile):
             contextlib,
             logging,
             inspect,
+            sys,
             warnings,
             zipfile,
             Path,
@@ -121,35 +123,33 @@ def tsimcne_nonparam(
         drop_last=drop_last,
         data_on_gpu=True,
     )
-    with open("/dev/null", "w") as f:
-        with contextlib.redirect_stderr(f):
-            with contextlib.redirect_stdout(f):
-                mod = tsimcne.PLtSimCNE(
-                    backbone=torch.nn.Embedding(len(y), initial_dim),
-                    backbone_dim=initial_dim,
-                    projection_head=torch.nn.Identity(),
-                    n_epochs=n_epochs,
-                    batch_size=batch_size,
-                    warmup_epochs=warmup_epochs,
-                    metric=metric,
-                    temperature=temp,
-                    optimizer_name=opt,
-                    lr=lr,
-                    weight_decay=weight_decay,
-                    out_dim=initial_dim,
-                    anneal_to_dim=dim,
-                    # save_intermediate_feat=True,
-                    batches_per_epoch=len(dm.train_dataloader()),
-                    eval_ann=eval_ann,
-                    # eval_function=EvalCB(A),
-                    **kwargs,
-                )
-                trainer = lightning.Trainer(
-                    max_epochs=n_epochs, logger=logger, **trainer_kwargs
-                )
-                trainer.fit(mod, datamodule=dm)
-                trainer.save_checkpoint(Path(trainer.log_dir) / "cne.ckpt")
-                out_batches = trainer.predict(mod, datamodule=dm)
+    with contextlib.redirect_stdout(sys.stderr):
+        mod = tsimcne.PLtSimCNE(
+            backbone=torch.nn.Embedding(len(y), initial_dim),
+            backbone_dim=initial_dim,
+            projection_head=torch.nn.Identity(),
+            n_epochs=n_epochs,
+            batch_size=batch_size,
+            warmup_epochs=warmup_epochs,
+            metric=metric,
+            temperature=temp,
+            optimizer_name=opt,
+            lr=lr,
+            weight_decay=weight_decay,
+            out_dim=initial_dim,
+            anneal_to_dim=dim,
+            # save_intermediate_feat=True,
+            batches_per_epoch=len(dm.train_dataloader()),
+            eval_ann=eval_ann,
+            # eval_function=EvalCB(A),
+            **kwargs,
+        )
+        trainer = lightning.Trainer(
+            max_epochs=n_epochs, logger=logger, **trainer_kwargs
+        )
+        trainer.fit(mod, datamodule=dm)
+        trainer.save_checkpoint(Path(trainer.log_dir) / "cne.ckpt")
+        out_batches = trainer.predict(mod, datamodule=dm)
     return torch.vstack([x[0] for x in out_batches]).cpu().numpy()
 
 
