@@ -36,4 +36,14 @@ def run_path(p, outfile):
     save_graph(outfile, adj, features, labels)
 
     with open(p / "files.dep", "a") as f:
-        [f.write(inspect.getfile(x) + "\n") for x in [save_graph, datasets]]
+        pyobjs = [
+            Path,
+            np,
+            os,
+            inspect,
+            save_graph,
+            datasets,
+            path_to_kwargs,
+            decomposition,
+        ]
+        [f.write(inspect.getfile(x) + "\n") for x in pyobjs]
