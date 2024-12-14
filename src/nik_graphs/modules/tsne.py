@@ -1,3 +1,4 @@
+import inspect
 import zipfile
 
 import numpy as np
@@ -13,14 +14,14 @@ def run_path(path, outfile):
     zipf = path.parent / "1.zip"
 
     with open(path / "files.dep", "a") as f:
-        f.write(f"{zipf}\n")
+        pyobjs = [inspect, zipfile, np, sparse, openTSNE, path_to_kwargs]
+        [f.write(inspect.getfile(x) + "\n") for x in pyobjs]
 
     A = sparse.load_npz(zipf)
 
     name, kwargs = path_to_kwargs(path)
     assert name == "tsne"
     Y = tsne(A, **kwargs)
-    # with zipfile.ZipFile(parent / "1.zip") as zf:
 
     with zipfile.ZipFile(outfile, "a") as zf:
         with zf.open("embedding.npy", "w") as f:
