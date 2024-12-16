@@ -106,11 +106,14 @@ def tsimcne_nonparam(
     weight_decay=0,
     warmup_epochs=0,
     drop_last=True,
+    random_state=4101661632,
     **kwargs,
 ):
     assert initial_dim >= dim
     if trainer_kwargs is None:
         trainer_kwargs = dict()
+
+    torch.manual_seed(random_state)
 
     if batch_size == "auto":
         batch_size = 2**10 if A.shape[0] < 10_000 else 2**13
@@ -220,7 +223,7 @@ class FastTensorDataLoader:
         shuffle=False,
         data_on_gpu=False,
         drop_last=False,
-        seed=0,
+        seed=None,
     ):
         """
         Initialize a FastTensorDataLoader.
@@ -259,7 +262,8 @@ class FastTensorDataLoader:
         self.shuffle = shuffle
         self.drop_last = drop_last
         self.seed = seed
-        torch.manual_seed(self.seed)
+        if self.seed is not None:
+            torch.manual_seed(self.seed)
 
         # Calculate number of  batches
         n_batches = torch.div(
