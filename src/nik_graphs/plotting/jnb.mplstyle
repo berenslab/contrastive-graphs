@@ -15,7 +15,9 @@ figure.dpi         : 300         ## figure dots per inch
 #figure.edgecolor   : white     ## figure edgecolor
 #figure.frameon     : True      ## enable figure frame
 
-font.sans-serif: Roboto Condensed, DejaVu Sans, default
+font.sans-serif: Inter
+font.monospace: Iosevka
+
 font.size : 5
 axes.titlesize : larger
 axes.titlepad : 3
