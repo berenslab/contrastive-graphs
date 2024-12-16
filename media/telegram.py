@@ -79,7 +79,7 @@ class MscTelegram:
         comment = f"`{fname}`"  # make sure that the variabel exists
 
         with open(fname, "rb") as f:
-            return await self.bot.send_animation(
+            return self.bot.send_animation(
                 chat_id=self.chat_id,
                 animation=f,
                 width=width,
@@ -94,7 +94,7 @@ class MscTelegram:
 
         png.load()  # load metadata
         with open(fname, "rb") as f:
-            return await self.bot.send_photo(
+            return self.bot.send_photo(
                 chat_id=self.chat_id,
                 photo=f,
                 parse_mode="Markdown",
@@ -105,7 +105,7 @@ class MscTelegram:
         with open(fname) as f:
             text = f.read()
 
-        return await self.bot.send_message(
+        return self.bot.send_message(
             chat_id=self.chat_id, text=text, parse_mode="Markdown"
         )
 
