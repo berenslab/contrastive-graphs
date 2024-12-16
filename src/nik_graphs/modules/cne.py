@@ -196,10 +196,10 @@ class GraphDM(lightning.LightningDataModule):
         )
 
     def val_dataloader(self):
-        bs = self.kwargs["batch_size"]
-        val_dl = FastTensorDataLoader(
-            self.neigh_mat[:bs], shuffle=False, **self.kwargs
-        )
+        N = self.neigh_mat.tocoo()
+        m = torch.randint(N.shape[0], (self.kwargs["batch_size"],))
+        A = sparse.coo_matrix((N.data[m], (N.row[m], N.col[m])), shape=N.shape)
+        val_dl = FastTensorDataLoader(A, shuffle=False, **self.kwargs)
 
         return [val_dl, self.predict_dataloader()]
 
