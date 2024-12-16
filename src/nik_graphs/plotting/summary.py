@@ -42,9 +42,7 @@ def plot_path(plotname, outfile):
                 acc = float(f.read())
         accd[k] = acc
 
-    stylefile = Path(__file__).parent / "jnb.mplstyle"
-    with plt.style.context(stylefile):
-        return plot(embedding, labels, accd, outfile=outfile)
+    return plot(embedding, labels, accd, outfile=outfile)
 
 
 def plot(embedding, labels, accd, outfile=None, format="pdf"):

@@ -31,7 +31,16 @@ def main():
         [print(f) for f in fontfiles]
 
     else:
-        mod.plot_path(plotname, outfile)
+        # set up fonts
+        import matplotlib
+        from matplotlib import font_manager
+
+        fonts = font_manager.findSystemFonts(
+            [project_root / "media/fonts/ttf"]
+        )
+        [font_manager.fontManager.addfont(fontpath) for fontpath in fonts]
+        with matplotlib.style.context(stylefile):
+            mod.plot_path(plotname, outfile)
 
 
 if __name__ == "__main__":
