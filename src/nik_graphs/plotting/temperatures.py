@@ -51,12 +51,12 @@ def deps(plotname):
 
 
 def plot_path(plotname, outfile, format="pdf"):
-    files = deps(plotname)
-    deps.pop("srcfiles")
+    depd = deps(plotname)
+    depd.pop("srcfiles")
 
     # labels = np.load(files["data"])["labels"]
     df_dict = dict()
-    for k, v in deps.items():
+    for k, v in depd.items():
         df_ = pl.DataFrame(dict(temp=[], epoch=[], k=[]))
         for temp, zipf in zip(_TEMPERATURES, v):
             with zipfile.ZipFile(zipf) as zf:
@@ -83,5 +83,6 @@ def plot(df, outfile=None, format="pdf"):
     fig, axd = plt.subplot_mosaic(keys, figsize=(5.5, 2))
 
     # TODO: well, I need to actually plot here
+    df.group_by("temp")
 
     fig.savefig(outfile, format=format)
