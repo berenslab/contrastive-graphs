@@ -1,2 +1,2 @@
 redo-ifchange $2
-python telegram.py $2
+uv run python telegram_send.py $2
