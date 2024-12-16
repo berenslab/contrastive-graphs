@@ -536,3 +536,5 @@ pyrightconfig.json
 .redo.*.*[0-9][0-9][0-9][0-9][0-9]
 /runs/**/*.zip
 /runs/**/files.dep
+/media/*.png
+/media/*.pdf
