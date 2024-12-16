@@ -158,6 +158,12 @@ def tsimcne_nonparam(
                 r"from an ambiguous collection\..*"
             )
             warnings.filterwarnings(action="ignore", message=msg)
+            msg = (
+                r"Experiment logs directory \w+/version_0 exists "
+                "and is not empty. Previous log files in this "
+                "directory will be deleted when the new ones are saved!"
+            )
+            warnings.filterwarnings(action="ignore", message=msg)
             trainer.fit(mod, datamodule=dm)
         if not isinstance(mod.backbone, torch.nn.Embedding):
             trainer.save_checkpoint(Path(trainer.log_dir) / "cne.ckpt")
