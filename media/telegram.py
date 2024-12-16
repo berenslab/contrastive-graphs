@@ -1,4 +1,3 @@
-import inspect
 import json
 import subprocess
 import sys
@@ -11,8 +10,7 @@ import telegram
 
 class MscTelegram:
     def __init__(self, token=None, chat_id=None):
-        modfile = Path(inspect.getfile(type(self)))
-        with open(modfile.parent / "telegram.json") as f:
+        with open(Path(__file__).parent / "telegram.json") as f:
             self.rc = json.load(f)
 
         self.token = token if token is not None else self.rc["token"]
@@ -36,15 +34,11 @@ class MscTelegram:
             )
 
     def send_mp4(self, fname):
-        ## how to get video info example taken from
-        ## https://github.com/kkroening/ffmpeg-python/blob/master/examples/video_info.py
+        # how to get video info example taken from
+        # https://github.com/kkroening/ffmpeg-python/blob/master/examples/video_info.py
         import ffmpeg
 
-        try:
-            probe = ffmpeg.probe(fname)
-        except ffmpeg.Error as e:
-            print(e.stderr, file=sys.stderr)
-            sys.exit(1)
+        probe = ffmpeg.probe(fname)
 
         video_stream = next(
             (
@@ -62,7 +56,6 @@ class MscTelegram:
         width = int(video_stream["width"])
         height = int(video_stream["height"])
         duration = float(video_stream["duration"])
-        num_frames = int(video_stream["nb_frames"])
 
         ffmpeg_proc = subprocess.run(
             [
@@ -83,31 +76,7 @@ class MscTelegram:
             stdout=subprocess.PIPE,
         )
 
-        # filter out the comment field from the video metadata
-        lines = iter([str(l) for l in ffmpeg_proc.stdout.split("\n")])
-        for line in lines:
-            print(line)
-            if "comment=" in line:
-                comment = line[len("comment=") :]
-                # assumption: there will not be an escaped backslash at
-                # the end of the comment string.  In this case it will
-                # actually bleed into the next line, which isn't too bad,
-                # just some (irrelevant) extra information.
-                while line[-1] == "\\":
-                    try:
-                        line = next(lines)
-                    except StopIteration:
-                        break
-                    finally:
-                        comment = comment[:-1]
-                    comment = comment[:-1] + "\n" + line
-
-                break
-
-        try:
-            comment
-        except NameError:
-            comment = f"`{fname}`"  # make sure that the variabel exists
+        comment = f"`{fname}`"  # make sure that the variabel exists
 
         with open(fname, "rb") as f:
             return self.bot.send_animation(
