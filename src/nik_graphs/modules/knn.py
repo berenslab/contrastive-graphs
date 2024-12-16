@@ -54,8 +54,8 @@ def run_path(path, outfile):
         with zf.open("score.txt", "w") as f:
             f.write(f"{score}".encode())
 
-        with zf.open("scores.arrow", "w") as f:
-            df.write_ipc(f)
+        with zf.open("scores.csv", "w") as f:
+            df.write_csv(f)
 
 
 def knn(
