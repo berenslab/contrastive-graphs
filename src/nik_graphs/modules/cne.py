@@ -153,7 +153,8 @@ def tsimcne_nonparam(
             msg = r"Trying to infer the `batch_size` from an ambiguous collection\..*"
             warnings.filterwarnings(action="ignore", message=msg)
             trainer.fit(mod, datamodule=dm)
-        trainer.save_checkpoint(Path(trainer.log_dir) / "cne.ckpt")
+        if not isinstance(mod.backbone, torch.nn.Embedding):
+            trainer.save_checkpoint(Path(trainer.log_dir) / "cne.ckpt")
         out_batches = trainer.predict(mod, datamodule=dm)
     return torch.vstack([x[0] for x in out_batches]).cpu().numpy()
 
