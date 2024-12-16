@@ -65,9 +65,15 @@ def plot_path(plotname, outfile, format="pdf"):
 
                 with zf.open("score.txt") as f:
                     score = float(f.read())
-                    df2 = pl.DataFrame(dict(epoch=[N_EPOCHS], score=[score]))
-            df__ = df1.vstack(df2).with_columns(pl.lit(temp).alias("temp"))
-            df_ = df_.vstack(df__.rename(dict(score=k)))
+                    df2 = pl.DataFrame(
+                        dict(epoch=[N_EPOCHS - 1], score=[score])
+                    )
+            if df2["epoch"] in df1["epoch"]:
+                df__ = df1
+            else:
+                df__ = df1.vstack(df2)  #
+            df__ = df__.with_columns(pl.lit(temp).alias("temp"))
+            df_ = df_.vstack(df__.rename(dict(score=k))[["temp", "epoch", k]])
         df_dict[k] = df_
 
     df = pl.concat(
