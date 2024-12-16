@@ -2,6 +2,7 @@ import zipfile
 import inspect
 
 import numpy as np
+import polars as pl
 from sklearn import neighbors
 
 from ..path_utils import path_to_kwargs
@@ -14,7 +15,7 @@ def run_path(path, outfile):
     assert name == "knn"
 
     with open(path / "files.dep", "a") as f:
-        pyobjs = [inspect, zipfile, np, neighbors, path_to_kwargs]
+        pyobjs = [inspect, zipfile, np, neighbors, pl, path_to_kwargs]
         [f.write(inspect.getfile(x) + "\n") for x in pyobjs]
 
     # assumption: we have the embedding generated in the direct parent
@@ -33,9 +34,29 @@ def run_path(path, outfile):
 
     score = knn(X, labels, **indd, **kwargs)
 
+    npz = np.load(embeddings_dir / "1.zip")
+    other_embks = [k for k in npz.keys() if k.startswith("embeddings/step-")]
+    n = len("embeddings/step-")
+    step_keys = [int(k[n:]) for k in other_embks]
+    scores = [knn(npz[k], labels, **indd, **kwargs) for k in other_embks]
+    df_scores = pl.DataFrame(dict(step=step_keys, score=scores))
+    with zipfile.ZipFile(embeddings_dir / "1.zip") as zf:
+        if "lightning_logs/steps.csv" in zf.namelist():
+            with zf.open("lightning_logs/steps.csv") as f:
+                df_epochs = pl.read_csv(f)
+        else:
+            df_epochs = pl.DataFrame(
+                dict(global_step=step_keys, epoch=step_keys)
+            )
+
+    df = df_scores.join(df_epochs, left_on="step", right_on="global_step")
+
     with zipfile.ZipFile(outfile, "x") as zf:
         with zf.open("score.txt", "w") as f:
             f.write(f"{score}".encode())
+
+        with zf.open("scores.arrow", "w") as f:
+            df.write_ipc(f)
 
 
 def knn(
