@@ -28,13 +28,11 @@ def main():
         f".aggregate.{modulename}", package="nik_graphs"
     )
 
-    project_root = Path(__file__).parent.parent.parent
-    stylefile = Path(__file__).parent / "plotting/jnb.mplstyle"
     if args.printdeps:
         deps = mod.deplist(dispatch)
-        [print(dep) for dep in deps + [mod.__file__, __file__, stylefile]]
+        [print(dep) for dep in deps + [mod.__file__, __file__]]
     else:
-        return mod.aggregate_path(plotname, outfile)
+        return mod.aggregate_path(dispatch, outfile)
 
 
 if __name__ == "__main__":
