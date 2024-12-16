@@ -25,8 +25,8 @@ dependencies = [
   "tsimcne>=0.4.12",
   "lightning>=2.4.0",
   "python-telegram-bot>=21.9",
-  "pillow>=11.0.0",
   "ffmpeg-python>=0.2.0",
+  "pillow-simd>=9.5.0.post2",
 ]
 
 [project.urls]
