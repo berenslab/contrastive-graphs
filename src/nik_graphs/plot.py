@@ -21,10 +21,15 @@ def main():
         f".plotting.{modulename}", package="nik_graphs"
     )
 
+    project_root = Path(__file__).parent.parent.parent
+    stylefile = Path(__file__).parent / "plotting/jnb.mplstyle"
     if args.printdeps:
         deps = mod.deplist(plotname)
-        stylefile = Path(__file__).parent / "plotting/jnb.mplstyle"
         [print(dep) for dep in deps + [mod.__file__, __file__, stylefile]]
+
+        fontfiles = (project_root / "media/fonts/ttf").glob("*/all-fonts")
+        [print(f) for f in fontfiles]
+
     else:
         mod.plot_path(plotname, outfile)
 
