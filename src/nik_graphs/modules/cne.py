@@ -65,7 +65,7 @@ def run_path(path, outfile):
     trainer_kwargs = dict(
         log_every_n_steps=50,
         # val_check_interval=20,
-        check_val_every_n_epoch=25,
+        check_val_every_n_epoch=5,
         precision="bf16-mixed",
         enable_model_summary=False,
         enable_progress_bar=False,
