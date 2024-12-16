@@ -21,7 +21,7 @@ def main():
         f".plotting.{modulename}", package="nik_graphs"
     )
 
-    project_root = Path(__file__).parent.parent.parent
+    project_root = Path(__file__).parent.parent
     stylefile = Path(__file__).parent / "plotting/jnb.mplstyle"
     if args.printdeps:
         deps = mod.deplist(plotname)
