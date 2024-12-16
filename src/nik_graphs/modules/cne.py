@@ -153,7 +153,10 @@ def tsimcne_nonparam(
             max_epochs=n_epochs, logger=logger, **trainer_kwargs
         )
         with warnings.catch_warnings():
-            msg = r"Trying to infer the `batch_size` from an ambiguous collection\..*"
+            msg = (
+                "Trying to infer the `batch_size` "
+                r"from an ambiguous collection\..*"
+            )
             warnings.filterwarnings(action="ignore", message=msg)
             trainer.fit(mod, datamodule=dm)
         if not isinstance(mod.backbone, torch.nn.Embedding):
