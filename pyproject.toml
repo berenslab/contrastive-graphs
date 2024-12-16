@@ -24,6 +24,9 @@ dependencies = [
   # "torchvision>=0.20.0",
   "tsimcne>=0.4.12",
   "lightning>=2.4.0",
+  "python-telegram-bot>=21.9",
+  "pillow>=11.0.0",
+  "ffmpeg-python>=0.2.0",
 ]
 
 [project.urls]
