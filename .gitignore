@@ -542,3 +542,5 @@ pyrightconfig.json
 /media/fonts/*.zip
 media/fonts/ttf/*/fontlist.txt
 media/fonts/ttf/*/all-fonts
+/media/magick/ImageMagick-*/**
+/media/magick/magick

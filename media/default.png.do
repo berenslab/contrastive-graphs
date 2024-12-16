@@ -10,6 +10,6 @@ if [ $(command -v pdftoppm) ]; then
 elif [ $(command -v convert) ]; then
     convert -density 600 "$2.pdf" -resize 25% png:- > $3 2>/dev/null
 else
-    echo "No suitable command found for conversion.  Neither `pdftoppm' nor `convert' available." >&2
-    exit 1
+    redo-ifchange magick/magick
+    ./magick/magick convert -density 600 "$2.pdf" -resize 25% png:- > $3 2>/dev/null
 fi
