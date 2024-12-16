@@ -65,7 +65,7 @@ def run_path(path, outfile):
     trainer_kwargs = dict(
         log_every_n_steps=50,
         # val_check_interval=20,
-        check_val_every_n_epoch=25,
+        check_val_every_n_epoch=5,
         precision="bf16-mixed",
         enable_model_summary=False,
         enable_progress_bar=False,
@@ -84,7 +84,11 @@ def run_path(path, outfile):
             np.save(f, Y)
 
         for p in Path(logger.log_dir).iterdir():
-            zf.write(p, f"lightning_logs/{p.name}")
+            if p.name == "intermediate_emb.zip":
+                with zipfile.ZipFile(p) as z_embs:
+                    _tsimcne_copy_zip(z_embs, zf)
+            else:
+                zf.write(p, f"lightning_logs/{p.name}")
             p.unlink()
         Path(logger.log_dir).rmdir()
 
@@ -106,6 +110,7 @@ def tsimcne_nonparam(
     weight_decay=0,
     warmup_epochs=0,
     drop_last=True,
+    save_intermediate_feat=True,
     random_state=4101661632,
     **kwargs,
 ):
@@ -143,7 +148,7 @@ def tsimcne_nonparam(
             weight_decay=weight_decay,
             out_dim=initial_dim,
             anneal_to_dim=dim,
-            # save_intermediate_feat=True,
+            save_intermediate_feat=save_intermediate_feat,
             batches_per_epoch=len(dm.train_dataloader()),
             eval_ann=eval_ann,
             # eval_function=EvalCB(A),
@@ -159,7 +164,7 @@ def tsimcne_nonparam(
             )
             warnings.filterwarnings(action="ignore", message=msg)
             msg = (
-                r"Experiment logs directory \w+/version_0 exists "
+                r"Experiment logs directory [^\s]+/version_0 exists "
                 "and is not empty. Previous log files in this "
                 "directory will be deleted when the new ones are saved!"
             )
@@ -392,3 +397,12 @@ def evaluate(Z, y, A, random_state=None, metric="cosine", test_size=1000):
     linacc, knnacc = accuracy(Z, y, random_state=random_state, metric=metric)
 
     return linacc, knnacc, recall
+
+
+def _tsimcne_copy_zip(z_embs, zf):
+    for name in z_embs.namelist():
+        if name == "labels.npy":
+            continue
+        rename = f"embeddings/{Path(name).name}"
+        with z_embs.open(name) as f1, zf.open(rename, "w") as f2:
+            f2.write(f1.read())
