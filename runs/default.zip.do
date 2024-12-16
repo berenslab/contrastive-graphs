@@ -36,11 +36,11 @@ elif [ x$PARTITION == "xcpu-galvani" ]; then
     srun --partition $PARTITION $FLAGS \
          uv run python ../src/nik_graphs/launch.py --path $_PATH --outfile $3
 # if PARTITION is a GPU partition, we also need to pass the flag for GPU
-elif [ x$PARTITION == "x2080-galvani" ]; then
+elif [ x$PARTITION == "x2080-galvani"  -o x$PARTITION == "xa100-galvani" ]; then
     srun --partition $PARTITION --gpus=1 $FLAGS \
          uv run python ../src/nik_graphs/launch.py --path $_PATH --outfile $3
 else
-    echo "Unknown partition \"$PARTITION\" found in $_PATH" >&2
+    echo "$0: Unknown partition \"$PARTITION\" found in $_PATH" >&2
     exit 1
 fi
 
