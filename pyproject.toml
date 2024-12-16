@@ -27,6 +27,7 @@ dependencies = [
   "python-telegram-bot>=21.9",
   "pillow>=11.0.0",
   "ffmpeg-python>=0.2.0",
+  "polars>=1.17.1",
 ]
 
 [project.urls]
