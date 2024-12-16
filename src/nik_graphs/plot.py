@@ -9,6 +9,13 @@ def main():
     parser.add_argument("--plotname", required=True, type=Path)
     parser.add_argument("--outfile", type=Path)
     parser.add_argument("--printdeps", action="store_true")
+    parser.add_argument(
+        "--format",
+        type=str,
+        default="pdf",
+        help="parameter that determines the output file type, will "
+        "be passed to the call to `fig.savefig()`.",
+    )
     args = parser.parse_args()
 
     plotname = args.plotname
@@ -40,7 +47,7 @@ def main():
         )
         [font_manager.fontManager.addfont(fontpath) for fontpath in fonts]
         with matplotlib.style.context(stylefile):
-            mod.plot_path(plotname, outfile)
+            mod.plot_path(plotname, outfile, format=args.format)
 
 
 if __name__ == "__main__":

@@ -30,7 +30,7 @@ def deps(plotname):
     return depdict
 
 
-def plot_path(plotname, outfile):
+def plot_path(plotname, outfile, format="pdf"):
     files = deps(plotname)
 
     embedding = np.load(files["embedding"])["embedding"]
@@ -42,7 +42,7 @@ def plot_path(plotname, outfile):
                 acc = float(f.read())
         accd[k] = acc
 
-    return plot(embedding, labels, accd, outfile=outfile)
+    return plot(embedding, labels, accd, outfile=outfile, format=format)
 
 
 def plot(embedding, labels, accd, outfile=None, format="pdf"):
