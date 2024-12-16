@@ -1,5 +1,5 @@
-import zipfile
 import inspect
+import zipfile
 
 import numpy as np
 import polars as pl
@@ -28,7 +28,6 @@ def run_path(path, outfile):
     X = np.load(embeddings_dir / "1.zip")["embedding"]
     npz = np.load(data_dir / "1.zip")
     labels = npz["labels"]
-
     keys = ["train", "test", "val"]
     indd = {f"{k}_inds": npz[f"split/{k}"] for k in keys}
 
