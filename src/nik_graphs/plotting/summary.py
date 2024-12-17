@@ -46,9 +46,10 @@ def plot_path(plotname, outfile, format="pdf"):
 
 
 def plot(embedding, labels, accd, outfile=None, format="pdf"):
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(2.5, 2.5))
 
     ax.scatter(*embedding.T, c=labels, alpha=0.6, rasterized=True)
+    ax.set_aspect(1)
 
     txt = "\n".join(f"{k} = {v:.1%}" for k, v in accd.items())
     ax.text(
