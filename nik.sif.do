@@ -1,4 +1,6 @@
 # -*- mode: sh -*-
+exec >&2
+
 TMP=$(mktemp)
 cat > "$TMP" << EOF
 Bootstrap: docker
