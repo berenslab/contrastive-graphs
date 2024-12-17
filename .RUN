@@ -1,1 +1,1 @@
-singularity exec --pwd "$PWD" --bind "$(dirname $PWD)" ../nik.sif python3
+singularity exec ../nik.sif --pwd "$PWD" --bind "$(dirname $PWD)" python3
