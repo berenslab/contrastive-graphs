@@ -3,6 +3,7 @@ import itertools
 import zipfile
 from pathlib import Path
 
+import matplotlib as mpl
 import numpy as np
 import polars as pl
 from matplotlib import pyplot as plt
@@ -34,7 +35,17 @@ def plot(df, outfile=None, format="pdf"):
     keys = ["lin", "knn", "recall"]
     fig, axd = plt.subplot_mosaic(keys, figsize=(5.5, 2))
 
-    # TODO: well, I need to actually plot here
-    df.group_by("temp")
+    cmap = plt.get_cmap("magma")
+    norm = mpl.colors.LogNorm(df["temp"].min(), df["temp"].max())
+    for temp, df_ in df.group_by("temp", maintain_order=True):
+        for key in keys:
+            ax = axd[key]
+            ax.plot(
+                df["epoch"], df[key], color=cmap(norm(temp)), label=f"{temp}"
+            )
+    for key in keys:
+        ax = axd[key]
+        ax.set_ylabel(key)
+        ax.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
 
     fig.savefig(outfile, format=format)
