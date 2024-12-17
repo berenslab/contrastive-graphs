@@ -29,7 +29,8 @@ if [ ! -f ../nik.sif ]; then
     exit 1
 fi
 
-RUN="singularity exec ../nik.sif --pwd \"$PWD\" --bind \"$(dirname $PWD)\" python3"
+redo-ifchange
+RUN=$(<../.RUN)
 # The actual calls to the computation happen in the block below.  We
 # first determine whether the current file needs to be launched on a
 # partition (and if we can even do that) and then pass the flags to srun.

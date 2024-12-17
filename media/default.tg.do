@@ -1,3 +1,4 @@
 redo-ifchange $2
-RUN="singularity exec ../nik.sif --pwd \"$PWD\" --bind \"$(dirname $PWD)\" python3"
+redo-ifchange ../.RUN
+RUN=$(<../.RUN)
 $RUN telegram_send.py $2
