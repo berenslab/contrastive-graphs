@@ -29,7 +29,9 @@ if [ ! -f ../nik.sif ]; then
     exit 1
 fi
 
-RUN="singularity exec --pwd \"$PWD\" --bind \"$(dirname $PWD)\" ../nik.sif python3"
+PROJROOT=$(dirname $PWD)
+SINGULARITYFLAGS="--pwd $PWD --bind $PROJROOT --env PYTHONPATH=$PROJROOT"
+RUN="singularity exec $SINGULARITYFLAGS ../nik.sif python3"
 # The actual calls to the computation happen in the block below.  We
 # first determine whether the current file needs to be launched on a
 # partition (and if we can even do that) and then pass the flags to srun.
