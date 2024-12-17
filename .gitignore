@@ -544,3 +544,4 @@ media/fonts/ttf/*/fontlist.txt
 media/fonts/ttf/*/all-fonts
 /media/magick/ImageMagick-*/**
 /media/magick/magick
+/dataframes/*.csv
