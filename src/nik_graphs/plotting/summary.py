@@ -8,7 +8,7 @@ from matplotlib import pyplot as plt
 # example plotname = "mnist.tsne.summary". The middle part must not
 # contain dots as part of the arguments.
 def deplist(plotname):
-    return deps(plotname).values()
+    return list(deps(plotname).values())
 
 
 def deps(plotname):
