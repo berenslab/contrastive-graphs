@@ -3,9 +3,7 @@ import itertools
 import zipfile
 from pathlib import Path
 
-import numpy as np
 import polars as pl
-from matplotlib import pyplot as plt
 
 TEMPERATURES = [x * 10**i for i in range(-4, 1) for x in [1, 5]]
 RANDOM_STATES = [None, 1111, 2222]
@@ -43,10 +41,6 @@ def deps(dispatch):
     depdict = {
         k: [p / k / "1.zip" for p in paths] for k in ["lin", "knn", "recall"]
     }
-
-    depdict["srcfiles"] = [
-        inspect.getfile(f) for f in [inspect, Path, np, plt, zipfile]
-    ]
     return depdict
 
 

@@ -1,4 +1,3 @@
-import inspect
 import zipfile
 from pathlib import Path
 
@@ -9,10 +8,7 @@ from matplotlib import pyplot as plt
 # example plotname = "mnist.tsne.summary". The middle part must not
 # contain dots as part of the arguments.
 def deplist(plotname):
-    depdict = deps(plotname)
-
-    srcfiles = depdict.pop("srcfiles")
-    return list(depdict.values()) + srcfiles
+    return deps(plotname).values()
 
 
 def deps(plotname):
@@ -23,10 +19,6 @@ def deps(plotname):
     depdict = {k: path / k / "1.zip" for k in ["lin", "knn", "recall"]}
     depdict["embedding"] = path / "1.zip"
     depdict["data"] = path.parent / "1.zip"
-
-    depdict["srcfiles"] = [
-        inspect.getfile(f) for f in [inspect, Path, np, plt]
-    ]
     return depdict
 
 
