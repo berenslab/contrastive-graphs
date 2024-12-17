@@ -33,7 +33,7 @@ def plot_path(plotname, outfile, format="pdf"):
 
 def plot(df, outfile=None, format="pdf"):
     keys = ["lin", "knn", "recall"]
-    fig, axd = plt.subplot_mosaic(keys, figsize=(5.5, 2))
+    fig, axd = plt.subplot_mosaic([keys], figsize=(5.5, 2))
 
     cmap = plt.get_cmap("magma")
     norm = mpl.colors.LogNorm(df["temp"].min(), df["temp"].max())
