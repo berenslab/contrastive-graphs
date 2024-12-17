@@ -28,19 +28,24 @@ def plot_path(plotname, outfile, format="pdf"):
 
 def plot(df, outfile=None, format="pdf"):
     keys = ["lin", "knn", "recall"]
-    fig, axd = plt.subplot_mosaic([keys], figsize=(5.5, 2))
+    fig, axd = plt.subplot_mosaic(
+        [keys + ["legend"]], figsize=(5.5, 1.25), width_ratios=[1, 1, 1, 0.25]
+    )
 
-    cmap = plt.get_cmap("magma")
+    cmap = plt.get_cmap("copper")
     norm = mpl.colors.LogNorm(df["temp"].min(), df["temp"].max())
-    for temp, df_ in df.group_by("temp", maintain_order=True):
+    for (temp,), df_ in df.group_by("temp", maintain_order=True):
         for key in keys:
             ax = axd[key]
             ax.plot(
-                df["epoch"], df[key], color=cmap(norm(temp)), label=f"{temp}"
+                df_["epoch"], df_[key], c=cmap(norm(temp)), label=f"{temp}"
             )
     for key in keys:
         ax = axd[key]
         ax.set_ylabel(key)
+        ax.set_xlabel("epochs")
         ax.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
-
+    handles, labels = axd["knn"].get_legend_handles_labels()
+    axd["legend"].legend(handles=handles, labels=labels, loc="center")
+    axd["legend"].set_axis_off()
     fig.savefig(outfile, format=format)
