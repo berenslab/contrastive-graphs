@@ -30,7 +30,7 @@ if [ ! -f ../nik.sif ]; then
 fi
 
 PROJROOT=$(dirname $PWD)
-SINGULARITYFLAGS="--pwd $PWD --bind $PROJROOT --env PYTHONPATH=$PROJROOT"
+SINGULARITYFLAGS="--pwd $PWD --bind $PROJROOT --env PYTHONPATH=$PROJROOT/src"
 RUN="singularity exec $SINGULARITYFLAGS ../nik.sif python3"
 # The actual calls to the computation happen in the block below.  We
 # first determine whether the current file needs to be launched on a
