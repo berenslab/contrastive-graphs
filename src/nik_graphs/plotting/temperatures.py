@@ -40,7 +40,12 @@ def plot(df, outfile=None, format="pdf"):
             ax = axd[key]
             ax.plot(*m, c=color, label=f"{temp:g}")
             ax.fill_between(
-                m["epoch"], m[key] - std, m[key] + std, color=color, alpha=0.62
+                m["epoch"],
+                m[key] - std,
+                m[key] + std,
+                color=color,
+                ec=None,
+                alpha=0.62,
             )
     for key in keys:
         ax = axd[key]
