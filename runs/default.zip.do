@@ -24,21 +24,27 @@ PARTITION=$(grep "__partition__ = " ../src/nik_graphs/modules/${PYNAME}.py \
                 | sed 's/__partition__ = "\(.*\)"/\1/')
 FLAGS=--cpus-per-task=8
 
+if [ ! -f ../nik.sif ]; then
+    echo "$0: Container file 'nik.sif' does not exist. Build it first!" >&2
+    exit 1
+fi
+
+RUN="singularity exec ../nik.sif --exec --pwd \"$PWD\" --bind \"$PWD\" python3"
 # The actual calls to the computation happen in the block below.  We
 # first determine whether the current file needs to be launched on a
 # partition (and if we can even do that) and then pass the flags to srun.
-# The call chain is [srun ->] uv -> python launch.py
+# The call chain is [srun ->] singularity -> python3 launch.py
 
 # if $PARTITION is not set or if `srun` does not exist, we call `uv` directly
 if [ x$PARTITION == x -o x$(command -v srun) == x ]; then
-    uv run python ../src/nik_graphs/launch.py --path $_PATH --outfile $3
+    $RUN ../src/nik_graphs/launch.py --path $_PATH --outfile $3
 elif [ x$PARTITION == "xcpu-galvani" ]; then
     srun --partition $PARTITION $FLAGS \
-         uv run python ../src/nik_graphs/launch.py --path $_PATH --outfile $3
+         $RUN ../src/nik_graphs/launch.py --path $_PATH --outfile $3
 # if PARTITION is a GPU partition, we also need to pass the flag for GPU
 elif [ x$PARTITION == "x2080-galvani"  -o x$PARTITION == "xa100-galvani" ]; then
     srun --partition $PARTITION --gpus=1 $FLAGS \
-         uv run python ../src/nik_graphs/launch.py --path $_PATH --outfile $3
+         $RUN ../src/nik_graphs/launch.py --path $_PATH --outfile $3
 else
     echo "$0: Unknown partition \"$PARTITION\" found in $_PATH" >&2
     exit 1

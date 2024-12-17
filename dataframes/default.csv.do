@@ -1,3 +1,4 @@
 # -*- mode: sh -*-
-uv run python ../src/nik_graphs/agg.py --dispatch $2 --printdeps | xargs redo-ifchange
-uv run python ../src/nik_graphs/agg.py --dispatch $2 --outfile $3
+RUN="singularity exec ../nik.sif --exec --pwd \"$PWD\" --bind \"$PWD\" python3"
+$RUN ../src/nik_graphs/agg.py --dispatch $2 --printdeps | xargs redo-ifchange
+$RUN ../src/nik_graphs/agg.py --dispatch $2 --outfile $3
