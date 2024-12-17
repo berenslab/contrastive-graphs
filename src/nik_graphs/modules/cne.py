@@ -29,28 +29,6 @@ def run_path(path, outfile):
     torch.set_float32_matmul_precision("medium")
     zipf = path.parent / "1.zip"
 
-    with open(path / "files.dep", "a") as f:
-        pyobjs = [
-            contextlib,
-            logging,
-            inspect,
-            subprocess,
-            warnings,
-            zipfile,
-            Path,
-            lightning,
-            np,
-            torch,
-            tsimcne,
-            sparse,
-            linear_model,
-            model_selection,
-            neighbors,
-            pipeline,
-            preprocessing,
-        ]
-        [f.write(inspect.getfile(x) + "\n") for x in pyobjs]
-
     A = sparse.load_npz(zipf)
     labels = np.load(zipf)["labels"]
 

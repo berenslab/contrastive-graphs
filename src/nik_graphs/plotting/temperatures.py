@@ -1,4 +1,3 @@
-import inspect
 from pathlib import Path
 
 import matplotlib as mpl
@@ -13,7 +12,7 @@ def deplist(plotname):
 
     path = Path("../dataframes/temp_evals.csv")
 
-    return [path] + [inspect.getfile(f) for f in [inspect, Path, plt]]
+    return [path]
 
 
 def plot_path(plotname, outfile, format="pdf"):
