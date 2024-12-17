@@ -1,10 +1,7 @@
 import inspect
-import itertools
-import zipfile
 from pathlib import Path
 
 import matplotlib as mpl
-import numpy as np
 import polars as pl
 from matplotlib import pyplot as plt
 
@@ -19,9 +16,7 @@ def deplist(plotname):
 
     path = Path("../dataframes/temp_evals.csv")
 
-    return [path] + [
-        inspect.getfile(f) for f in [inspect, Path, np, plt, zipfile]
-    ]
+    return [path] + [inspect.getfile(f) for f in [inspect, Path, plt]]
 
 
 def plot_path(plotname, outfile, format="pdf"):
