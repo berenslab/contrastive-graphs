@@ -106,10 +106,10 @@ From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
         pyg-lib torch_scatter torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-2.4.0+cu124.html \
         && \
         pip install --break-system-packages dgl -f https://data.dgl.ai/wheels/torch-2.4/cu124/repo.html
-    pip install --editable --break -system-packages ./nik_graphs
 EOF
 
 # on my laptop, I need to run:
 # run0 --setenv=APPTAINER_TMPDIR=$PWD apptainer build nik.sif nik.def
+
 singularity build --fakeroot $3 $TMP
 rm $TMP
