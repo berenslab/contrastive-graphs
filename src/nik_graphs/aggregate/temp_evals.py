@@ -7,7 +7,8 @@ import numpy as np
 import polars as pl
 from matplotlib import pyplot as plt
 
-_TEMPERATURES = [x * 10**i for i in range(-4, 1) for x in [1, 5]]
+TEMPERATURES = [x * 10**i for i in range(-4, 1) for x in [1, 5]]
+RANDOM_STATES = [None, 1111, 2222]
 N_EPOCHS = 30
 
 
@@ -29,16 +30,15 @@ def deps(dispatch):
     default_temp = sig.parameters["temp"].default
     default_n_epochs = sig.parameters["n_epochs"].default
 
-    # rng = np.random.default_rng(333**3)
-    # rints = rng.integers(10000, size=2)
-    rstrs = [""]  # + [f",random_state={r}" for r in rints]
-
     n_epochs = f",n_epochs={N_EPOCHS}" if default_n_epochs != N_EPOCHS else ""
     path = Path("../runs") / dataset
     paths = []
-    for temp, rstr in itertools.product(_TEMPERATURES, rstrs):
+    for temp, r in itertools.product(TEMPERATURES, RANDOM_STATES):
         tempstr = f",temp={temp}" if temp != default_temp else ""
-        paths.append(path / ("cne,metric=cosine" + n_epochs + tempstr + rstr))
+        randstr = f",random_state={r}" if r is not None else ""
+        paths.append(
+            path / ("cne,metric=cosine" + n_epochs + tempstr + randstr)
+        )
 
     depdict = {
         k: [p / k / "1.zip" for p in paths] for k in ["lin", "knn", "recall"]
@@ -58,7 +58,11 @@ def aggregate_path(path, outfile=None):
     df_dict = dict()
     for k, v in depd.items():
         df_ = None
-        for temp, zipf in zip(_TEMPERATURES, v):
+        # same iteration scheme as in `deps()` above so that the order
+        # between the zipfile and the parameters match.
+        for (temp, r), zipf in zip(
+            itertools.product(TEMPERATURES, RANDOM_STATES), v
+        ):
             with zipfile.ZipFile(zipf) as zf:
                 with zf.open("scores.csv") as f:
                     df1 = pl.read_csv(f).drop("step")
@@ -72,13 +76,16 @@ def aggregate_path(path, outfile=None):
                 df__ = df1
             else:
                 df__ = df1.vstack(df2)  #
-            df__ = df__.with_columns(pl.lit(float(temp)).alias("temp"))
+            df__ = df__.with_columns(
+                pl.lit(float(temp)).alias("temp"),
+                pl.lit(r).alias("random_state"),
+            )
             df__ = df__.rename(dict(score=k))
             df_ = df_.vstack(df__) if df_ is not None else df__
         df_dict[k] = df_
 
     df = pl.concat(
-        [df_dict[k][["temp", "epoch"]]]
+        [df_dict[k][["temp", "epoch", "random_state"]]]
         + [pl.DataFrame(df[k]) for k, df in df_dict.items()],
         how="horizontal",
     )
