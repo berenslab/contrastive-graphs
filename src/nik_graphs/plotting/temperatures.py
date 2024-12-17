@@ -35,10 +35,15 @@ def plot(df, outfile=None, format="pdf"):
     cmap = plt.get_cmap("copper")
     norm = mpl.colors.LogNorm(df["temp"].min(), df["temp"].max())
     for (temp,), df_ in df.group_by("temp", maintain_order=True):
+        df__ = df_.group_by("random_state")
         for key in keys:
+            color = cmap(norm(temp))
+            m = df__.mean()[key]
+            std = df__.std()[key]
             ax = axd[key]
-            ax.plot(
-                df_["epoch"], df_[key], c=cmap(norm(temp)), label=f"{temp}"
+            ax.plot(df_["epoch"], m, c=color, label=f"{temp:g}")
+            ax.fill_between(
+                df_["epoch"], m - std, m + std, c=color, alpha=0.62
             )
     for key in keys:
         ax = axd[key]
