@@ -5,9 +5,6 @@ import matplotlib as mpl
 import polars as pl
 from matplotlib import pyplot as plt
 
-_TEMPERATURES = [x * 10**i for i in range(-4, 1) for x in [1, 5]]
-N_EPOCHS = 30
-
 
 # example plotname = "temperatures"
 def deplist(plotname):
@@ -35,15 +32,15 @@ def plot(df, outfile=None, format="pdf"):
     cmap = plt.get_cmap("copper")
     norm = mpl.colors.LogNorm(df["temp"].min(), df["temp"].max())
     for (temp,), df_ in df.group_by("temp", maintain_order=True):
-        df__ = df_.group_by("random_state")
+        df__ = df_.group_by("epoch")
         for key in keys:
             color = cmap(norm(temp))
-            m = df__.mean()[key]
-            std = df__.std()[key]
+            m = df__.agg(pl.mean(key)).sort(by="epoch")
+            std = df__.agg(pl.std(key)).sort(by="epoch")[key]
             ax = axd[key]
-            ax.plot(df_["epoch"], m, c=color, label=f"{temp:g}")
+            ax.plot(*m, c=color, label=f"{temp:g}")
             ax.fill_between(
-                df_["epoch"], m - std, m + std, c=color, alpha=0.62
+                m["epoch"], m[key] - std, m[key] + std, color=color, alpha=0.62
             )
     for key in keys:
         ax = axd[key]
