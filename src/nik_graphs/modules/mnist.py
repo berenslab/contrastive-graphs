@@ -45,14 +45,5 @@ def run_path(p, outfile):
     save_dataset_split(outfile, train_inds, test_inds, val_inds)
 
     with open(p / "files.dep", "a") as f:
-        pyobjs = [
-            Path,
-            np,
-            os,
-            inspect,
-            save_graph,
-            datasets,
-            path_to_kwargs,
-            decomposition,
-        ]
+        pyobjs = [path_to_kwargs, decomposition]
         [f.write(inspect.getfile(x) + "\n") for x in pyobjs]

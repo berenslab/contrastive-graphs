@@ -15,8 +15,7 @@ def run_path(path, outfile):
     assert name == "knn"
 
     with open(path / "files.dep", "a") as f:
-        pyobjs = [inspect, zipfile, np, neighbors, pl, path_to_kwargs]
-        [f.write(inspect.getfile(x) + "\n") for x in pyobjs]
+        f.write(inspect.getfile(f"{path_to_kwargs}\n"))
 
     # assumption: we have the embedding generated in the direct parent
     # and the dataset is defined on directory above.  This should

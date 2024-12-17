@@ -15,7 +15,7 @@ def run_path(path, outfile):
     zipf = path.parent / "1.zip"
 
     with open(path / "files.dep", "a") as f:
-        pyobjs = [inspect, zipfile, np, sparse, openTSNE, path_to_kwargs]
+        pyobjs = [path_to_kwargs]
         [f.write(inspect.getfile(x) + "\n") for x in pyobjs]
 
     A = sparse.load_npz(zipf)

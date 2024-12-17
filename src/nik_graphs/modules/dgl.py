@@ -96,16 +96,5 @@ def dgl_dataset(cls, p, outfile):
         with zf.open("dgl_class_info.txt", "w") as f:
             f.write(dgl_output.getvalue().encode())
     with open(p / "files.dep", "a") as f:
-        pyobjs = [
-            Path,
-            contextlib,
-            os,
-            zipfile,
-            inspect,
-            np,
-            nx,
-            save_graph,
-            path_to_kwargs,
-            cls,
-        ]
+        pyobjs = [save_graph, path_to_kwargs]
         [f.write(inspect.getfile(x) + "\n") for x in pyobjs]
