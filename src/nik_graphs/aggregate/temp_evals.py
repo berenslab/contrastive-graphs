@@ -78,7 +78,7 @@ def aggregate_path(path, outfile=None):
                 df__ = df1.vstack(df2)
             df__ = df__.with_columns(
                 pl.lit(float(temp)).alias("temp"),
-                pl.lit(r).alias("random_state", dtype=pl.Int32),
+                pl.lit(r, dtype=pl.Int32).alias("random_state"),
             )
             df__ = df__.rename(dict(score=k))
             df_ = df_.vstack(df__) if df_ is not None else df__
