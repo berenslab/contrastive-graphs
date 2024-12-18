@@ -3,6 +3,7 @@ from pathlib import Path
 
 import numpy as np
 from matplotlib import pyplot as plt
+from scipy import sparse
 
 
 # example plotname = "mnist.tsne.summary". The middle part must not
@@ -26,7 +27,13 @@ def plot_path(plotname, outfile, format="pdf"):
     files = deps(plotname)
 
     embedding = np.load(files["embedding"])["embedding"]
+    if embedding.shape[1] > 2:
+        raise RuntimeError(
+            f"Need a 2D embedding, but given array is {embedding.shape[1]}D"
+        )
+
     labels = np.load(files["data"])["labels"]
+    # A = sparse.load_npz(files["data"])
     accd = dict()
     for k in ["lin", "knn", "recall"]:
         with zipfile.ZipFile(files[k]) as zf:
