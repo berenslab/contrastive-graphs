@@ -61,11 +61,11 @@ def tsne(
         **kwargs,
     )
 
-    # normalize affinities row-wise, then they will be normalized into
-    # a joint probability distribution by `PrecomputedAffinities`
-    affinities = openTSNE.affinity.PrecomputedAffinities(
-        preprocessing.normalize(A, norm="l1", axis=1),
-    )
+    # normalize affinities row-wise, then symmetrize.  Will be
+    # normalized into a joint probability distribution by
+    # `PrecomputedAffinities`
+    P = preprocessing.normalize(A, norm="l1", axis=1)
+    affinities = openTSNE.affinity.PrecomputedAffinities((P + P.T) / 2)
     return tsne.fit(affinities=affinities)
 
 
