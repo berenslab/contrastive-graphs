@@ -7,14 +7,7 @@ from pathlib import Path
 
 import networkx as nx
 import numpy as np
-
-from dgl.data import (
-    AmazonCoBuyComputerDataset,
-    AmazonCoBuyPhotoDataset,
-    CiteseerGraphDataset,
-    CoraGraphDataset,
-    PubmedGraphDataset,
-)
+from dgl.data import CoraGraphDataset
 
 from ..graph_utils import save_dataset_split, save_graph
 from ..path_utils import path_to_kwargs
@@ -90,4 +83,4 @@ def dgl_dataset(cls, p, outfile):
     with open(p / "files.dep", "a") as f:
         pyobjs = [save_graph, path_to_kwargs]
         [f.write(inspect.getfile(x) + "\n") for x in pyobjs]
-        f.write(__file__)
+        f.write(__file__ + "\n")
