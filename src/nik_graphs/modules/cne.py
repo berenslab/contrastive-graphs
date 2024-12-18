@@ -115,7 +115,9 @@ def tsimcne_nonparam(
     )
     if initialization == "spectral":
         X = spectral(
-            A.asfptype(), n_components=initial_dim, random_state=random_state
+            sparse.csr_matrix(A).asfptype(),
+            n_components=initial_dim,
+            random_state=random_state,
         )
         init = rescale(
             X,
