@@ -25,18 +25,8 @@ __partition__ = "cpu-galvani"
 def run_path(p, outfile):
 
     name, kwargs = path_to_kwargs(p)
-    assert name == "dgl"
-    match kwargs["id"]:
-        case "photo":
-            cls = AmazonCoBuyPhotoDataset
-        case "computer":
-            cls = AmazonCoBuyComputerDataset
-        case "citeseer":
-            cls = CiteseerGraphDataset
-        case "cora":
-            cls = CoraGraphDataset
-        case "pubmed":
-            cls = PubmedGraphDataset
+    assert name == "cora"
+    cls = CoraGraphDataset
     return dgl_dataset(cls, p, outfile)
 
 
@@ -44,7 +34,6 @@ def dgl_dataset(cls, p, outfile):
     name, kwargs = path_to_kwargs(p)
     random_state = kwargs.pop("random_state", 47**8)
     rng = np.random.default_rng(random_state)
-    _ = kwargs.pop("id")
     assert kwargs == dict()
 
     cache_dir = os.environ.get("XDG_CACHE_DIR", Path.home() / ".cache")
@@ -101,3 +90,4 @@ def dgl_dataset(cls, p, outfile):
     with open(p / "files.dep", "a") as f:
         pyobjs = [save_graph, path_to_kwargs]
         [f.write(inspect.getfile(x) + "\n") for x in pyobjs]
+        f.write(__file__)
