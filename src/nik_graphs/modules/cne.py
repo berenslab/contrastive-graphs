@@ -114,7 +114,9 @@ def tsimcne_nonparam(
         data_on_gpu=True,
     )
     if initialization == "spectral":
-        X = spectral(A, n_components=initial_dim, random_state=random_state)
+        X = spectral(
+            A.asfptype(), n_components=initial_dim, random_state=random_state
+        )
         init = rescale(
             X,
             inplace=True,
