@@ -32,8 +32,7 @@ fi
 PROJROOT=$(dirname $PWD)
 # those directories will be available inside the container, see
 # https://docs.sylabs.io/guides/3.0/user-guide/bind_paths_and_mounts.html#user-defined-bind-paths
-SINGULARITY_BINDPATH="$PROJROOT,$XDG_CACHE_DIR"
-SINGULARITYFLAGS="--pwd $PWD --env PYTHONPATH=$PROJROOT/src"
+SINGULARITYFLAGS="--pwd $PWD --bind $PROJROOT,$XDG_CACHE_DIR --env PYTHONPATH=$PROJROOT/src"
 RUN="singularity exec $SINGULARITYFLAGS ../nik.sif python3"
 # The actual calls to the computation happen in the block below.  We
 # first determine whether the current file needs to be launched on a
