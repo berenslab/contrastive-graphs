@@ -16,7 +16,7 @@ def run_path(path, outfile):
     assert name == "recall"
 
     with open(path / "files.dep", "a") as f:
-        f.write(inspect.getfile(f"{path_to_kwargs}\n"))
+        f.write(f"{inspect.getfile(path_to_kwargs)}\n")
 
     # assumption: we have the embedding generated in the direct parent
     # and the dataset is defined on directory above.  This should
