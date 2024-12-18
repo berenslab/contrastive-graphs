@@ -32,8 +32,8 @@ fi
 PROJROOT=$(dirname $PWD)
 # those directories will be available inside the container, see
 # https://docs.sylabs.io/guides/3.0/user-guide/bind_paths_and_mounts.html#user-defined-bind-paths
-SINGULARITYFLAGS="--pwd $PWD --bind $PROJROOT,$XDG_CACHE_DIR --env PYTHONPATH=$PROJROOT/src"
-RUN="singularity exec $SINGULARITYFLAGS ../nik.sif python3"
+SFLAGS="--pwd $PWD --bind $PROJROOT,$XDG_CACHE_DIR --env PYTHONPATH=$PROJROOT/src"
+RUN="singularity exec $SFLAGS ../nik.sif python3"
 # The actual calls to the computation happen in the block below.  We
 # first determine whether the current file needs to be launched on a
 # partition (and if we can even do that) and then pass the flags to srun.
@@ -47,6 +47,9 @@ elif [ x$PARTITION == "xcpu-galvani" ]; then
          $RUN ../src/nik_graphs/launch.py --path $_PATH --outfile $3
 # if PARTITION is a GPU partition, we also need to pass the flag for GPU
 elif [ x$PARTITION == "x2080-galvani"  -o x$PARTITION == "xa100-galvani" ]; then
+    # append --nv so that cuda will work on the compute node
+    SFLAGS="$SFLAGS --nv"
+    RUN="singularity exec $SFLAGS ../nik.sif python3"
     srun --partition $PARTITION --gpus=1 $FLAGS \
          $RUN ../src/nik_graphs/launch.py --path $_PATH --outfile $3
 else
