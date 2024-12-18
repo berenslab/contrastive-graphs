@@ -11,7 +11,7 @@ import lightning
 import numpy as np
 import torch
 import tsimcne
-from openTSNE import initialization
+from openTSNE.initialization import rescale, spectral
 from scipy import sparse
 from sklearn import (
     linear_model,
@@ -114,10 +114,8 @@ def tsimcne_nonparam(
         data_on_gpu=True,
     )
     if initialization == "spectral":
-        X = initialization.spectral(
-            A, n_components=initial_dim, random_state=random_state
-        )
-        init = initialization.rescale(
+        X = spectral(A, n_components=initial_dim, random_state=random_state)
+        init = rescale(
             X,
             inplace=True,
             target_std=1,
