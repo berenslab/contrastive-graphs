@@ -75,6 +75,10 @@ From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
             && apt-get clean -qq \
             && rm -rf /var/lib/apt/lists/*
 
+     pip install --break-system-packages \
+         torch==2.4.1 \
+          torchvision==0.19.1 \
+           --index-url https://download.pytorch.org/whl/cu124
 
      pip install --upgrade --break-system-packages \
             "networkx>=3.4.2" \
@@ -84,8 +88,7 @@ From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
             "annoy>=1.17.3" \
             "matplotlib>=3.9.3" \
             "opentsne>=1.0.2" \
-            "torch==2.4.0" \
-            "tsimcne>=0.4.12" \
+            "tsimcne>=0.4.13" \
             "lightning>=2.4.0" \
             "scipy>=1.14.1" \
             "numba>=0.60.0" \
