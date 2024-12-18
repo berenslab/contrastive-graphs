@@ -22,10 +22,13 @@ def plot_path(plotname, outfile, format="pdf"):
     return plot(df, outfile=outfile, format=format)
 
 
-def plot(df, outfile=None, format="pdf"):
+def plot(df, outfile, format="pdf"):
     keys = ["lin", "knn", "recall"]
+    by_temp = ["a", "b", "c", "."]
     fig, axd = plt.subplot_mosaic(
-        [keys + ["legend"]], figsize=(5.5, 1.25), width_ratios=[1, 1, 1, 0.25]
+        [keys + ["legend"], by_temp],
+        figsize=(5.5, 2.5),
+        width_ratios=[1, 1, 1, 0.25],
     )
 
     cmap = plt.get_cmap("copper")
@@ -46,11 +49,30 @@ def plot(df, outfile=None, format="pdf"):
                 ec=None,
                 alpha=0.62,
             )
-    for key in keys:
+    dfg = df.filter(pl.col("epoch") == df["epoch"].max()).group_by(
+        "temp", maintain_order=True
+    )
+    for key, tkey in zip(keys, by_temp):
         ax = axd[key]
         ax.set_ylabel(key)
         ax.set_xlabel("epochs")
         ax.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
+
+        ax = axd[tkey]
+        temp, mean = dfg.agg(pl.mean(key)).sort(by="temp")[["temp", key]]
+        std = dfg.agg(pl.std(key)).sort(by="temp")[key]
+        ax.scatter(temp, mean, c=cmap(norm(temp)), zorder=5, s=15)
+        ax.plot(temp, mean, c="xkcd:grey")
+        ax.fill_between(
+            temp,
+            mean - std,
+            mean + std,
+            color="xkcd:grey",
+            alpha=0.62,
+            ec=None,
+        )
+        ax.set(ylabel=key, xlabel="temperature", xscale="log")
+
     handles, labels = axd["knn"].get_legend_handles_labels()
     axd["legend"].legend(handles=handles, labels=labels, loc="center")
     axd["legend"].set_axis_off()
