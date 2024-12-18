@@ -76,8 +76,8 @@ From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
             && rm -rf /var/lib/apt/lists/*
 
      pip install --break-system-packages \
-         torch==2.4.1 \
-          torchvision==0.19.1 \
+         torch==2.4.0 \
+          torchvision==0.19.0 \
            --index-url https://download.pytorch.org/whl/cu124
 
      pip install --upgrade --break-system-packages \
