@@ -5,6 +5,7 @@ import numpy as np
 import openTSNE
 import openTSNE.callbacks
 from scipy import sparse
+from sklearn import preprocessing
 
 from ..path_utils import path_to_kwargs
 
@@ -58,9 +59,11 @@ def tsne(
         **kwargs,
     )
 
-    A /= A.sum(1)
-    A /= A.sum()
-    affinities = openTSNE.affinity.PrecomputedAffinities(A, normalize=False)
+    # normalize affinities row-wise, then they will be normalized into
+    # a joint probability distribution by `PrecomputedAffinities`
+    affinities = openTSNE.affinity.PrecomputedAffinities(
+        preprocessing.normalize(A, norm="l1", axis=1),
+    )
     return tsne.fit(affinities=affinities)
 
 
