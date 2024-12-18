@@ -87,12 +87,12 @@ def dgl_dataset(cls, p, outfile):
         val_inds = inds[train_size + test_size :]
     else:
 
-        def mask2ind(x):
-            return np.where(x)[0]
+        def key2ind(k):
+            return np.where(g.ndata[k][sel])[0]
 
-        train_inds = mask2ind(g.ndata["train_mask"])
-        test_inds = mask2ind(g.ndata["test_mask"])
-        val_inds = mask2ind(g.ndata["val_mask"])
+        train_inds = key2ind("train_mask")
+        test_inds = key2ind("test_mask")
+        val_inds = key2ind("val_mask")
     save_dataset_split(outfile, train_inds, test_inds, val_inds)
 
     with zipfile.ZipFile(outfile, "a") as zf:
