@@ -11,6 +11,7 @@ import lightning
 import numpy as np
 import torch
 import tsimcne
+from openTSNE import initialization
 from scipy import sparse
 from sklearn import (
     linear_model,
@@ -89,6 +90,7 @@ def tsimcne_nonparam(
     warmup_epochs=0,
     drop_last=True,
     save_intermediate_feat=True,
+    initialization="spectral",
     random_state=4101661632,
     **kwargs,
 ):
@@ -111,9 +113,25 @@ def tsimcne_nonparam(
         drop_last=drop_last,
         data_on_gpu=True,
     )
+    if initialization == "spectral":
+        X = initialization.spectral(
+            A, n_components=initial_dim, random_state=random_state
+        )
+        init = initialization.rescale(
+            X,
+            inplace=True,
+            target_std=1,
+        ).astype("float32")
+        backbone = torch.nn.Embedding.from_pretrained(
+            torch.from_numpy(init), freeze=False
+        )
+    elif initialization == "random":
+        backbone = torch.nn.Embedding(A.shape[0], initial_dim)
+    else:
+        raise ValueError(f"Wrong {initialization=!r} passed")
     with contextlib.redirect_stdout(sys.stderr):
         mod = tsimcne.PLtSimCNE(
-            backbone=torch.nn.Embedding(len(y), initial_dim),
+            backbone=backbone,
             backbone_dim=initial_dim,
             projection_head=torch.nn.Identity(),
             n_epochs=n_epochs,
