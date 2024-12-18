@@ -43,6 +43,7 @@ def tsne(
     n_jobs=-1,
     initialization="spectral",
     random_state=505**3,
+    negative_gradient_method="fft",
     **kwargs,
 ):
     if early_exaggeration_iter is None:
@@ -56,6 +57,7 @@ def tsne(
         early_exaggeration_iter=early_exaggeration_iter,
         initialization=initialization,
         random_state=random_state,
+        negative_gradient_method=negative_gradient_method,
         **kwargs,
     )
 
