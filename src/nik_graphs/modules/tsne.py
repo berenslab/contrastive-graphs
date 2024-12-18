@@ -24,7 +24,7 @@ def run_path(path, outfile):
     name, kwargs = path_to_kwargs(path)
     assert name == "tsne"
 
-    callbacks_every_iters = 1
+    callbacks_every_iters = kwargs.get("callbacks_every_iters", 1)
     callbacks = TSNECallback(outfile, callbacks_every_iters, save_freq=5)
     kwargs["callbacks_every_iters"] = callbacks_every_iters
     kwargs["callbacks"] = callbacks
