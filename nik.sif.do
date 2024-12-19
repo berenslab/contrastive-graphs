@@ -89,11 +89,10 @@ From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
              > checksum.txt \
          && sha256sum --quiet -c checksum.txt \
          && tar xf julia.tar.gz \
-         && cd julia-1.11.2 \
          && mv julia-1.11.2 /opt \
          && ln /opt/julia-1.11.2/bin/julia /usr/local/bin/julia \
          && cd .. \
-         && rm -r checksum.txt julia.tar.gz julia-1.11.2
+         && rm -r checksum.txt julia.tar.gz
 
     pip install --break-system-packages \
         torch==2.4.0 \
