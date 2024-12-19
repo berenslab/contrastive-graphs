@@ -103,6 +103,17 @@ From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
          && cd .. \
          && rm -r fftw-3.3.10
 
+    curl https://julialang-s3.julialang.org/bin/linux/x64/1.11/julia-1.11.2-linux-x86_64.tar.gz \
+             > julia.tar.gz \
+         && echo "8a372ad262d4d4d55a1044f4fe3bce7c9a4a3ce8c513d2470e58e8071eecd476 julia.tar.gz" \
+             > checksum.txt \
+         && sha256sum --quiet -c checksum.txt \
+         && tar xf julia.tar.gz \
+         && cd julia-1.11.2 \
+         && mv bin etc include lib libexec share /usr/local \
+         && cd .. \
+         && rm -r checksum.txt julia.tar.gz julia-1.11.2
+
     pip install --break-system-packages \
         torch==2.4.0 \
         torchvision==0.19.0 \
