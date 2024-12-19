@@ -37,7 +37,6 @@ From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
             libboost-all-dev \
             libcurl3-dev \
             libeigen3-dev \
-            libfftw3-dev \
             libflann-dev \
             libfreetype6-dev \
             libglew-dev \
@@ -83,6 +82,17 @@ From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
             && apt-get clean -qq \
             && rm -rf /var/lib/apt/lists/*
 
+    curl http://www.fftw.org/fftw-3.3.10.tar.gz > fftw.tar.gz \
+         && echo "8ccbf6a5ea78a16dbc3e1306e234cc5c fftw.tar.gz" > checksum.txt \
+         && md5sum --quiet -c checksum.txt \
+         && tar xf fftw.tar.gz \
+         && rm fftw.tar.gz checksum.txt \
+         && cd fftw-3.3.10 \
+         && ./configure --enable-threads --enable-openmp \
+         && make \
+         && make install \
+         && cd .. \
+         && rm -r fftw-3.3.10
 
     pip install --break-system-packages \
         torch==2.4.0 \
