@@ -21,7 +21,7 @@ def run_path(path, outfile):
     A = sparse.load_npz(zipf)
 
     name, kwargs = path_to_kwargs(path)
-    assert name == "nx"
+    assert name == "tfdp"
 
     Y = tfdp(A, **kwargs)
 
