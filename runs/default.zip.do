@@ -53,7 +53,7 @@ else
     echo "$0: Unknown partition \"$PARTITION\" found in $_PATH" >&2
     exit 1
 fi
-SLURMFLAGS="--cpus-per-task=8 --name $(basename $_PATH) $PARTITIONFLAGS"
+SLURMFLAGS="--cpus-per-task=8 --job-name $(basename $_PATH) $PARTITIONFLAGS"
 
 if [ x$(command -v srun) != x  -a "x$PARTITION" != x ]; then
     SRUN="srun --partition $PARTITION $SLURMFLAGS"
