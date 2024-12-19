@@ -58,6 +58,15 @@ def save_graph(outfile, adjacency_mat, features, labels):
         with zf.open("labels.npy", "w") as f:
             np.save(f, labels)
 
+        with zf.open("drgraph.txt", "w") as f:
+
+            def write(s):
+                return f.write(s.encode())
+
+            A = adjacency_mat.tocoo()
+            write(f"{A.shape[0]} {A.nnz}\n")
+            [write(f"{r} {c} {v}\n") for r, c, v in zip(A.row, A.col, A.data)]
+
 
 def save_dataset_split(outfile, train_ind, test_ind, val_ind):
 
