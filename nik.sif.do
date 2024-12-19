@@ -88,7 +88,16 @@ From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
          && tar xf fftw.tar.gz \
          && rm fftw.tar.gz checksum.txt \
          && cd fftw-3.3.10 \
-         && ./configure --enable-threads --enable-openmp \
+         && ./configure \
+            --enable-threads \
+            --enable-openmp \
+            --enable-float \
+            --enable-sse \
+            --enable-sse2 \
+            --enable-avx \
+            --enable-avx2 \
+            --enable-avx512 \
+            --enable-avx-128-fma \
          && make \
          && make install \
          && cd .. \
