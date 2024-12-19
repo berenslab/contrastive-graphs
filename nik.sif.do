@@ -83,12 +83,13 @@ From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
             && apt-get clean -qq \
             && rm -rf /var/lib/apt/lists/*
 
-     pip install --break-system-packages \
-         torch==2.4.0 \
-          torchvision==0.19.0 \
-           --index-url https://download.pytorch.org/whl/cu124
 
-     pip install --upgrade --break-system-packages \
+    pip install --break-system-packages \
+        torch==2.4.0 \
+        torchvision==0.19.0 \
+            --index-url https://download.pytorch.org/whl/cu124
+
+    pip install --upgrade --break-system-packages \
             "networkx>=3.4.2" \
             "pandas[performance,parquet]>=2.2.3" \
             "numpy>=2.0.0" \
