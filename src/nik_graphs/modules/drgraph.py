@@ -5,12 +5,8 @@ import zipfile
 from pathlib import Path
 
 import numpy as np
-from scipy import sparse
-
-from tfdp.tfdp import tFDP
 
 from ..path_utils import path_to_kwargs
-from .nx import _get_init
 
 __partition__ = "cpu-galvani"
 
@@ -22,8 +18,7 @@ def run_path(path, outfile):
     zipf = path.parent / "1.zip"
 
     with open(path / "files.dep", "a") as f:
-        files = [BIN, path_to_kwargs]
-        [f.write(f"{inspect.getfile(x)}\n") for x in files]
+        f.write(f"{inspect.getfile(path_to_kwargs)}\n{BIN}\n")
 
     # this is done so we can bootstrap the executable.  If we call
     # this via redo for the first time, then we do not yet know the
