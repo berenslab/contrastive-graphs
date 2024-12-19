@@ -27,15 +27,18 @@ From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
             ca-certificates \
             cmake \
             curl \
+            doxygen \
             gfortran \
             git \
             libavcodec-dev \
             libavformat-dev \
             libavutil-dev \
-            libboost-all-dev \
             libblas-dev \
+            libboost-all-dev \
             libcurl3-dev \
             libeigen3-dev \
+            libfftw3-dev \
+            libflann-dev \
             libfreetype6-dev \
             libglew-dev \
             libgoogle-perftools-dev \
@@ -44,6 +47,8 @@ From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
             libjpeg-dev \
             libjs-mathjax \
             liblapack-dev \
+            liblz4-dev \
+            libmetis-dev \
             libpng-dev \
             libpostproc-dev \
             libpq-dev \
@@ -57,6 +62,7 @@ From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
             libzmq3-dev \
             openssh-server \
             pkg-config \
+            poppler-utils \
             pwgen \
             python3 \
             python3-dev \
@@ -72,7 +78,6 @@ From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
             wget \
             yasm \
             zip \
-            poppler-utils \
             zlib1g-dev \
             && apt-get clean -qq \
             && rm -rf /var/lib/apt/lists/*
