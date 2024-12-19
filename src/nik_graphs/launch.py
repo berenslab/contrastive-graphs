@@ -35,7 +35,7 @@ def main():
 
     with zipfile.ZipFile(outfile, "a") as zf:
         with zf.open("elapsed_secs.txt", "w") as f:
-            f.write(f"{t1 - t0}".encode())
+            f.write(f"{t1 - t0}\n".encode())
 
     deptxt = f"{inspect.getfile(mod)}\n{__file__}\n"
     with open(path / "files.dep", "a") as f:

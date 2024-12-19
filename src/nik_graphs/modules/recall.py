@@ -49,7 +49,7 @@ def run_path(path, outfile):
 
     with zipfile.ZipFile(outfile, "x") as zf:
         with zf.open("score.txt", "w") as f:
-            f.write(f"{score}".encode())
+            f.write(f"{score}\n".encode())
 
         with zf.open("scores.csv", "w") as f:
             df.write_csv(f)
