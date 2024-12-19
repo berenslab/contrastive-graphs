@@ -61,7 +61,7 @@ From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
             libxine2-dev \
             libzmq3-dev \
             meson \
-            ninja \
+            ninja-build \
             pkg-config \
             poppler-utils \
             pwgen \
