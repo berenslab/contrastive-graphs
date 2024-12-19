@@ -154,19 +154,6 @@ From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
         && \
         pip install --break-system-packages dgl -f https://data.dgl.ai/wheels/torch-2.4/cu124/repo.html
 
-    curl -L https://github.com/fcdimitr/sgtsnepi/tarball/aa1f6a45dc75766d81754164b0915aab8a1bce84 \
-            > sgtsnepi.tar.gz \
-         && echo "768b207c9ea79b75d527bb53beec245f30ab42c86cd28b47d7ce2307e537626c  sgtsnepi.tar.gz" \
-            > checksum.txt \
-        && sha256sum --quiet -c checksum.txt \
-        && tar xf sgtsnepi.tar.gz \
-        && cd fcdimitr-sgtsnepi-aa1f6a4 \
-        && meson setup build \
-        && meson compile -C build \
-        && meson install -C build \
-        && cd .. \
-        && rm -r sgtsnepi.tar.gz checksum.txt fcdimitr-sgtsnepi-aa1f6a4
-
 EOF
 
 # on my laptop, I need to run:
