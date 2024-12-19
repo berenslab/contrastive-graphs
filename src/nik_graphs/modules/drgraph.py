@@ -20,14 +20,6 @@ def run_path(path, outfile):
     with open(path / "files.dep", "a") as f:
         f.write(f"{inspect.getfile(path_to_kwargs)}\n{BIN}\n")
 
-    # this is done so we can bootstrap the executable.  If we call
-    # this via redo for the first time, then we do not yet know the
-    # dependencies, hence we can run into the case that this function
-    # is executing before the dependencies have been tracked (as we do
-    # the recording only after running this).
-    if not BIN.exists():
-        subprocess.run(["redo-ifchange", str(BIN)], check=True)
-
     with zipfile.ZipFile(zipf) as zf:
         zf.extract("drgraph.txt", path=path)
 

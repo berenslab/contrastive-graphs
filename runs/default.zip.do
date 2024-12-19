@@ -30,6 +30,16 @@ PROJROOT=$(dirname $PWD)
 SFLAGS="--pwd $PWD --bind $PROJROOT,$XDG_CACHE_DIR --env PYTHONPATH=$PROJROOT/src"
 
 PYNAME=$(rstrip $(basename $_PATH) ",*")
+
+# special case, we depend on the executable being present by the time
+# we redo drgraph and call the launch script.  Cannot redo it inside
+# of drgraph.py because that is inside of the singularity container
+# (and hence there is no redo and it would be detached from the redo
+# process outside of the container).
+if [ x$PYNAME == xdrgraph ]; then
+    redo-ifchange ../bin/drgraph
+fi
+
 if [ ! -f "../src/nik_graphs/modules/${PYNAME}.py" ]; then
     echo "$0: file \"../src/nik_graphs/modules/${PYNAME}.py\" does not exist" >&2
     echo "cannot launch redo.  Make sure $PYNAME.py exists as a module" >&2
