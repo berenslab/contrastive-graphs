@@ -104,6 +104,7 @@ From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
             "ogb>=1.3.6" \
             "torch_geometric>=2.6.1" \
             "contrastive-ne>=0.3.8" \
+            git+https://github.com/jnboehm/t-fdp \
 
     pip install --break-system-packages \
         pyg-lib torch_scatter torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-2.4.0+cu124.html \
