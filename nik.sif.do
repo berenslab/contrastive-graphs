@@ -32,12 +32,14 @@ From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
             libavcodec-dev \
             libavformat-dev \
             libavutil-dev \
+            libboost-all-dev \
             libblas-dev \
             libcurl3-dev \
             libeigen3-dev \
             libfreetype6-dev \
             libglew-dev \
             libgoogle-perftools-dev \
+            libgsl-dev \
             libgtk2.0-dev \
             libjpeg-dev \
             libjs-mathjax \
