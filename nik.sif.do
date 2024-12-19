@@ -119,5 +119,9 @@ EOF
 # on my laptop, I need to run:
 # run0 --setenv=APPTAINER_TMPDIR=$PWD apptainer build nik.sif nik.def
 
-singularity build --fakeroot $3 $TMP
+# set default values, if not set
+: ${XDG_CACHE_DIR:=$HOME/.cache}
+env SINGULARITY_CACHEDIR=${SINGULARITY_CACHEDIR-$XDG_CACHE_DIR/singularity} \
+    SINGULARITY_TMPDIR=${SCRATCH-$PWD} \
+        singularity build --fakeroot $3 $TMP
 rm $TMP
