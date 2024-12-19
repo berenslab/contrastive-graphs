@@ -103,6 +103,8 @@ From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
             "lightning>=2.4.0" \
             "python-telegram-bot>=21.9" \
             humanize \
+            "tsnet>=0.3.1" \
+            "setuptools>=72.0.0" \
             "ogb>=1.3.6" \
             "torch_geometric>=2.6.1" \
             "contrastive-ne>=0.3.8" \
