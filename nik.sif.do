@@ -110,12 +110,8 @@ From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
          && sha256sum --quiet -c checksum.txt \
          && tar xf julia.tar.gz \
          && cd julia-1.11.2 \
-         && mv bin/* /usr/local/bin \
-         && mv etc/* /usr/local/etc \
-         && mv include/* /usr/local/include \
-         && mv lib/* /usr/local/lib \
-         && mv libexec/* /usr/local/libexec \
-         && mv share/* /usr/local/share \
+         && mv julia-1.11.2 /opt \
+         && ln /opt/julia-1.11.2/bin/julia /usr/local/bin/julia \
          && cd .. \
          && rm -r checksum.txt julia.tar.gz julia-1.11.2
 
