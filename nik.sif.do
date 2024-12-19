@@ -60,7 +60,8 @@ From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
             libturbojpeg0-dev \
             libxine2-dev \
             libzmq3-dev \
-            openssh-server \
+            meson \
+            ninja \
             pkg-config \
             poppler-utils \
             pwgen \
@@ -104,6 +105,8 @@ From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
             ipython \
             black \
             sphinx \
+            meson \
+            ninja \
             "polars>=1.17.1" \
             "lightning>=2.4.0" \
             "python-telegram-bot>=21.9" \
