@@ -39,14 +39,14 @@ def deps(dispatch):
         )
 
     depdict = {
-        k: [p / k / "1.zip" for p in paths] for k in ["lin", "knn", "recall"]
+        k: [p / k / "1.zip" for p in paths]
+        for k in [".", "lin", "knn", "recall"]
     }
     return depdict
 
 
 def aggregate_path(path, outfile=None):
     depd = deps(path)
-    depd.pop("srcfiles")
 
     # labels = np.load(files["data"])["labels"]
     df_dict = dict()
@@ -57,32 +57,46 @@ def aggregate_path(path, outfile=None):
         for (temp, r), zipf in zip(
             itertools.product(TEMPERATURES, RANDOM_STATES), v
         ):
-            with zipfile.ZipFile(zipf) as zf:
-                with zf.open("scores.csv") as f:
-                    df1 = pl.read_csv(f).drop("step")
+            if k == ".":
+                # read the loss from the run lightning_logs/metrics.csv
+                with zipfile.ZipFile(zipf) as zf:
+                    with zf.open("lightning_logs/metrics.csv") as f:
+                        df_metrics = pl.read_csv(f)
+                dfg = df_metrics.group_by("epoch", maintain_order=True)
+                df__ = dfg.mean()[["epoch", "loss"]]
 
-                with zf.open("score.txt") as f:
-                    score = float(f.read())
-                    df2 = pl.DataFrame(
-                        dict(epoch=[N_EPOCHS - 1], score=[score])
-                    )
-            if df2["epoch"] in df1["epoch"]:
-                df__ = df1
             else:
-                df__ = df1.vstack(df2)
+                with zipfile.ZipFile(zipf) as zf:
+                    with zf.open("scores.csv") as f:
+                        df1 = pl.read_csv(f).drop("step")
+
+                    with zf.open("score.txt") as f:
+                        score = float(f.read())
+                        df2 = pl.DataFrame(
+                            dict(epoch=[N_EPOCHS - 1], score=[score])
+                        )
+                # check if the final accuracy has already been
+                # computed because the last embedding has been saved
+                # (n_epochs % callback_freq == 0) in the training.
+                if df2["epoch"].item() in df1["epoch"]:
+                    df__ = df1
+                else:
+                    df__ = df1.vstack(df2)
             df__ = df__.with_columns(
                 pl.lit(float(temp)).alias("temp"),
                 pl.lit(r, dtype=pl.Int32).alias("random_state"),
             )
-            df__ = df__.rename(dict(score=k))
+            if k != ".":
+                df__ = df__.rename(dict(score=k))
             df_ = df_.vstack(df__) if df_ is not None else df__
         df_dict[k] = df_
 
-    df = pl.concat(
-        [df_dict[k][["temp", "epoch", "random_state"]]]
-        + [pl.DataFrame(df[k]) for k, df in df_dict.items()],
-        how="horizontal",
-    )
+    # take any of the dfs as initial value
+    df = df_dict.pop(".")
+    for k, df_ in df_dict.items():
+        df = df.join(
+            df_, on=["temp", "epoch", "random_state"], join_nulls=True
+        )
 
     if outfile is not None:
         # with zipfile.ZipFile(outfile, "x") as zf:
