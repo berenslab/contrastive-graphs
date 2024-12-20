@@ -30,6 +30,7 @@ def run_path(path, outfile):
 
     Y = drgraph(A_file, **kwargs)
 
+    A_file.unlink(missing_ok=False)
     with zipfile.ZipFile(outfile, "a") as zf:
         with zf.open("embedding.npy", "w") as f:
             np.save(f, Y)

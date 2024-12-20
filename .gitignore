@@ -546,3 +546,4 @@ media/fonts/ttf/*/all-fonts
 /media/magick/magick
 /dataframes/*.csv
 /*.sif
+/bin/drgraph
