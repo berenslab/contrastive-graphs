@@ -7,21 +7,19 @@ Bootstrap: docker
 From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
 
 %environment
-    # only for build process
-    export DEBIAN_FRONTEND=noninteractive
-    export PIP_ROOT_USER_ACTION=ignore
-
     # generally necessary
-    export LD_LIBRARY_PATH=/usr/local/lib:${LD_LIBRARY_PATH}
+    # export LD_LIBRARY_PATH=/usr/local/lib:${LD_LIBRARY_PATH}
     export TZ=Europe/Berlin
     export DGLBACKEND=pytorch
     # export SHELL /bin/bash
 
 %post
-    apt-get -q update
-
-    apt-get install -y  -qq --reinstall software-properties-common && \
-            apt-get -qq update && apt-get upgrade -y -qq && \
+    export DEBIAN_FRONTEND=noninteractive
+    export PIP_ROOT_USER_ACTION=ignore
+    unset SSL_CERT_FILE
+    apt-get -qq update \
+            && apt-get install -y  -qq --reinstall software-properties-common && \
+            && apt-get upgrade -y -qq && \
             apt-get install -yq -qq --no-install-recommends \
             build-essential \
             ca-certificates \
