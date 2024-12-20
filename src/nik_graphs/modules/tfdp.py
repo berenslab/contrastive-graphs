@@ -3,7 +3,6 @@ import zipfile
 
 import numpy as np
 from scipy import sparse
-
 from tfdp.tfdp import tFDP
 
 from ..path_utils import path_to_kwargs
@@ -48,5 +47,5 @@ def tfdp(
     edgesrc = A.indptr
     edgetgt = A.indices
 
-    Y, _elapsed_time = _tfdp.optmization(graph, edgesrc, edgetgt)
+    Y, _elapsed_time = _tfdp.optimization(graph, edgesrc, edgetgt)
     return Y
