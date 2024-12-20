@@ -18,9 +18,9 @@ From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
     export PIP_ROOT_USER_ACTION=ignore
     unset SSL_CERT_FILE
     apt-get -qq update \
-            && apt-get install -y  -qq --reinstall software-properties-common && \
-            && apt-get upgrade -y -qq && \
-            apt-get install -yq -qq --no-install-recommends \
+            && apt-get install -y  -qq --reinstall software-properties-common \
+            && apt-get upgrade -y -qq \
+            && apt-get install -yq -qq --no-install-recommends \
             build-essential \
             ca-certificates \
             cmake \
