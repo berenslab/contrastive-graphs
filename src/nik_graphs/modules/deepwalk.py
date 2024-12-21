@@ -1,10 +1,10 @@
 import sys
 import zipfile
 
+import dgl
+import networkx as nx
 import numpy as np
 import torch
-from dgl import from_scipy
-from dgl.nn import DeepWalk
 from scipy import sparse
 
 from ..path_utils import path_to_kwargs
@@ -30,8 +30,9 @@ def run_path(path, outfile):
 def deepwalk(A, verbose=True, batch_size=128, lr=0.01, n_epochs=100):
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
-    g = from_scipy(A, device=device)
-    model = DeepWalk(g, emb_dim=128).to(device)
+    G = nx.from_scipy_sparse_array(A)
+    g = dgl.from_networkx(G, device=device)
+    model = dgl.nn.DeepWalk(g, emb_dim=128).to(device)
 
     loader = torch.utils.data.DataLoader(
         torch.arange(g.num_nodes()),
