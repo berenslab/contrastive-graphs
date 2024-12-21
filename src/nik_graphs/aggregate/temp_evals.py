@@ -5,7 +5,7 @@ from pathlib import Path
 
 import polars as pl
 
-DATASETS = ["mnist"]
+DATASETS = ["cora", "computer", "photo", "citeseer", "mnist"]
 TEMPERATURES = [x * 10**i for i in range(-4, 1) for x in [1, 5]]
 RANDOM_STATES = [None, 1111, 2222]
 N_EPOCHS = 30
