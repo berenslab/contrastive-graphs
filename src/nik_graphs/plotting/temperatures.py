@@ -34,7 +34,6 @@ def plot(df, outfile, format="pdf"):
         n_rows,
         n_cols,
         figsize=(5.5, 1 * n_rows),
-        # width_ratios=[1, 1, 1, 1, 0.25],
         squeeze=False,
     )
 

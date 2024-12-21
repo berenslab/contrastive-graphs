@@ -3,6 +3,15 @@ import importlib
 from pathlib import Path
 
 
+def letter_dict():
+    return dict(
+        loc="left",
+        horizontalalignment="right",
+        fontsize="x-large",
+        weight="bold",
+    )
+
+
 def main():
 
     parser = argparse.ArgumentParser()
