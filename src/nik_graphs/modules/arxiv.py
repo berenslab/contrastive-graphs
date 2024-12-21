@@ -7,7 +7,7 @@ from pathlib import Path
 
 import networkx as nx
 import numpy as np
-from ogb.nodeproppred import DglNodePropPredDataset, NodePropPredDataset
+from ogb.nodeproppred import DglNodePropPredDataset
 
 from ..graph_utils import save_dataset_split, save_graph
 from ..path_utils import path_to_kwargs
@@ -18,6 +18,10 @@ def run_path(p, outfile):
     name, kwargs = path_to_kwargs(p)
     assert name == "arxiv"
 
+    return ogb_dataset("arxiv", p, outfile)
+
+
+def ogb_dataset(dataset_key, p, outfile):
     name, kwargs = path_to_kwargs(p)
     random_state = kwargs.pop("random_state", 47**8)
     rng = np.random.default_rng(random_state)
@@ -28,7 +32,7 @@ def run_path(p, outfile):
 
     dgl_output = io.StringIO()
     with contextlib.redirect_stdout(dgl_output):
-        dataset = DglNodePropPredDataset("ogbn-arxiv", root=data_dir)
+        dataset = DglNodePropPredDataset(f"ogbn-{dataset_key}", root=data_dir)
 
     g, labels = dataset[0]
     labels = labels.squeeze()
