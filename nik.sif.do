@@ -110,6 +110,7 @@ From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
             "numba>=0.60.0" \
             cupy-cuda12x \
             "opentsne>=1.0.2" \
+            "h5py>3.12.0" \
             ipython \
             black \
             sphinx \
