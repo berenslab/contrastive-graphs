@@ -5,6 +5,7 @@ from pathlib import Path
 
 import polars as pl
 
+DATASETS = ["mnist"]
 TEMPERATURES = [x * 10**i for i in range(-4, 1) for x in [1, 5]]
 RANDOM_STATES = [None, 1111, 2222]
 N_EPOCHS = 30
@@ -29,9 +30,11 @@ def deps(dispatch):
     default_n_epochs = sig.parameters["n_epochs"].default
 
     n_epochs = f",n_epochs={N_EPOCHS}" if default_n_epochs != N_EPOCHS else ""
-    path = Path("../runs") / dataset
     paths = []
-    for temp, r in itertools.product(TEMPERATURES, RANDOM_STATES):
+    for dataset, temp, r in itertools.product(
+        DATASETS, TEMPERATURES, RANDOM_STATES
+    ):
+        path = Path("../runs") / dataset
         tempstr = f",temp={temp}" if temp != default_temp else ""
         randstr = f",random_state={r}" if r is not None else ""
         paths.append(
@@ -54,8 +57,8 @@ def aggregate_path(path, outfile=None):
         df_ = None
         # same iteration scheme as in `deps()` above so that the order
         # between the zipfile and the parameters match.
-        for (temp, r), zipf in zip(
-            itertools.product(TEMPERATURES, RANDOM_STATES), v
+        for (dataset, temp, r), zipf in zip(
+            itertools.product(DATASETS, TEMPERATURES, RANDOM_STATES), v
         ):
             if k == ".":
                 # read the loss from the run lightning_logs/metrics.csv
@@ -83,6 +86,7 @@ def aggregate_path(path, outfile=None):
                 else:
                     df__ = df1.vstack(df2)
             df__ = df__.with_columns(
+                pl.lit(dataset).alias("dataset"),
                 pl.lit(float(temp)).alias("temp"),
                 pl.lit(r, dtype=pl.Int32).alias("random_state"),
             )
@@ -95,7 +99,9 @@ def aggregate_path(path, outfile=None):
     df = df_dict.pop(".")
     for k, df_ in df_dict.items():
         df = df.join(
-            df_, on=["temp", "epoch", "random_state"], join_nulls=True
+            df_,
+            on=["temp", "epoch", "random_state", "dataset"],
+            join_nulls=True,
         )
 
     if outfile is not None:
