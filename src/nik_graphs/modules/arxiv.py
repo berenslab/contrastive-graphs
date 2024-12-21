@@ -35,9 +35,14 @@ def ogb_dataset(dataset_key, p, outfile):
         dataset = DglNodePropPredDataset(f"ogbn-{dataset_key}", root=data_dir)
 
     g, labels = dataset[0]
-    labels = labels.squeeze()
-    features = g.ndata["feat"].numpy()
-    G = g.to_networkx().to_undirected()
+    if dataset_key != "mag":
+        labels = labels.squeeze()
+        features = g.ndata["feat"].numpy()
+        G = g.to_networkx().to_undirected()
+    else:
+        labels = labels["paper"].numpy().squeeze()
+        features = g.ndata["feat"]["paper"].numpy()
+        G = g[("paper", "cites", "paper")].to_networkx().to_undirected()
 
     # preprocess
     G.remove_edges_from(nx.selfloop_edges(G))
