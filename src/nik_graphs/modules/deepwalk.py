@@ -1,3 +1,4 @@
+import sys
 import zipfile
 
 import numpy as np
@@ -52,7 +53,9 @@ def deepwalk(A, verbose=True, batch_size=128, lr=0.01, n_epochs=100):
         total_loss /= len(loader)
 
         if verbose:
-            print(f"Epoch: {epoch:03d}, Loss: {total_loss:.4f}")
+            print(
+                f"Epoch: {epoch:03d}, Loss: {total_loss:.4f}", file=sys.stderr
+            )
 
     Z = model.node_embed.weight.detach().cpu().numpy()
     return Z
