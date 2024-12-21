@@ -1,15 +1,12 @@
 import sys
 import zipfile
-from pathlib import Path
 
-import lightning
+import networkx as nx
 import numpy as np
 import torch
 import torch_geometric
-from dgl import from_scipy
-from dgl.nn import DeepWalk
 from scipy import sparse
-from torch_geometric.utils.convert import from_scipy_sparse_matrix
+from torch_geometric.utils.convert import from_networkx
 
 from ..path_utils import path_to_kwargs
 
@@ -49,7 +46,8 @@ def node2vec(
 ):
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
-    edge_index = from_scipy_sparse_matrix(A).edge_index
+    G = nx.from_scipy_sparse_array(A)
+    edge_index = from_networkx(G).edge_index
 
     model = torch_geometric.nn.Node2Vec(
         edge_index,
