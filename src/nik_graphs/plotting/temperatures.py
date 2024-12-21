@@ -29,24 +29,19 @@ def plot(df, outfile, format="pdf"):
     datasets = df["dataset"].unique()
     n_rows = len(datasets)
     keys = ["lin", "knn", "recall", "loss"]
-    n_cols = len(keys)
-    fig, axxs = plt.subplots(
-        n_rows,
-        n_cols,
-        figsize=(5.5, 1 * n_rows),
-        squeeze=False,
-    )
+    fig = plt.figure(figsize=(5.5, 1.1 * n_rows))
+    figs = fig.subfigures(n_rows, squeeze=False)
 
     cmap = plt.get_cmap("copper")
     norm = mpl.colors.LogNorm(df["temp"].min(), df["temp"].max())
 
     dfg = df.filter(pl.col("epoch") == df["epoch"].max()).group_by(["dataset"])
-    it = enumerate(zip(axxs, dfg))
     letters = iter(string.ascii_lowercase)
-    for i, (axs, (grpkey, df_)) in it:
-        print(grpkey)
+    for i, (sfig, ((dataset_name,), df_)) in enumerate(zip(figs.flat, dfg)):
+        sfig.suptitle(dataset_name)
+        axd = sfig.subplot_mosaic([keys])
 
-        for ax, key in zip(axs, keys):
+        for key, ax in axd.items():
             dfgg = df_.group_by("temp")
             temp, mean = dfgg.agg(pl.mean(key)).sort(by="temp")[["temp", key]]
             std = dfgg.agg(pl.std(key)).sort(by="temp")[key]
