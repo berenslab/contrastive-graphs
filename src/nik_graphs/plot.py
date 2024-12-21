@@ -49,6 +49,7 @@ def main():
     else:
         # set up fonts
         import matplotlib
+        import matplotlib.style
         from matplotlib import font_manager
 
         fonts = font_manager.findSystemFonts(
