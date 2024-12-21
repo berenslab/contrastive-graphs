@@ -1,8 +1,11 @@
+import string
 from pathlib import Path
 
 import matplotlib as mpl
 import polars as pl
 from matplotlib import pyplot as plt
+
+from ..plot import letter_dict
 
 
 # example plotname = "temperatures"
@@ -23,57 +26,49 @@ def plot_path(plotname, outfile, format="pdf"):
 
 
 def plot(df, outfile, format="pdf"):
-    keys = ["lin", "knn", "recall"]
-    by_temp = ["a", "b", "c", "."]
-    fig, axd = plt.subplot_mosaic(
-        [keys + ["legend"], by_temp],
-        figsize=(5.5, 2.5),
-        width_ratios=[1, 1, 1, 0.25],
+    datasets = df["dataset"].unique()
+    n_rows = len(datasets)
+    keys = ["lin", "knn", "recall", "loss"]
+    n_cols = len(keys)
+    fig, axxs = plt.subplots(
+        n_rows,
+        n_cols,
+        figsize=(5.5, 1 * n_rows),
+        # width_ratios=[1, 1, 1, 1, 0.25],
+        squeeze=False,
     )
 
     cmap = plt.get_cmap("copper")
     norm = mpl.colors.LogNorm(df["temp"].min(), df["temp"].max())
-    for (temp,), df_ in df.group_by("temp", maintain_order=True):
-        df__ = df_.group_by("epoch")
-        for key in keys:
-            color = cmap(norm(temp))
-            m = df__.agg(pl.mean(key)).sort(by="epoch")
-            std = df__.agg(pl.std(key)).sort(by="epoch")[key]
-            ax = axd[key]
-            ax.plot(*m, c=color, label=f"{temp:g}")
+
+    dfg = df.filter(pl.col("epoch") == df["epoch"].max()).group_by(["dataset"])
+    it = enumerate(zip(axxs, dfg))
+    letters = iter(string.ascii_lowercase)
+    for i, (axs, (grpkey, df_)) in it:
+        print(grpkey)
+
+        for ax, key in zip(axs, keys):
+            dfgg = df_.group_by("temp")
+            temp, mean = dfgg.agg(pl.mean(key)).sort(by="temp")[["temp", key]]
+            std = dfgg.agg(pl.std(key)).sort(by="temp")[key]
+            ax.scatter(temp, mean, c=cmap(norm(temp)), zorder=5, s=15)
+            ax.plot(temp, mean, c="xkcd:grey")
             ax.fill_between(
-                m["epoch"],
-                m[key] - std,
-                m[key] + std,
-                color=color,
-                ec=None,
+                temp,
+                mean - std,
+                mean + std,
+                color="xkcd:grey",
                 alpha=0.62,
+                ec=None,
             )
-    dfg = df.filter(pl.col("epoch") == df["epoch"].max()).group_by(
-        "temp", maintain_order=True
-    )
-    for key, tkey in zip(keys, by_temp):
-        ax = axd[key]
-        ax.set_ylabel(key)
-        ax.set_xlabel("epochs")
-        ax.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
+            letter = next(letters)
+            ax.set_title(letter, **letter_dict())
+            ax.set(ylabel=key, xlabel="temperature", xscale="log")
+            if key != "loss":
+                ax.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
 
-        ax = axd[tkey]
-        temp, mean = dfg.agg(pl.mean(key)).sort(by="temp")[["temp", key]]
-        std = dfg.agg(pl.std(key)).sort(by="temp")[key]
-        ax.scatter(temp, mean, c=cmap(norm(temp)), zorder=5, s=15)
-        ax.plot(temp, mean, c="xkcd:grey")
-        ax.fill_between(
-            temp,
-            mean - std,
-            mean + std,
-            color="xkcd:grey",
-            alpha=0.62,
-            ec=None,
-        )
-        ax.set(ylabel=key, xlabel="temperature", xscale="log")
-
-    handles, labels = axd["knn"].get_legend_handles_labels()
-    axd["legend"].legend(handles=handles, labels=labels, loc="center")
-    axd["legend"].set_axis_off()
+        # if i == 0:
+        #     handles, labels = ax.get_legend_handles_labels()
+        #     axs[-1].legend(handles=handles, labels=labels, loc="center")
+        # axs[-1].set_axis_off()
     fig.savefig(outfile, format=format)
