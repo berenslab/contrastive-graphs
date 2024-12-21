@@ -20,14 +20,14 @@ def run_path(path, outfile):
 
     name, kwargs = path_to_kwargs(path)
     assert name == "deepwalk"
-    Y = deepwalk(A, verbose=False)
+    Y = deepwalk(A, verbose=False, **kwargs)
 
     with zipfile.ZipFile(outfile, "x") as zf:
         with zf.open("embedding.npy", "w") as f:
             np.save(f, Y)
 
 
-def deepwalk(A, verbose=True, batch_size=128, lr=0.01, n_epochs=100):
+def deepwalk(A, verbose=False, batch_size=128, lr=0.01, n_epochs=100):
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
     G = nx.from_scipy_sparse_array(A)
