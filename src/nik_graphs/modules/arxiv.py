@@ -63,7 +63,9 @@ def ogb_dataset(dataset_key, p, outfile):
 
     save_graph(outfile, A, features, labels)
 
-    if "train_mask" not in g.ndata:
+    m = "train_mask"
+    has_split = m not in g.ndata and g.ndata[m] != dict()
+    if not has_split:
         n = A.shape[0]
         train_size = n * 8 // 10
         test_size = n // 10
