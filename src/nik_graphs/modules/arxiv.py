@@ -89,4 +89,4 @@ def ogb_dataset(dataset_key, p, outfile):
     with open(p / "files.dep", "a") as f:
         pyobjs = [save_graph, path_to_kwargs]
         [f.write(inspect.getfile(x) + "\n") for x in pyobjs]
-        f.write(__file__)
+        f.write(f"{__file__}\n")
