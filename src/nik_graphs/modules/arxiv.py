@@ -56,7 +56,6 @@ def ogb_dataset(dataset_key, p, outfile):
         sel = sel & (norms != 0)
 
     G = G.subgraph(sel)
-    G = nx.relabel_nodes(G, mapping={g: i for i, g in enumerate(G.nodes)})
     labels = labels[sel]
     features = features[sel, :]
     A = nx.adjacency_matrix(G).astype("uint8")
