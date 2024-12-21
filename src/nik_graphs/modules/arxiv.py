@@ -24,12 +24,14 @@ def run_path(p, outfile):
     assert kwargs == dict()
 
     cache_dir = os.environ.get("XDG_CACHE_DIR", Path.home() / ".cache")
-    data_dir = Path(cache_dir) / "deep_graph_library"
+    data_dir = Path(cache_dir) / "open_graph_benchmark"
 
     dgl_output = io.StringIO()
     with contextlib.redirect_stdout(dgl_output):
-        g = cls(data_dir)[0]
-    labels = g.ndata["label"].numpy()
+        dataset = DglNodePropPredDataset("ogbn-arxiv", root=data_dir)
+
+    g, labels = dataset[0]
+    labels = labels.squeeze()
     features = g.ndata["feat"].numpy()
     G = g.to_networkx().to_undirected()
 
