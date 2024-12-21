@@ -545,5 +545,6 @@ media/fonts/ttf/*/all-fonts
 /media/magick/ImageMagick-*/**
 /media/magick/magick
 /dataframes/*.csv
+/dataframes/*.h5
 /*.sif
 /bin/drgraph
