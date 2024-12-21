@@ -25,7 +25,7 @@ def run_path(path, outfile):
 
     name, kwargs = path_to_kwargs(path)
     assert name == "node2vec"
-    Y = node2vec(A, verbose=False)
+    Y = node2vec(A, verbose=False, **kwargs)
 
     with zipfile.ZipFile(outfile, "x") as zf:
         with zf.open("embedding.npy", "w") as f:
@@ -34,7 +34,7 @@ def run_path(path, outfile):
 
 def node2vec(
     A,
-    dim,
+    dim=128,
     batch_size=128,
     lr=0.01,
     n_epochs=100,
