@@ -66,7 +66,7 @@ fi
 SLURMFLAGS="--cpus-per-task=8 --job-name $(basename $_PATH) $PARTITIONFLAGS"
 
 if [ x$(command -v srun) != x  -a "x$PARTITION" != x ]; then
-    SRUN="srun --partition $PARTITION $SLURMFLAGS"
+    SRUN="srun --quiet --partition $PARTITION $SLURMFLAGS"
 else
     SRUN=
 fi
