@@ -24,7 +24,7 @@ def run_path(path, outfile):
     A = sparse.load_npz(zipf)
 
     name, kwargs = path_to_kwargs(path)
-    assert name == "deepwalk"
+    assert name == "node2vec"
     Y = node2vec(A, verbose=False)
 
     with zipfile.ZipFile(outfile, "x") as zf:
