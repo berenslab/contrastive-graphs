@@ -9,6 +9,7 @@ from sklearn import preprocessing
 from noack import Noack
 
 from ..path_utils import path_to_kwargs
+from .tsne import TSNECallback
 
 __partition__ = "cpu-galvani"
 
@@ -64,28 +65,3 @@ def noack(
     P = preprocessing.normalize(A, norm="l1", axis=1)
     affinities = openTSNE.affinity.PrecomputedAffinities((P + P.T) / 2)
     return noack.fit(affinities=affinities)
-
-
-class TSNECallback(openTSNE.callbacks.Callback):
-    def __init__(self, zipfname, callbacks_every_iters, save_freq=5):
-        super().__init__()
-        self.zipfname = zipfname
-        self.callbacks_every_iters = callbacks_every_iters
-        self.save_freq = save_freq
-        self.counter = 0
-        self.n_called = 0
-        self.errors = []
-
-    def __call__(self, iteration, error, embedding):
-
-        if (self.n_called + 1) % self.save_freq == 0:
-            with zipfile.ZipFile(self.zipfname, "a") as zf:
-                fname = f"embeddings/step-{self.counter:05d}.npy"
-                with zf.open(fname, "w") as f:
-                    np.save(f, embedding.astype("float32"))
-
-        # tsne calls the callback functions if:
-        # (iter + 1) % callbacks_every_iters == 0
-        self.counter += self.callbacks_every_iters
-        self.n_called += 1
-        self.errors.append(error)
