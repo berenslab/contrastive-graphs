@@ -24,7 +24,7 @@ def run_path(path, outfile):
     A = sparse.load_npz(zipf)
 
     name, kwargs = path_to_kwargs(path)
-    assert name == "tsne"
+    assert name == "noack"
 
     callbacks_every_iters = kwargs.get("callbacks_every_iters", 1)
     callbacks = TSNECallback(outfile, callbacks_every_iters, save_freq=5)
