@@ -60,6 +60,5 @@ def noack(
     # normalize affinities row-wise, then symmetrize.  Will be
     # normalized into a joint probability distribution by
     # `PrecomputedAffinities`
-    P = preprocessing.normalize(A, norm="l1", axis=1)
-    affinities = openTSNE.affinity.PrecomputedAffinities((P + P.T) / 2)
+    affinities = openTSNE.affinity.PrecomputedAffinities(A)
     return noack.fit(affinities=affinities)
