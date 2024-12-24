@@ -1,4 +1,5 @@
 import inspect
+import multiprocessing
 import zipfile
 
 import numpy as np
@@ -44,7 +45,7 @@ def noack(
     n_epochs=50,
     a=1,
     r=-1,
-    n_jobs=-1,
+    n_jobs="auto",
     initialization="spectral",
     random_state=505**3,
     theta=0.9,
@@ -53,6 +54,8 @@ def noack(
     n_iter = n_epochs
     rng = np.random.default_rng(random_state)
     Y_init = _get_init(A, initialization, dim=2, rng=rng)
+    if n_jobs == "auto":
+        n_jobs = min(24, multiprocessing.cpu_count())
 
     noack = Noack(
         n_jobs=n_jobs,
