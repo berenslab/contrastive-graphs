@@ -46,7 +46,6 @@ def noack(
     n_jobs=-1,
     initialization="spectral",
     random_state=505**3,
-    negative_gradient_method="fft",
     **kwargs,
 ):
     n_iter = n_epochs
@@ -55,7 +54,6 @@ def noack(
         n_iter=n_iter,
         initialization=initialization,
         random_state=random_state,
-        negative_gradient_method=negative_gradient_method,
         **kwargs,
     )
 
