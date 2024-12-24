@@ -3,9 +3,7 @@ import zipfile
 from pathlib import Path
 
 DATASETS = ["cora", "computer", "photo", "citeseer", "mnist"]
-DATASETS = ["cora", "mnist"]
-LAYOUTS = ["drgraph", "tsne"]
-# N_EPOCHS = 30
+LAYOUTS = ["tfdp", "drgraph", "tsne"]
 
 
 # example plotname = "temperatures"
@@ -20,10 +18,18 @@ def deps(dispatch):
 
     dataset = "mnist"
 
-    n_epochs = ",n_epochs=30"
     paths = []
     for dataset, layout in itertools.product(DATASETS, LAYOUTS):
-        paths.append(Path("../runs") / dataset / (layout + n_epochs))
+        match layout:
+            case "cne":
+                x = "cne,dim=2"
+            case "fa2":
+                x = "nx,layout=forceatlas2"
+            case "fdp":
+                x = "nx,layout=spring"
+            case _:
+                x = layout
+        paths.append(Path("../runs") / dataset / x)
 
     depdict = {
         k: [p / k / "1.zip" for p in paths]
