@@ -52,7 +52,7 @@ def noack(
     **kwargs,
 ):
     n_iter = n_epochs
-    Y_init = _get_init(A, initialization, dim=2, random_state=random_state
+    Y_init = _get_init(A, initialization, dim=2, random_state=random_state)
     if n_jobs == "auto":
         n_jobs = min(24, multiprocessing.cpu_count())
 
