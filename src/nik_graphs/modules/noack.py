@@ -40,7 +40,7 @@ def run_path(path, outfile):
 
 def noack(
     A,
-    n_epochs=750,
+    n_epochs=50,
     a=1,
     r=-1,
     n_jobs=-1,
