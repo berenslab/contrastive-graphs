@@ -9,6 +9,7 @@ from sklearn import preprocessing
 from noack import Noack
 
 from ..path_utils import path_to_kwargs
+from .nx import _get_init
 from .tsne import TSNECallback
 
 __partition__ = "cpu-galvani"
@@ -18,7 +19,7 @@ def run_path(path, outfile):
     zipf = path.parent / "1.zip"
 
     with open(path / "files.dep", "a") as f:
-        pyobjs = [path_to_kwargs]
+        pyobjs = [path_to_kwargs, TSNECallback, _get_init]
         [f.write(inspect.getfile(x) + "\n") for x in pyobjs]
 
     A = sparse.load_npz(zipf)
@@ -50,10 +51,13 @@ def noack(
     **kwargs,
 ):
     n_iter = n_epochs
+    rng = np.random.default_rng(random_state)
+    Y_init = _get_init(A, initialization, dim=2, rng=rng)
+
     noack = Noack(
         n_jobs=n_jobs,
         n_iter=n_iter,
-        initialization=initialization,
+        initialization=Y_init,
         random_state=random_state,
         theta=0.9,
         **kwargs,
