@@ -10,6 +10,6 @@ if [ $(command -v pdftoppm) ]; then
 elif [ $(command -v convert) ]; then
     convert -density 600 "$2.pdf" -resize 2000x2000 png:- > $3 2>/dev/null
 else
-    redo-ifchange magick/magick
-    ./magick/magick convert -density 600 "$2.pdf" -resize 2000x2000 png:- > $3 2>/dev/null
+    redo-ifchange ../bin/magick
+    ../bin/magick convert -density 600 "$2.pdf" -resize 2000x2000 png:- > $3 2>/dev/null
 fi
