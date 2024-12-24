@@ -42,5 +42,28 @@ def plot(h5, outfile, format="pdf"):
             data = h5_ds[key]
             ax.scatter(data[:, 0], data[:, 1], c=labels, rasterized=True)
             ax.set_title(next(letters), **letter_dict())
+            ax.axis("equal")
+
+            txt = "\n".join(
+                sorted(
+                    (
+                        f"{k} = {v:5.1%}"
+                        for k, v in h5_ds[key].attrs.items()
+                        if k != "lin"
+                    ),
+                    key=len,
+                    reverse=True,
+                )
+            )
+            ax.text(
+                1,
+                1,
+                txt,
+                transform=ax.transAxes,
+                fontsize="x-small",
+                family="monospace",
+                ha="right",
+                va="top",
+            )
 
     fig.savefig(outfile, format=format)
