@@ -2,7 +2,7 @@
 set -e
 exec >&2
 
-MAGICK_VERSION=7.1.1-41
+MAGICK_VERSION=7.1.1-43
 TMPTAR=$(mktemp)
 curl -s https://imagemagick.org/archive/ImageMagick-${MAGICK_VERSION}.tar.gz > $TMPTAR
 TMP=$(mktemp)
