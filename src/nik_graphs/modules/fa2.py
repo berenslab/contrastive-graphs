@@ -45,11 +45,12 @@ def forceatlas2(
     random_state=505**3,
     callbacks_every_iters=0,
     callbacks=None,
+    verbose=False,
     **kwargs,
 ):
     Y_init = _get_init(A, initialization, dim=dim, random_state=random_state)
 
-    fa2 = ForceAtlas2(**kwargs)
+    fa2 = ForceAtlas2(verbose=verbose, **kwargs)
     return fa2.forceatlas2(
         A,
         Y_init,
