@@ -3,7 +3,7 @@ import zipfile
 from pathlib import Path
 
 DATASETS = ["cora", "computer", "photo", "citeseer", "mnist"]
-LAYOUTS = ["tfdp", "drgraph", "tsne"]
+LAYOUTS = ["fa2", "tfdp", "drgraph", "tsne"]
 
 
 # example plotname = "temperatures"
