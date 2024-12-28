@@ -26,7 +26,7 @@ def run_path(path, outfile):
     assert name == "fa2"
 
     callbacks_every_iters = kwargs.get("callbacks_every_iters", 1)
-    callbacks = TSNECallback(outfile, callbacks_every_iters, save_freq=5)
+    callbacks = FA2Callback(outfile, callbacks_every_iters, save_freq=5)
     kwargs["callbacks_every_iters"] = callbacks_every_iters
     kwargs["callbacks"] = callbacks
 
@@ -57,3 +57,8 @@ def forceatlas2(
         callbacks_every_iters=callbacks_every_iters,
         callbacks=callbacks,
     )
+
+
+class FA2Callback(TSNECallback):
+    def __call__(self, iteration, embedding):
+        super().__call__(iteration, float("-inf"), embedding)
