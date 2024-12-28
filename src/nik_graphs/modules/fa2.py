@@ -43,9 +43,17 @@ def forceatlas2(
     dim=2,
     initialization="spectral",
     random_state=505**3,
+    callbacks_every_iters=0,
+    callbacks=None,
     **kwargs,
 ):
     Y_init = _get_init(A, initialization, dim=dim, random_state=random_state)
 
     fa2 = ForceAtlas2(**kwargs)
-    return fa2.forceatlas2(A, Y_init, iterations=n_epochs)
+    return fa2.forceatlas2(
+        A,
+        Y_init,
+        iterations=n_epochs,
+        callbacks_every_iters=callbacks_every_iters,
+        callbacks=callbacks,
+    )
