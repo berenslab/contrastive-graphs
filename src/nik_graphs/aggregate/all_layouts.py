@@ -9,14 +9,12 @@ LAYOUTS = ["fa2", "tfdp", "drgraph", "tsne"]
 # example plotname = "temperatures"
 def deplist(dispatch):
     depvals = deps(dispatch).values()
-    return [f for lis in depvals for f in lis]
+    return list(set([f for lis in depvals for f in lis]))
 
 
 def deps(dispatch):
     # dataset, algo, _name = dispatch.name.split(".")
     assert str(dispatch) == "all_layouts"
-
-    dataset = "mnist"
 
     paths = []
     for dataset, layout in itertools.product(DATASETS, LAYOUTS):
@@ -61,8 +59,8 @@ def aggregate_path(path, outfile=None):
                     embedding = np.load(zipf)["embedding"]
                     f5.create_dataset(f"{dataset}/{layout}", data=embedding)
                 elif k == "..":
-                    labels = np.load(zipf)["labels"]
                     if f"{dataset}/labels" not in f5:
+                        labels = np.load(zipf)["labels"]
                         f5.create_dataset(f"{dataset}/labels", data=labels)
                 else:
                     acctxt = (zipfile.Path(zipf) / "score.txt").read_text()
