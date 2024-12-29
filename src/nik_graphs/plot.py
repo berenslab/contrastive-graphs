@@ -26,6 +26,12 @@ def letter_iterator():
     )
 
 
+def add_scalebars(ax, **kwargs):
+    from ._scalebars import add_scalebar_frac
+
+    return add_scalebar_frac(ax, **kwargs)
+
+
 def main():
 
     parser = argparse.ArgumentParser()
