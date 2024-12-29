@@ -60,18 +60,6 @@ def plot(h5, outfile, format="pdf"):
                 va="top",
             )
 
-            # this code feels nicer in principle, but the alpha values
-            # for overlapping paths does not stack unfortunately.
-
-            # mplpath = data_to_mplpath(data, row, col)
-            # ppatch = mpl.patches.PathPatch(
-            #     mplpath,
-            #     alpha=0.05,
-            #     rasterized=True,
-            #     zorder=0.8,
-            #     lw=plt.rcParams["axes.linewidth"],
-            # )
-            # ax.add_patch(ppatch)
             pts = np.hstack((data[row], data[col])).reshape(len(row), 2, 2)
             lines = mpl.collections.LineCollection(
                 pts,
@@ -84,16 +72,3 @@ def plot(h5, outfile, format="pdf"):
             ax.add_collection(lines)
 
     fig.savefig(outfile, format=format)
-
-
-def data_to_mplpath(data, row, col):
-
-    import numpy as np
-    from matplotlib.path import Path
-
-    xy1 = data[row]
-    xy2 = data[col]
-    pts = np.hstack((xy1, xy2)).reshape(2 * len(row), 2)
-    codes = np.tile([Path.MOVETO, Path.LINETO], len(row))
-
-    return Path(pts, codes, readonly=True)
