@@ -37,6 +37,7 @@ def deps(dispatch):
 def aggregate_path(path, outfile=None):
     import h5py
     import numpy as np
+    from scipy import sparse
 
     depd = deps(path)
 
@@ -62,6 +63,15 @@ def aggregate_path(path, outfile=None):
                     if f"{dataset}/labels" not in f5:
                         labels = np.load(zipf)["labels"]
                         f5.create_dataset(f"{dataset}/labels", data=labels)
+
+                    if f"{dataset}/edges" not in f5:
+                        A = sparse.load_npz(zipf).tocoo()
+                        for attr in ["row", "col"]:  # , "data"]:
+                            f5.create_dataset(
+                                f"{dataset}/edges/{attr}",
+                                data=getattr(A, attr),
+                            )
+
                 else:
                     acctxt = (zipfile.Path(zipf) / "score.txt").read_text()
                     score = float(acctxt)

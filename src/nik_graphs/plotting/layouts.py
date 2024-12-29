@@ -32,7 +32,7 @@ def plot(h5, outfile, format="pdf"):
     for sfig, dataset in zip(figs, h5):
         sfig.suptitle(dataset)
         h5_ds = h5[dataset]
-        keys = [k for k in h5_ds if k != "labels"]
+        keys = [k for k in h5_ds if k not in ["edges", "labels"]]
         labels = h5_ds["labels"]
 
         axd = sfig.subplot_mosaic([keys])
