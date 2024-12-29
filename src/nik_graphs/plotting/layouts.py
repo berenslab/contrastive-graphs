@@ -1,4 +1,5 @@
 import string
+from pathlib import Path
 
 DATASETS = ["cora", "computer", "photo", "citeseer", "mnist"]
 DATASETS = ["cora", "mnist"]
@@ -6,8 +7,7 @@ LAYOUTS = ["drgraph", "tsne"]
 # N_EPOCHS = 30
 
 
-# example plotname = "temperatures"
-def deplist(dispatch):
+def deplist(dispatch: Path):
     assert dispatch.name == "layouts"
     return ["../dataframes/all_layouts.h5"]
 
@@ -44,17 +44,12 @@ def plot(h5, outfile, format="pdf"):
             ax.set_title(next(letters), **letter_dict())
             ax.axis("equal")
 
-            txt = "\n".join(
-                sorted(
-                    (
-                        f"{k} = {v:5.1%}"
-                        for k, v in h5_ds[key].attrs.items()
-                        if k != "lin"
-                    ),
-                    key=len,
-                    reverse=True,
-                )
+            lines = (
+                f"{k} = {v:5.1%}"
+                for k, v in h5_ds[key].attrs.items()
+                if k != "lin"
             )
+            txt = "\n".join(sorted(lines, key=len, reverse=True))
             ax.text(
                 1,
                 1,
