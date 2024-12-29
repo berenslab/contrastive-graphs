@@ -1,5 +1,8 @@
 import argparse
+import functools
 import importlib
+import itertools
+import string
 from pathlib import Path
 
 
@@ -9,6 +12,17 @@ def letter_dict():
         horizontalalignment="right",
         fontsize="x-large",
         weight="bold",
+    )
+
+
+def letter_iterator():
+    # gives 27404 letter combinations from a, b, ..., zzzz
+    return (
+        functools.reduce(lambda a, b: a + b, x, "")
+        for i in range(1, 5)
+        for x in itertools.combinations_with_replacement(
+            string.ascii_lowercase, i
+        )
     )
 
 

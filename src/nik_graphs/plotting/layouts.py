@@ -1,4 +1,3 @@
-import string
 from pathlib import Path
 
 
@@ -21,9 +20,9 @@ def plot(h5, outfile, format="pdf"):
     import numpy as np
     from matplotlib import pyplot as plt
 
-    from ..plot import letter_dict
+    from ..plot import letter_dict, letter_iterator
 
-    letters = itertools.cycle(string.ascii_lowercase)
+    letters = letter_iterator()
     fig = plt.figure(figsize=(3, 1.1 * len(h5)))
     figs = fig.subfigures(len(h5))
     for sfig, dataset in zip(figs, h5):
