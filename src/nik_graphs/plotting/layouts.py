@@ -20,7 +20,7 @@ def plot(h5, outfile, format="pdf"):
     import numpy as np
     from matplotlib import pyplot as plt
 
-    from ..plot import letter_dict, letter_iterator
+    from ..plot import add_scalebars, letter_dict, letter_iterator
 
     letters = letter_iterator()
     fig = plt.figure(figsize=(3, 1.1 * len(h5)))
@@ -41,6 +41,7 @@ def plot(h5, outfile, format="pdf"):
             ax.scatter(data[:, 0], data[:, 1], c=labels, rasterized=True)
             ax.set_title(next(letters), **letter_dict())
             ax.axis("equal")
+            add_scalebars(ax)
 
             lines = (
                 f"{k} = {v:5.1%}"
