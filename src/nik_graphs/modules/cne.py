@@ -45,6 +45,8 @@ def run_path(path, outfile):
         # val_check_interval=20,
         check_val_every_n_epoch=10,
         precision="bf16-mixed",
+        devices=1,
+        accelerator="gpu",
         enable_model_summary=False,
         enable_progress_bar=False,
         enable_checkpointing=False,
