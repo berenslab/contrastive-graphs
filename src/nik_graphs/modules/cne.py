@@ -1,5 +1,4 @@
 import contextlib
-import inspect
 import logging
 import subprocess
 import sys
