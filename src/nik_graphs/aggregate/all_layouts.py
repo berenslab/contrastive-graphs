@@ -23,8 +23,6 @@ def deps(dispatch):
         match layout:
             case "cne":
                 x = "cne,dim=2"
-            case "fa2":
-                x = "nx,layout=forceatlas2"
             case "fdp":
                 x = "nx,layout=spring"
             case _:
