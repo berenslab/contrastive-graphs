@@ -1,11 +1,6 @@
 import string
 from pathlib import Path
 
-DATASETS = ["cora", "computer", "photo", "citeseer", "mnist"]
-DATASETS = ["cora", "mnist"]
-LAYOUTS = ["drgraph", "tsne"]
-# N_EPOCHS = 30
-
 
 def deplist(dispatch: Path):
     assert dispatch.name == "layouts"
