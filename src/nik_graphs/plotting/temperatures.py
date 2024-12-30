@@ -1,11 +1,10 @@
-import string
 from pathlib import Path
 
 import matplotlib as mpl
 import polars as pl
 from matplotlib import pyplot as plt
 
-from ..plot import letter_dict
+from ..plot import letter_dict, letter_iterator
 
 
 # example plotname = "temperatures"
@@ -36,7 +35,7 @@ def plot(df, outfile, format="pdf"):
     norm = mpl.colors.LogNorm(df["temp"].min(), df["temp"].max())
 
     dfg = df.filter(pl.col("epoch") == df["epoch"].max()).group_by(["dataset"])
-    letters = iter(string.ascii_lowercase)
+    letters = letter_iterator()
     for i, (sfig, ((dataset_name,), df_)) in enumerate(zip(figs.flat, dfg)):
         sfig.suptitle(dataset_name)
         axd = sfig.subplot_mosaic([keys])
