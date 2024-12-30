@@ -82,7 +82,7 @@ def tsimcne_nonparam(
     trainer_kwargs=None,
     logger=None,
     n_epochs=100,
-    temp="learnable",
+    temp=0.01,
     eval_ann=False,
     opt="adam",
     lr=1,
@@ -108,10 +108,6 @@ def tsimcne_nonparam(
         y = torch.zeros(A.shape[0], dtype=int)
     else:
         y = labels
-
-    if temp == "learnable":
-        temp = torch.nn.Parameter(torch.tensor(0.5))
-
     dm = GraphDM(
         A,
         labels=y,
