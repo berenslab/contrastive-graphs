@@ -1,9 +1,5 @@
 # example plotname = "trainmetrics"
 def deplist(plotname):
-    return list(deps(plotname).values())
-
-
-def deps(plotname):
     assert plotname.name == "trainmetrics"
 
     return ["../dataframes/learntemp_evals"]
@@ -12,7 +8,7 @@ def deps(plotname):
 def plot_path(plotname, outfile, format="pdf"):
     import polars as pl
 
-    df = pl.read_csv(deps(plotname)[0])
+    df = pl.read_csv(deplist(plotname)[0])
 
     return plot(
         df,
