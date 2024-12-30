@@ -76,6 +76,7 @@ def run_path(path, outfile):
 def tsimcne_nonparam(
     A,
     labels=None,
+    loss="infonce-temp",
     metric="euclidean",
     batch_size="auto",
     trainer_kwargs=None,
@@ -138,6 +139,7 @@ def tsimcne_nonparam(
         raise ValueError(f"Wrong {initialization=!r} passed")
     with contextlib.redirect_stdout(sys.stderr):
         mod = tsimcne.PLtSimCNE(
+            loss=loss,
             backbone=backbone,
             backbone_dim=initial_dim,
             projection_head=torch.nn.Identity(),
