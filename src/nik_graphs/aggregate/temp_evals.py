@@ -89,9 +89,7 @@ def aggregate_path(path, outfile=None):
                 pl.lit(dataset).alias("dataset"),
                 pl.lit(float(temp)).alias("temp"),
                 pl.lit(r, dtype=pl.Int32).alias("random_state"),
-            )
-            if k != ".":
-                df__ = df__.rename(dict(score=k))
+            ).rename(dict(score=k), strict=False)
             df_ = df_.vstack(df__) if df_ is not None else df__
         df_dict[k] = df_
 
