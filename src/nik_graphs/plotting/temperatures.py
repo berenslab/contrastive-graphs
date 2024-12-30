@@ -59,6 +59,8 @@ def plot(df, outfile, format="pdf"):
             ax.set(ylabel=key, xlabel="temperature", xscale="log")
             if key != "loss":
                 ax.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
+            else:
+                ax.set_yscale("log")
 
         # if i == 0:
         #     handles, labels = ax.get_legend_handles_labels()
