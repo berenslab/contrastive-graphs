@@ -1,77 +1,36 @@
-import zipfile
-from pathlib import Path
-
-
-# example plotname = "mnist.trainmetrics". The middle part must not
-# contain dots as part of the arguments.
+# example plotname = "trainmetrics"
 def deplist(plotname):
     return list(deps(plotname).values())
 
 
 def deps(plotname):
-    dataset, _name = plotname.name.split(".")
-    assert _name == "trainmetrics"
+    assert plotname.name == "trainmetrics"
 
-    path = Path("../runs") / dataset / "cne,loss=infonce-temp,metric=cosine"
-    depdict = {k: path / k / "1.zip" for k in ["lin", "knn", "recall"]}
-    depdict["embedding"] = path / "1.zip"
-    return depdict
+    return ["../dataframes/learntemp_evals"]
 
 
 def plot_path(plotname, outfile, format="pdf"):
     import polars as pl
-    import yaml
 
-    depdict = deps(plotname)
-
-    zpath = zipfile.Path(depdict["embedding"])
-    with (zpath / "lightning_logs/metrics.csv").open() as f:
-        train_df = pl.read_csv(f)
-    with (zpath / "lightning_logs/hparams.yaml").open() as f:
-        hparams = yaml.safe_load(f)
-
-    df_dict = dict()
-    for k in ["lin", "knn", "recall"]:
-        zipf = depdict[k]
-        with zipfile.ZipFile(zipf) as zf:
-            with zf.open("scores.csv") as f:
-                df1 = pl.read_csv(f)
-
-        df_ = df1.rename(dict(score=k), strict=False)
-        df_dict[k] = df_
-    df = pl.concat(
-        [df_dict["knn"].drop("knn")]
-        + [pl.DataFrame(df[k]) for k, df in df_dict.items()],
-        how="horizontal",
-    )
-
-    # subtract 1 from the step so it aligns with the steps in train_df
-    df1 = (
-        df.select(pl.all(), s=pl.col("step") - 1)
-        .drop("step")
-        .rename(dict(s="step"))
-    )
-    df2 = train_df.drop(
-        ["dof", "ta", "ru", "val_logtemp", "val_ru", "val_ta", "val_loss"]
-    ).drop_nulls()
-    dfj = df1.join(df2, on=["epoch", "step"], how="right")
+    df = pl.read_csv(deps(plotname)[0])
 
     return plot(
-        dfj,
-        batches_per_epoch=hparams["batches_per_epoch"],
+        df,
         outfile=outfile,
         format=format,
     )
 
 
-def plot(df, batches_per_epoch=None, outfile=None, format="pdf"):
+def plot(df, outfile=None, format="pdf"):
     import matplotlib as mpl
     import polars as pl
     from matplotlib import pyplot as plt
 
     from ..plot import add_letters
 
-    dfg = df.group_by("epoch")
+    dff = df.filter(pl.col("dataset") == "mnist")
+    dfg = dff.group_by("epoch")
+    batches_per_epoch = dff["batches_per_epoch"]
 
     def plot_steps(ax, k, color):
         if batches_per_epoch is not None:
