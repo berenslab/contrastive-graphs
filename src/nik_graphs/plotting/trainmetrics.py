@@ -48,6 +48,7 @@ def plot_path(plotname, outfile, format="pdf"):
 
 
 def plot(train_df, df, outfile=None, format="pdf"):
+    import polars as pl
     from matplotlib import pyplot as plt
 
     dfg = train_df.group_by("epoch")
@@ -57,10 +58,18 @@ def plot(train_df, df, outfile=None, format="pdf"):
         [["plot", "legend"]], figsize=(3.25, 2.5), width_ratios=[1, 0.25]
     )
     ax = axd["plot"]
+    for k in ["logtemp", "loss"]:
+        epoch, val = dfg.agg(pl.mean(k)).sort(by="epoch")[["epoch", k]]
+        if k == "logtemp":
+            k = "temperature"
+            val = val.exp()
+        ax.plot(epoch, val, label=k)
+
     for k in ["knn", "lin", "recall"]:
         ax.plot(df["epoch"], df[k], label=k)
 
     handles, labels = ax.get_legend_handles_labels()
     axd["legend"].legend(handles=handles, labels=labels, loc="center")
+    axd["legend"].set_axis_off()
 
     fig.savefig(outfile, format=format)
