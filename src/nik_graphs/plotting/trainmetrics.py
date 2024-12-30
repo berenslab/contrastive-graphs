@@ -30,15 +30,13 @@ def plot_path(plotname, outfile, format="pdf"):
 
     # labels = np.load(files["data"])["labels"]
     df_dict = dict()
-    df_ = None
     for k in ["lin", "knn", "recall"]:
         zipf = depdict[k]
         with zipfile.ZipFile(zipf) as zf:
             with zf.open("scores.csv") as f:
                 df1 = pl.read_csv(f).drop("step")
 
-        df__ = df1.rename(dict(score=k), strict=False)
-        df_ = df_.vstack(df__) if df_ is not None else df__
+        df_ = df1.rename(dict(score=k), strict=False)
         df_dict[k] = df_
     df = pl.concat(
         [df_dict["knn"].drop("knn")] + [df[k] for k, df in df_dict.items()],
