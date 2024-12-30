@@ -50,7 +50,7 @@ def plot_path(plotname, outfile, format="pdf"):
 def plot(train_df, df, outfile=None, format="pdf"):
     from matplotlib import pyplot as plt
 
-    dfg = train_df.groupby("epoch")
+    dfg = train_df.group_by("epoch")
 
     # figsize is 3.25 inches, that is a single column in icml 2025 paper format.
     fig, axd = plt.subplot_mosaic(
