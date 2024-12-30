@@ -37,7 +37,7 @@ def plot_path(plotname, outfile, format="pdf"):
             with zf.open("scores.csv") as f:
                 df1 = pl.read_csv(f).drop("step")
 
-    df__ = df1.with_columns().df__.rename(dict(score=k), strict=False)
+    df__ = df1.rename(dict(score=k), strict=False)
     df_ = df_.vstack(df__) if df_ is not None else df__
     df_dict[k] = df_
     df = pl.concat(
