@@ -45,30 +45,40 @@ def plot_path(plotname, outfile, format="pdf"):
         how="horizontal",
     )
 
+    # subtract 1 from the step so it aligns with the steps in train_df
+    df1 = (
+        df.select(pl.all(), s=pl.col("step") - 1)
+        .drop("step")
+        .rename(dict(s="step"))
+    )
+    df2 = train_df.drop(
+        ["dof", "ta", "ru", "val_logtemp", "val_ru", "val_ta", "val_loss"]
+    ).drop_nulls()
+    dfj = df1.join(df2, on=["epoch", "step"], how="right")
+
     return plot(
-        train_df,
-        df,
+        dfj,
         batches_per_epoch=hparams["batches_per_epoch"],
         outfile=outfile,
         format=format,
     )
 
 
-def plot(train_df, df, batches_per_epoch=None, outfile=None, format="pdf"):
+def plot(df, batches_per_epoch=None, outfile=None, format="pdf"):
     import matplotlib as mpl
     import polars as pl
     from matplotlib import pyplot as plt
 
     from ..plot import add_letters
 
-    dfg = train_df.group_by("epoch")
+    dfg = df.group_by("epoch")
 
     def plot_steps(ax, k, color):
         if batches_per_epoch is not None:
-            df = train_df[["step", k]].drop_nulls()
-            s = df[k] if k != "logtemp" else df[k].exp()
+            df_ = df[["step", k]].drop_nulls()
+            s = df_[k] if k != "logtemp" else df_[k].exp()
             ax.plot(
-                df["step"] / batches_per_epoch,
+                df_["step"] / batches_per_epoch,
                 s,
                 color=color,
                 alpha=0.618,
@@ -83,7 +93,7 @@ def plot(train_df, df, batches_per_epoch=None, outfile=None, format="pdf"):
     def set_bounds(ax):
         if batches_per_epoch is not None:
             ax.spines.bottom.set_bounds(
-                0, (train_df["step"] / batches_per_epoch).ceil().max()
+                0, (df["step"] / batches_per_epoch).ceil().max()
             )
 
     # figsize is 3.25 inches, that is a single column in icml 2025 paper format.
@@ -115,13 +125,20 @@ def plot(train_df, df, batches_per_epoch=None, outfile=None, format="pdf"):
 
     ax = axd["loss"]
     epoch, val = dfg.agg(pl.mean("loss")).sort(by="epoch")[["epoch", "loss"]]
-    (line,) = ax.plot(epoch, val, label="loss", color="xkcd:dark grey")
+    (line,) = ax.plot(epoch, val, label="train", color="xkcd:dark grey")
+    # epoch, val = (
+    #     dfg.agg(pl.mean("val_loss"))
+    #     .sort(by="epoch")[["epoch", "val_loss"]]
+    #     .drop_nulls()
+    # )
+    # ax.plot(epoch, val, label="val", color=line.get_color())
     plot_steps(ax, "loss", line.get_color())
     ax.set(xlabel="epoch", ylabel="loss")
 
     ax = axd["acc"]
     for k in ["knn", "lin", "recall"]:
-        ax.plot(df["epoch"], df[k], label=k)
+        epoch, score = df[["epoch", k]].drop_nulls()
+        ax.plot(epoch, score, label=k)
     ax.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
     ax.legend()
     ax.set(xlabel="epoch")
