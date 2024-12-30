@@ -89,7 +89,7 @@ def aggregate_path(path, outfile=None):
                     .drop("step")
                     .rename(dict(s="step", score=key))
                 )
-            df_.with_columns(
+            df_ = df_.with_columns(
                 pl.lit(dataset).alias("dataset"),
                 # pl.lit(r, dtype=pl.Int32).alias("random_state"),
             )
