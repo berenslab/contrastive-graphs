@@ -76,7 +76,7 @@ def run_path(path, outfile):
 def tsimcne_nonparam(
     A,
     labels=None,
-    loss="infonce-temp",
+    loss="infonce",
     metric="euclidean",
     batch_size="auto",
     trainer_kwargs=None,
