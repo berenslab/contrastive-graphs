@@ -20,16 +20,9 @@ def deps(plotname):
 
 
 def plot_path(plotname, outfile, format="pdf"):
-    import numpy as np
     import polars as pl
 
     depdict = deps(plotname)
-
-    # embedding = np.load(files["embedding"])["embedding"]
-    # if embedding.shape[1] > 2:
-    #     raise RuntimeError(
-    #         f"Need a 2D embedding, but given array is {embedding.shape[1]}D"
-    #     )
 
     zpath = zipfile.Path(depdict["embedding"])
     with (zpath / "lightning_logs/metrics.csv").open() as f:
@@ -58,21 +51,17 @@ def plot_path(plotname, outfile, format="pdf"):
 def plot(train_df, df, outfile=None, format="pdf"):
     from matplotlib import pyplot as plt
 
-    fig, ax = plt.subplots(figsize=(2.5, 2.5))
+    dfg = train_df.groupby("epoch")
 
-    ax.scatter(*embedding.T, c=labels, alpha=0.6, rasterized=True)
-    ax.set_aspect(1)
-
-    txt = "\n".join(f"{k} = {v:.1%}" for k, v in accd.items())
-    ax.text(
-        1,
-        1,
-        txt,
-        transform=ax.transAxes,
-        ha="right",
-        va="top",
-        ma="right",
-        family="monospace",
+    # figsize is 3.25 inches, that is a single column in icml 2025 paper format.
+    fig, axd = plt.subplot_mosaic(
+        [["plot", "legend"]], figsize=(3.25, 2.5), width_ratios=[1, 0.25]
     )
+    ax = axd["plot"]
+    for k in ["knn", "lin", "recall"]:
+        ax.plot(df["epoch"], df[k], label=k)
+
+    handles, labels = ax.get_legend_handles_labels()
+    axd["legend"].legend(handles=handles, labels=labels, loc="center")
 
     fig.savefig(outfile, format=format)
