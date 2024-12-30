@@ -39,7 +39,8 @@ def plot_path(plotname, outfile, format="pdf"):
         df_ = df1.rename(dict(score=k), strict=False)
         df_dict[k] = df_
     df = pl.concat(
-        [df_dict["knn"].drop("knn")] + [df[k] for k, df in df_dict.items()],
+        [df_dict["knn"].drop("knn")]
+        + [pl.DataFrame(df[k]) for k, df in df_dict.items()],
         how="horizontal",
     )
 
