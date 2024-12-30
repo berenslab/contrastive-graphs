@@ -12,7 +12,7 @@ def deps(plotname):
     dataset, _name = plotname.name.split(".")
     assert _name == "trainmetrics"
 
-    path = Path("../runs") / dataset / "cne,n_epochs=5"
+    path = Path("../runs") / dataset / "cne,loss=infonce-temp,n_epochs=5"
     depdict = {k: path / k / "1.zip" for k in ["lin", "knn", "recall"]}
     depdict["embedding"] = path / "1.zip"
     depdict["data"] = path.parent / "1.zip"
