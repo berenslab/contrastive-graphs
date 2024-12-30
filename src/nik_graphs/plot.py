@@ -26,6 +26,12 @@ def letter_iterator():
     )
 
 
+def add_letters(axs):
+    ld = letter_dict()
+    for letter, ax in zip(letter_iterator(), axs):
+        ax.set_title(letter, **ld)
+
+
 def add_scalebars(ax, **kwargs):
     from ._scalebars import add_scalebar_frac
 
