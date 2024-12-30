@@ -14,7 +14,7 @@ def deplist(dispatch):
 
 def deps(dispatch):
     # dataset, algo, _name = dispatch.name.split(".")
-    assert str(dispatch) == "temp_evals"
+    assert str(dispatch) == "learntemp_evals"
 
     from ..modules.cne import tsimcne_nonparam
 
