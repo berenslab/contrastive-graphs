@@ -2,7 +2,7 @@
 def deplist(plotname):
     assert plotname.name == "trainmetrics"
 
-    return ["../dataframes/learntemp_evals"]
+    return ["../dataframes/learntemp_evals.csv"]
 
 
 def plot_path(plotname, outfile, format="pdf"):
