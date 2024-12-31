@@ -30,7 +30,9 @@ def plot(df, outfile=None, format="pdf"):
     fig = plt.figure(figsize=(3.25, 1 * len(datasets)))
     figs = fig.subfigures(len(datasets), 1, squeeze=False)
 
-    for sfig, ((dataset,), df_) in zip(figs.flat, df.group_by("dataset")):
+    for sfig, ((dataset,), df_) in zip(
+        figs.flat, df.group_by("dataset", maintain_order=True)
+    ):
         plot_dataset(sfig, df_, dataset)
         sfig.suptitle(dataset)
     add_letters(fig.get_axes())
