@@ -18,15 +18,34 @@ def plot_path(plotname, outfile, format="pdf"):
 
 
 def plot(df, outfile=None, format="pdf"):
-    import matplotlib as mpl
     import polars as pl
     from matplotlib import pyplot as plt
 
     from ..plot import add_letters
 
-    df = df.filter(pl.col("dataset") == "mnist")
+    datasets = ["mnist", "computer", "photo"]
+    df = df.filter(pl.col("dataset").is_in(datasets))
+
+    # figsize is 3.25 inches, that is a single column in icml 2025 paper format.
+    # figsize=(3.25, 1.1),
+    fig = plt.figure(figsize=(3.25, 1 * len(datasets)))
+    figs = fig.subfigures(len(datasets), 1, squeeze=False)
+
+    for sfig, ((dataset,), df_) in zip(figs.flat, df.group_by("dataset")):
+        plot_dataset(sfig, df_, dataset)
+        sfig.suptitle(dataset)
+    add_letters(fig.get_axes())
+    fig.savefig(outfile, format=format)
+
+
+def plot_dataset(fig, df, dataset_name):
+    import matplotlib as mpl
+    import polars as pl
+
+    axd = fig.subplot_mosaic([["loss", "temperature", "acc"]])
+
     dfg = df.group_by("epoch")
-    batches_per_epoch = df["batches_per_epoch"]
+    batches_per_epoch = df["batches_per_epoch"][0]
 
     def plot_steps(ax, k, color):
         if batches_per_epoch is not None:
@@ -51,14 +70,8 @@ def plot(df, outfile=None, format="pdf"):
                 0, (df["step"] / batches_per_epoch).ceil().max()
             )
 
-    # figsize is 3.25 inches, that is a single column in icml 2025 paper format.
-    fig, axd = plt.subplot_mosaic(
-        [["loss", "temperature", "acc"]],
-        figsize=(3.25, 1.1),
-    )
     [ax.sharex(axd["loss"]) for k, ax in axd.items() if k != "loss"]
     [set_bounds(ax) for k, ax in axd.items()]
-    add_letters(axd.values())
 
     ax = axd["temperature"]
     epoch, logtemp = dfg.agg(pl.mean("logtemp")).sort(by="epoch")[
@@ -97,5 +110,3 @@ def plot(df, outfile=None, format="pdf"):
     ax.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
     ax.legend()
     ax.set(xlabel="epoch")
-
-    fig.savefig(outfile, format=format)
