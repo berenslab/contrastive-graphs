@@ -36,6 +36,16 @@ def plot(df, outfile=None, format="pdf"):
         sfig.suptitle(dataset)
     add_letters(fig.get_axes())
     [ax.set_xlabel("epoch") for fig in figs[-1] for ax in fig.get_axes()]
+    (ax,) = [ax for ax in figs[0, 0].get_axes() if ax.get_label() == "acc"]
+    handles, labels = ax.get_legend_handles_labels()
+    fig.legend(
+        handles=handles,
+        labels=labels,
+        loc="upper right",
+        ncols=3,
+        fontsize="small",
+        columnspacing=1.25,
+    )
     fig.savefig(outfile, format=format)
 
 
@@ -109,4 +119,3 @@ def plot_dataset(fig, df, dataset_name):
         epoch, score = df[["epoch", k]].drop_nulls()
         ax.plot(epoch, score, label=k)
     ax.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
-    ax.legend()
