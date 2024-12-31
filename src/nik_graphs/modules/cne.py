@@ -82,7 +82,7 @@ def tsimcne_nonparam(
     trainer_kwargs=None,
     logger=None,
     n_epochs=100,
-    temp=0.01,
+    temp=0.1,
     eval_ann=False,
     opt="adam",
     lr=1,
