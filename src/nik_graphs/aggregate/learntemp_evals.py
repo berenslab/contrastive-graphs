@@ -3,6 +3,7 @@ import itertools
 from pathlib import Path
 
 DATASETS = ["cora", "computer", "photo", "citeseer", "mnist"]
+DATASETS = ["mnist"]
 RANDOM_STATES = [None]
 N_EPOCHS = 30
 
@@ -20,8 +21,11 @@ def deps(dispatch):
 
     sig = inspect.signature(tsimcne_nonparam)
     default_loss = sig.parameters["loss"].default
+    default_metric = sig.parameters["metric"].default
     default_n_epochs = sig.parameters["n_epochs"].default
 
+    mname = "cosine"
+    metric = f",metric={mname}" if default_metric != mname else ""
     lname = "infonce-temp"
     loss = f",loss={lname}" if default_loss != lname else ""
     n_epochs = f",n_epochs={N_EPOCHS}" if default_n_epochs != N_EPOCHS else ""
@@ -30,7 +34,7 @@ def deps(dispatch):
     for dataset, r in iterator():
         path = Path("../runs") / dataset
         randstr = f",random_state={r}" if r is not None else ""
-        paths.append(path / ("cne" + loss + n_epochs + randstr))
+        paths.append(path / ("cne" + metric + loss + n_epochs + randstr))
 
     depdict = {
         k: [p / k / "1.zip" for p in paths]
