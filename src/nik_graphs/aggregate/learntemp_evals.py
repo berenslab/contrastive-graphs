@@ -104,6 +104,6 @@ def aggregate_path(path, outfile=None):
     df = pl.concat([df for df in df_dict.values()])
     if outfile is not None:
         with open(outfile, "xb") as f:
-            df.write_csv(f)
+            df.write_parquet(f)
 
     return df

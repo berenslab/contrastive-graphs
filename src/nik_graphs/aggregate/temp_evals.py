@@ -107,6 +107,6 @@ def aggregate_path(path, outfile=None):
     if outfile is not None:
         # with zipfile.ZipFile(outfile, "x") as zf:
         with open(outfile, "xb") as f:
-            df.write_csv(f)
+            df.write_parquet(f)
 
     return df
