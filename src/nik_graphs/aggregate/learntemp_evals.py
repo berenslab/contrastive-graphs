@@ -3,7 +3,6 @@ import itertools
 from pathlib import Path
 
 DATASETS = ["cora", "computer", "photo", "citeseer", "mnist"]
-DATASETS = ["mnist"]
 RANDOM_STATES = [None]
 N_EPOCHS = 30
 
