@@ -2,13 +2,13 @@
 def deplist(plotname):
     assert plotname.name == "trainmetrics"
 
-    return ["../dataframes/learntemp_evals.csv"]
+    return ["../dataframes/learntemp_evals.parquet"]
 
 
 def plot_path(plotname, outfile, format="pdf"):
     import polars as pl
 
-    df = pl.read_csv(deplist(plotname)[0])
+    df = pl.read_parquet(deplist(plotname)[0])
 
     return plot(
         df,
