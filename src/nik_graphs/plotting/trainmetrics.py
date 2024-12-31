@@ -24,9 +24,9 @@ def plot(df, outfile=None, format="pdf"):
 
     from ..plot import add_letters
 
-    dff = df.filter(pl.col("dataset") == "mnist")
-    dfg = dff.group_by("epoch")
-    batches_per_epoch = dff["batches_per_epoch"]
+    df = df.filter(pl.col("dataset") == "mnist")
+    dfg = df.group_by("epoch")
+    batches_per_epoch = df["batches_per_epoch"]
 
     def plot_steps(ax, k, color):
         if batches_per_epoch is not None:
