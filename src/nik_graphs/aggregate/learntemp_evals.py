@@ -62,7 +62,6 @@ def aggregate_path(path, outfile=None):
 
     df_dict = dict()
     for key, ziplist in deps(path).items():
-        df = None
         for (dataset, r), zipf in zip(iterator(), ziplist):
             assert r is None
             zpath = zipfile.Path(zipf)
@@ -76,8 +75,12 @@ def aggregate_path(path, outfile=None):
                 batches_per_epoch = hparams["batches_per_epoch"]
                 df_ = train_df.drop(to_drop).drop_nulls()
                 df_ = df_.with_columns(
-                    pl.lit(batches_per_epoch).alias("batches_per_epoch")
+                    pl.lit(batches_per_epoch).alias("batches_per_epoch"),
+                    pl.lit(dataset).alias("dataset"),
                 )
+                # this key "." comes first, so we can simply store the
+                # df in the dictionary.
+                df_dict[dataset] = df_
 
             else:
                 with (zpath / "scores.csv").open() as f:
@@ -89,23 +92,20 @@ def aggregate_path(path, outfile=None):
                     .drop("step")
                     .rename(dict(s="step", score=key))
                 )
-            df_ = df_.with_columns(
-                pl.lit(dataset).alias("dataset"),
-                # pl.lit(r, dtype=pl.Int32).alias("random_state"),
-            )
+                df_ = df_.with_columns(
+                    pl.lit(dataset).alias("dataset"),
+                    # pl.lit(r, dtype=pl.Int32).alias("random_state"),
+                )
 
-            # rope in the intermediate values and join them onto the df
-            df = (
-                df.join(
+                # rope in the intermediate values and join them onto the df
+                df_dict[dataset] = df_dict[dataset].join(
                     df_,
                     on=["dataset", "epoch", "step"],
                     how="outer",
                     coalesce=True,
                 )
-                if df is not None
-                else df_
-            )
 
+    df = pl.concat([df for df in df_dict.values()])
     if outfile is not None:
         with open(outfile, "xb") as f:
             df.write_csv(f)
