@@ -23,8 +23,7 @@ def plot(df, outfile=None, format="pdf"):
 
     from ..plot import add_letters
 
-    datasets = ["mnist", "computer", "photo"]
-    df = df.filter(pl.col("dataset").is_in(datasets))
+    datasets = df["dataset"].unique()
 
     # figsize is 3.25 inches, that is a single column in icml 2025 paper format.
     # figsize=(3.25, 1.1),
