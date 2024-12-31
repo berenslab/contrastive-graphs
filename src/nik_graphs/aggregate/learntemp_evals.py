@@ -2,7 +2,7 @@ import inspect
 import itertools
 from pathlib import Path
 
-DATASETS = ["cora", "computer", "photo", "citeseer", "mnist"]
+DATASETS = ["cora", "computer", "photo", "citeseer"]  # , "mnist"]
 RANDOM_STATES = [None]
 N_EPOCHS = 30
 
