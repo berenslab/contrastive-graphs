@@ -50,17 +50,8 @@ def aggregate_path(path, outfile=None):
     import polars as pl
     import yaml
 
-    to_drop = [
-        "dof",
-        "ta",
-        "ru",
-        "val_logtemp",
-        "val_ru",
-        "val_ta",
-        "val_loss",
-    ]
+    to_drop = "dof ta ru val_logtemp val_ru val_ta val_loss".split()
 
-    df_dict = dict()
     for key, ziplist in deps(path).items():
         for (dataset, r), zipf in zip(iterator(), ziplist):
             assert r is None
