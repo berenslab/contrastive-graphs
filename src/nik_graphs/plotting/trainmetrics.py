@@ -86,7 +86,7 @@ def plot_dataset(fig, df, dataset_name):
     ax.text(
         1,
         last_temp,
-        rf"$\tau = {last_temp:.1g}$",
+        rf"$\tau = {last_temp:g}$",
         ha="right",
         va="bottom",
         transform=ax.get_yaxis_transform(),
