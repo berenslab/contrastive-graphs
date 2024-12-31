@@ -18,7 +18,6 @@ def plot_path(plotname, outfile, format="pdf"):
 
 
 def plot(df, outfile=None, format="pdf"):
-    import polars as pl
     from matplotlib import pyplot as plt
 
     from ..plot import add_letters
@@ -36,6 +35,7 @@ def plot(df, outfile=None, format="pdf"):
         plot_dataset(sfig, df_, dataset)
         sfig.suptitle(dataset)
     add_letters(fig.get_axes())
+    [ax.set_xlabel("epoch") for fig in figs[-1] for ax in fig.get_axes()]
     fig.savefig(outfile, format=format)
 
 
@@ -81,7 +81,7 @@ def plot_dataset(fig, df, dataset_name):
     temp = logtemp.exp()
     (line,) = ax.plot(epoch, temp, label="temperature", color="xkcd:dark grey")
     plot_steps(ax, "logtemp", color=line.get_color())
-    ax.set(xlabel="epoch", ylabel=r"temperature $\tau$", yscale="log")
+    ax.set(ylabel=r"temperature $\tau$", yscale="log")
     last_temp = temp.drop_nulls()[-1]
     ax.text(
         1,
@@ -102,7 +102,7 @@ def plot_dataset(fig, df, dataset_name):
     # )
     # ax.plot(epoch, val, label="val", color=line.get_color())
     plot_steps(ax, "loss", line.get_color())
-    ax.set(xlabel="epoch", ylabel="loss")
+    ax.set_ylabel("loss")
 
     ax = axd["acc"]
     for k in ["knn", "lin", "recall"]:
@@ -110,4 +110,3 @@ def plot_dataset(fig, df, dataset_name):
         ax.plot(epoch, score, label=k)
     ax.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
     ax.legend()
-    ax.set(xlabel="epoch")
