@@ -19,6 +19,7 @@ def plot(h5, outfile, format="pdf"):
     import matplotlib as mpl
     import numpy as np
     from matplotlib import pyplot as plt
+    from scipy import linalg
 
     from ..plot import add_scalebars, letter_dict, letter_iterator
 
@@ -34,11 +35,13 @@ def plot(h5, outfile, format="pdf"):
         col = h5_ds["edges/col"]
 
         axd = sfig.subplot_mosaic([keys])
+        anchor = h5_ds[keys[0]]  # take any array
         for key, ax in axd.items():
             ax.set_title(key)
 
             data = np.array(h5_ds[key])
-            ax.scatter(data[:, 0], data[:, 1], c=labels, rasterized=True)
+            rot = linalg.orthogonal_procrustes(data, anchor)
+            ax.scatter(*(rot @ data).T, c=labels, rasterized=True)
             ax.set_title(next(letters), **letter_dict())
             ax.axis("equal")
             add_scalebars(ax)
