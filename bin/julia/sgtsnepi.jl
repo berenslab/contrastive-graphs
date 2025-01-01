@@ -40,11 +40,11 @@ function (@main)(ARGS)
         default = 200
         arg_type = Float64
         dest_name = "eta"
-        "--λ", "-λ"
+        "--λ", "-λ", "--lambda"
         help = "Rescaling parameter `λ` in sgtsnepi"
         arg_type = Float64
         default = 10
-        "--alpha"
+        "--alpha", "-ɑ", "--ɑ"
         help = "Early exag. multiplier `α` in sgtsnepi"
         arg_type = Float64
         default = 12
