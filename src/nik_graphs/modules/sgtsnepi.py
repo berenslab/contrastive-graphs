@@ -16,7 +16,7 @@ __partition__ = "cpu-galvani"
 PROJROOT = Path(__file__).parent.parent.parent.parent
 # this is the julia executable inside of the singularity container
 JULIAEXE = "/opt/julia-1.11.2/bin/julia"
-JULIAFLAGS = ["-J", str(PROJROOT / "bin/julia/nik_sgtsnepi_sysimage.so)")]
+JULIAFLAGS = ["-J", str(PROJROOT / "bin/julia/nik.so)")]
 JULIAFILE = PROJROOT / "bin/julia/sgtsnepi.jl"
 
 
