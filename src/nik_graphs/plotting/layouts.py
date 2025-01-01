@@ -23,7 +23,7 @@ def plot(h5, outfile, format="pdf"):
     from ..plot import add_scalebars, letter_dict, letter_iterator
 
     letters = letter_iterator()
-    fig = plt.figure(figsize=(3, 1.1 * len(h5)))
+    fig = plt.figure(figsize=(6.75, 1.1 * len(h5)))
     figs = fig.subfigures(len(h5))
     for sfig, dataset in zip(figs, h5):
         sfig.suptitle(dataset)
