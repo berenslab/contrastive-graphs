@@ -40,7 +40,7 @@ PYNAME=$(rstrip $(basename $_PATH) ",*")
 if [ x$PYNAME == xdrgraph ]; then
     redo-ifchange ../bin/drgraph
 elif [ x$PYNAME == xsgtsnepi ]; then
-    redo-ifchange ../bin/julia/nik_sgtsnepi_sysimage.so
+    redo-ifchange ../bin/julia/nik.so
 fi
 
 if [ ! -f "../src/nik_graphs/modules/${PYNAME}.py" ]; then
