@@ -1,7 +1,7 @@
-using .SparseArrays
-using .NPZ
-using .SGtSNEpi
-using .ArgParse
+using SparseArrays
+using NPZ
+using SGtSNEpi
+using ArgParse
 
 s = ArgParseSettings()
 @add_arg_table! s begin
