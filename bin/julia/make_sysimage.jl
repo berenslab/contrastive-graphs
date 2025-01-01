@@ -7,7 +7,7 @@ import PackageCompiler
 function (@main)(ARGS)
     PackageCompiler.create_sysimage(
         ["SGtSNEpi", "SparseArrays", "NPZ", "ArgParse"],
-        sysimage_path="nik_sgtsnepi.so",
+        sysimage_path=ARGS[1],
         import_into_main = true,
     )
 end
