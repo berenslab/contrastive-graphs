@@ -39,7 +39,7 @@ PYNAME=$(rstrip $(basename $_PATH) ",*")
 # Analogue for sgtsnepi.py, which needs the sysimage to function.
 if [ x$PYNAME == xdrgraph ]; then
     redo-ifchange ../bin/drgraph
-elif [ x$PYNAME == xsgtsnepi]; then
+elif [ x$PYNAME == xsgtsnepi ]; then
     redo-ifchange ../bin/julia/nik_sgtsnepi_sysimage.so
 fi
 
