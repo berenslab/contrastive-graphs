@@ -35,7 +35,7 @@ def plot(h5, outfile, format="pdf"):
         col = h5_ds["edges/col"]
 
         axd = sfig.subplot_mosaic([keys])
-        anchor = h5_ds[keys[0]]  # take any array
+        anchor = h5_ds["tsne"]  # take any array
         for key, ax in axd.items():
             ax.set_title(key)
 
