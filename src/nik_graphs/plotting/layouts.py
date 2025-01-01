@@ -41,7 +41,7 @@ def plot(h5, outfile, format="pdf"):
 
             data = np.array(h5_ds[key])
             rot, _scale = linalg.orthogonal_procrustes(data, anchor)
-            ax.scatter(*(rot.round(10) @ data).T, c=labels, rasterized=True)
+            ax.scatter(*(data @ rot.round(10)).T, c=labels, rasterized=True)
             ax.set_title(next(letters), **letter_dict())
             ax.axis("equal")
             add_scalebars(ax)
