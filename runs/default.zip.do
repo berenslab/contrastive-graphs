@@ -36,8 +36,11 @@ PYNAME=$(rstrip $(basename $_PATH) ",*")
 # of drgraph.py because that is inside of the singularity container
 # (and hence there is no redo and it would be detached from the redo
 # process outside of the container).
+# Analogue for sgtsnepi.py, which needs the sysimage to function.
 if [ x$PYNAME == xdrgraph ]; then
     redo-ifchange ../bin/drgraph
+elif [ x$PYNAME == xsgtsnepi]; then
+    redo-ifchange ../bin/julia/nik_sgtsnepi_sysimage.so
 fi
 
 if [ ! -f "../src/nik_graphs/modules/${PYNAME}.py" ]; then
