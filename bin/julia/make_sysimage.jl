@@ -8,6 +8,7 @@ function (@main)(ARGS)
     PackageCompiler.create_sysimage(
         ["SGtSNEpi", "SparseArrays", "NPZ", "ArgParse"],
         sysimage_path=ARGS[1],
-        import_into_main = true,
+        precompile_execution_file="precompile_sgtsnepi.jl",
+        import_into_main=true,
     )
 end
