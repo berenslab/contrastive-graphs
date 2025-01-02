@@ -20,7 +20,7 @@ def deplist(dispatch: Path):
 
 def deps(dispatch):
     # dataset, algo, _name = dispatch.name.split(".")
-    assert str(dispatch) == "temp_evals"
+    assert str(dispatch) == "high_dim_benchmarks"
 
     paths = []
 
