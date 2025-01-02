@@ -36,7 +36,8 @@ def deps(dispatch):
         paths.append(path / (modelstr + n_epochs + randstr))
 
     depdict = {
-        k: [p / k / "1.zip" for p in paths] for k in ["lin", "knn", "recall"]
+        k: [p / k / "1.zip" for p in paths]
+        for k in [".", "lin", "knn", "recall"]
     }
     return depdict
 
@@ -54,18 +55,37 @@ def aggregate_path(path, outfile=None):
     results = defaultdict(list)
     for key, ziplist in deps(path).items():
         for (dataset, (mname, modelstr), r), zipf in zip(iterator(), ziplist):
-            # "knn" is the first entry, so here we store all columns
-            if key == "knn":
+            zpath = zipfile.Path(zipf)
+
+            # "." is the first entry, so here we store all columns
+            if key == ".":
+                # hacky way to get the last temperature value when we
+                # make this parameter learnable
+                if ",loss=infonce-temp" in modelstr:
+                    with (zpath / "metrics.csv").open() as f:
+                        train_df = pl.read_csv(f)
+                        temp = (
+                            train_df.filter(
+                                pl.col("step") == train_df["step"].max()
+                            )
+                            .select("logtemp")
+                            .exp()
+                            .item()
+                        )
+                        mname = f"CNE ((̂τ = {temp:.2g})"
+
                 results["dataset"].append(dataset)
                 results["name"].append(mname)
                 results["run_name"].append(modelstr)
                 results["random_state"].append(r)
                 results["n_epochs"].append(N_EPOCHS)
+                fname = "elapsed_secs.txt"
+                key = "time"
+            else:
+                fname = "score.txt"
 
-            zpath = zipfile.Path(zipf)
-            acctxt = (zpath / "score.txt").read_text()
-            acc = float(acctxt)
-            results[key].append(acc)
+            txt = (zpath / fname).read_text()
+            results[key].append(float(txt))
 
     df = pl.DataFrame(results)
     if outfile is not None:
