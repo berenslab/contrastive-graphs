@@ -65,9 +65,9 @@ def aggregate_path(path, outfile=None):
                     with (zpath / "lightning_logs/metrics.csv").open() as f:
                         train_df = pl.read_csv(f)
                         temp = (
-                            train_df.filter(
-                                pl.col("step") == train_df["step"].max()
-                            )["logtemp"]
+                            train_df["logtemp"]
+                            .drop_nulls()
+                            .tail(1)
                             .exp()
                             .item()
                         )
