@@ -2,6 +2,7 @@ import itertools
 from pathlib import Path
 
 DATASETS = ["cora", "computer", "photo", "citeseer", "mnist"]
+DATASETS = ["cora", "computer"]
 MODELDICT = dict(
     CNE="cne,metric=cosine",
     CNEτ="cne,metric=cosine,loss=infonce-temp",
