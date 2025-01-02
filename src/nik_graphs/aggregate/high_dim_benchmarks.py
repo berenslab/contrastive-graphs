@@ -37,7 +37,7 @@ def deps(dispatch):
 
     depdict = {
         k: [p / k / "1.zip" for p in paths]
-        for k in [".", "lin", "knn", "recall"]
+        for k in [".", "..", "lin", "knn", "recall"]
     }
     return depdict
 
@@ -50,6 +50,7 @@ def aggregate_path(path, outfile=None):
     import zipfile
     from collections import defaultdict
 
+    import numpy as np
     import polars as pl
 
     results = defaultdict(list)
@@ -78,13 +79,17 @@ def aggregate_path(path, outfile=None):
                 results["run_name"].append(modelstr)
                 results["random_state"].append(r)
                 results["n_epochs"].append(N_EPOCHS)
-                fname = "elapsed_secs.txt"
-                tablecol_name = "time"
+                secs = (zpath / "elapsed_secs.txt").read_text()
+                results["time"].append(float(secs))
+            elif key == "..":
+                npz = np.load(zipf)
+                n, m = npz["shape"]
+                nnz = npz["data"].shape[0]
+                results["n_pts"].append(n)
+                results["n_edges"].append(nnz)
             else:
-                fname = "score.txt"
-                tablecol_name = key
-            txt = (zpath / fname).read_text()
-            results[tablecol_name].append(float(txt))
+                acctxt = (zpath / "score.txt").read_text()
+                results[key].append(float(acctxt))
 
     df = pl.DataFrame(results)
     if outfile is not None:
