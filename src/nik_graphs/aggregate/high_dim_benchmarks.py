@@ -72,7 +72,7 @@ def aggregate_path(path, outfile=None):
                             .exp()
                             .item()
                         )
-                        mname = f"CNE (̂τ = {temp:.2g})"
+                        mname = f"CNE (̂τ ≅ {temp:.1g})"
 
                 results["dataset"].append(dataset)
                 results["name"].append(mname)
