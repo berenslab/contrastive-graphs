@@ -63,7 +63,7 @@ def aggregate_path(path, outfile=None):
                 results["n_epochs"].append(N_EPOCHS)
 
             zpath = zipfile.Path(zipf)
-            acctxt = (zpath / "scores.csv").read_text()
+            acctxt = (zpath / "score.txt").read_text()
             acc = float(acctxt)
             results[key].append(acc)
 
