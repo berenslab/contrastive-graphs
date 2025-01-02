@@ -36,8 +36,7 @@ def deps(dispatch):
         paths.append(path / (modelstr + n_epochs + randstr))
 
     depdict = {
-        k: [p / k / "1.zip" for p in paths]
-        for k in [".", "lin", "knn", "recall"]
+        k: [p / k / "1.zip" for p in paths] for k in ["lin", "knn", "recall"]
     }
     return depdict
 
@@ -50,51 +49,29 @@ def aggregate_path(path, outfile=None):
     import zipfile
 
     import polars as pl
-    import yaml
-
-    to_drop = "dof ta ru val_logtemp val_ru val_ta val_loss".split()
 
     df_dict = dict()
     for key, ziplist in deps(path).items():
         for (dataset, (mname, modelstr), r), zipf in zip(iterator(), ziplist):
             zpath = zipfile.Path(zipf)
 
-            if key == ".":
-                with (zpath / "lightning_logs/metrics.csv").open() as f:
-                    train_df = pl.read_csv(f)
-                with (zpath / "lightning_logs/hparams.yaml").open() as f:
-                    hparams = yaml.safe_load(f)
+            with (zpath / "scores.csv").open() as f:
+                df_ = pl.read_csv(f)
+            df_ = df_.with_columns(
+                pl.lit(mname).alias("name"),
+                pl.lit(dataset).alias("dataset"),
+                pl.lit(r, dtype=pl.Int32).alias("random_state"),
+                pl.lit(modelstr).alias("run_name"),
+            )
 
-                batches_per_epoch = hparams["batches_per_epoch"]
-                df_ = train_df.drop(to_drop).drop_nulls()
-                df_ = df_.with_columns(
-                    pl.lit(batches_per_epoch).alias("batches_per_epoch"),
-                    pl.lit(dataset).alias("dataset"),
-                )
-                # this key "." comes first, so we can simply store the
-                # df in the dictionary.
+            if dataset not in df_dict:
                 df_dict[dataset] = df_
-
             else:
-                with (zpath / "scores.csv").open() as f:
-                    df_ = pl.read_csv(f)
-                # subtract 1 from the step so it aligns with the steps
-                # in train_df
-                df_ = (
-                    df_.select(pl.all(), s=pl.col("step") - 1)
-                    .drop("step")
-                    .rename(dict(s="step", score=key))
-                )
-                df_ = df_.with_columns(
-                    pl.lit(dataset).alias("dataset"),
-                    # pl.lit(r, dtype=pl.Int32).alias("random_state"),
-                )
-
                 # rope in the intermediate values and join them onto the df
                 df_dict[dataset] = df_dict[dataset].join(
                     df_,
-                    on=["dataset", "epoch", "step"],
-                    how="outer",
+                    on=["dataset", "epoch", "step", "run_name"],
+                    how="full",
                     coalesce=True,
                 )
 
