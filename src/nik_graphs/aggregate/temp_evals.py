@@ -19,8 +19,6 @@ def deps(dispatch):
     # dataset, algo, _name = dispatch.name.split(".")
     assert str(dispatch) == "temp_evals"
 
-    dataset = "mnist"
-
     from ..modules.cne import tsimcne_nonparam
 
     sig = inspect.signature(tsimcne_nonparam)
@@ -36,7 +34,7 @@ def deps(dispatch):
         tempstr = f",temp={temp}" if temp != default_temp else ""
         randstr = f",random_state={r}" if r is not None else ""
         paths.append(
-            path / ("cne,metric=cosine" + n_epochs + tempstr + randstr)
+            path / ("cne,metric=cosine" + tempstr + n_epochs + randstr)
         )
 
     depdict = {
