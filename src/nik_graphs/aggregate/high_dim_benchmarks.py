@@ -47,35 +47,27 @@ def iterator():
 
 def aggregate_path(path, outfile=None):
     import zipfile
+    from collections import defaultdict
 
     import polars as pl
 
-    df_dict = dict()
+    results = defaultdict(list)
     for key, ziplist in deps(path).items():
         for (dataset, (mname, modelstr), r), zipf in zip(iterator(), ziplist):
+            # "knn" is the first entry, so here we store all columns
+            if key == "knn":
+                results["dataset"].append(dataset)
+                results["name"].append(mname)
+                results["run_name"].append(modelstr)
+                results["random_state"].append(r)
+                results["n_epochs"].append(N_EPOCHS)
+
             zpath = zipfile.Path(zipf)
+            acctxt = (zpath / "scores.csv").read_text()
+            acc = float(acctxt)
+            results[key].append(acc)
 
-            with (zpath / "scores.csv").open() as f:
-                df_ = pl.read_csv(f).rename(dict(score=key))
-            df_ = df_.with_columns(
-                pl.lit(mname).alias("name"),
-                pl.lit(dataset).alias("dataset"),
-                pl.lit(r, dtype=pl.Int32).alias("random_state"),
-                pl.lit(modelstr).alias("run_name"),
-            )
-
-            if dataset not in df_dict:
-                df_dict[dataset] = df_
-            else:
-                # rope in the intermediate values and join them onto the df
-                df_dict[dataset] = df_dict[dataset].join(
-                    df_,
-                    on=["dataset", "epoch", "step", "run_name"],
-                    how="full",
-                    coalesce=True,
-                )
-
-    df = pl.concat([df for df in df_dict.values()])
+    df = pl.DataFrame(results)
     if outfile is not None:
         with open(outfile, "xb") as f:
             df.write_parquet(f)
