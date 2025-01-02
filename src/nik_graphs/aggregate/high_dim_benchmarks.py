@@ -56,7 +56,7 @@ def aggregate_path(path, outfile=None):
             zpath = zipfile.Path(zipf)
 
             with (zpath / "scores.csv").open() as f:
-                df_ = pl.read_csv(f)
+                df_ = pl.read_csv(f).rename(dict(score=key))
             df_ = df_.with_columns(
                 pl.lit(mname).alias("name"),
                 pl.lit(dataset).alias("dataset"),
