@@ -19,29 +19,29 @@ def format_table(dispatch, outfile, format="tex"):
         std = hrs.std()
         return f"{mean:.2f}±{std:.1f} hr"
 
-    df_fmt = df.group_by(["dataset", "name"], maintain_order=True).agg(
-        pl.col("knn").map_elements(mean_std_fmt, return_dtype=str),
-        pl.col("lin").map_elements(mean_std_fmt, return_dtype=str),
-        pl.col("recall").map_elements(mean_std_fmt, return_dtype=str),
-        pl.col("time").map_elements(mean_std_fmt_time, return_dtype=str),
+    df_fmt = (
+        df.group_by(["dataset", "run_name"], maintain_order=True)
+        .agg(
+            pl.col("name").first(),
+            pl.col("knn").map_elements(mean_std_fmt, return_dtype=str),
+            pl.col("lin").map_elements(mean_std_fmt, return_dtype=str),
+            pl.col("recall").map_elements(mean_std_fmt, return_dtype=str),
+            pl.col("time").map_elements(mean_std_fmt_time, return_dtype=str),
+        )
+        .drop("run_name")
     )
     # df_fmt looks something like:
     #
-    # shape: (8, 5)
-    # ┌──────────┬──────────┬────────────┬────────────┬────────────┐
-    # │ dataset  ┆ name     ┆ knn        ┆ lin        ┆ recall     │
-    # │ ---      ┆ ---      ┆ ---        ┆ ---        ┆ ---        │
-    # │ str      ┆ str      ┆ str        ┆ str        ┆ str        │
-    # ╞══════════╪══════════╪════════════╪════════════╪════════════╡
-    # │ cora     ┆ CNE      ┆ 76.76±1.1% ┆ 79.02±0.6% ┆ 65.16±0.9% │
-    # │ cora     ┆ CNEτ     ┆ 75.70±0.6% ┆ 75.70±0.4% ┆ 79.86±0.3% │
-    # │ cora     ┆ deepwalk ┆ 77.96±0.7% ┆ 79.31±0.2% ┆ 63.22±0.8% │
-    # │ cora     ┆ node2vec ┆ 40.40±3.1% ┆ 55.08±0.5% ┆  1.01±0.1% │
-    # │ computer ┆ CNE      ┆ 90.51±0.5% ┆ 90.28±0.7% ┆ 28.20±0.5% │
-    # │ computer ┆ CNEτ     ┆ 92.38±0.1% ┆ 89.31±0.5% ┆ 45.04±0.4% │
-    # │ computer ┆ deepwalk ┆ 91.45±0.3% ┆ 88.64±0.9% ┆ 30.22±0.1% │
-    # │ computer ┆ node2vec ┆ 87.67±0.8% ┆ 85.60±0.6% ┆ 15.04±0.4% │
-    # └──────────┴──────────┴────────────┴────────────┴────────────┘
+    # ┌──────────┬──────────────────┬────────────┬───┬─────────────┐
+    # │ dataset  ┆ name             ┆ knn        ┆   ┆ time        │
+    # ╞══════════╪══════════════════╪════════════╪═══╪═════════════╡
+    # │ cora     ┆ CNE (τ=0.5)      ┆ 77.96±1.0% ┆   ┆ 0.01±0.0 hr │
+    # │ cora     ┆ CNE (̂τ = 0.081)  ┆ 75.63±0.5% ┆   ┆ 0.01±0.0 hr │
+    # │ cora     ┆ deepwalk         ┆ 77.78±0.4% ┆ … ┆ 0.06±0.0 hr │
+    # │ computer ┆ CNE (τ=0.5)      ┆ 90.81±0.4% ┆   ┆ 0.15±0.0 hr │
+    # │ computer ┆ CNE (τ=0.05)     ┆ 91.50±0.2% ┆   ┆ 0.14±0.0 hr │
+    # │ computer ┆ CNE ((̂τ = 0.077) ┆ 91.60±0.3% ┆   ┆ 0.15±0.0 hr │
+    #                                 ⋮
 
     match format:
         case "tex":
