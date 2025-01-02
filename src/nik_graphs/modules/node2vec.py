@@ -61,6 +61,7 @@ def node2vec(
         p=p,
         q=q,
         sparse=True,
+        **kwargs,
     ).to(device)
 
     loader = model.loader(batch_size=batch_size, shuffle=True, num_workers=1)
