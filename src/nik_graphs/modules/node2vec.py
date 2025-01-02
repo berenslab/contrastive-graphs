@@ -42,9 +42,11 @@ def node2vec(
     p=1.0,
     q=1.0,
     verbose=False,
+    random_state=77301 * 12,
     **kwargs,
 ):
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
+    torch.manual_seed(random_state)
 
     G = nx.from_scipy_sparse_array(A)
     edge_index = from_networkx(G).edge_index

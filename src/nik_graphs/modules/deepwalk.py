@@ -27,8 +27,11 @@ def run_path(path, outfile):
             np.save(f, Y)
 
 
-def deepwalk(A, verbose=False, batch_size=128, lr=0.01, n_epochs=100):
+def deepwalk(
+    A, verbose=False, batch_size=128, lr=0.01, n_epochs=100, random_state=49491
+):
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
+    torch.manual_seed(random_state)
 
     G = nx.from_scipy_sparse_array(A)
     g = dgl.from_networkx(G, device=device)
