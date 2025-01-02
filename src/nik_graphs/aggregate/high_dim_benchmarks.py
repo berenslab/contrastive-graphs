@@ -80,12 +80,12 @@ def aggregate_path(path, outfile=None):
                 results["random_state"].append(r)
                 results["n_epochs"].append(N_EPOCHS)
                 fname = "elapsed_secs.txt"
-                key = "time"
+                tablecol_name = "time"
             else:
                 fname = "score.txt"
-
+                tablecol_name = key
             txt = (zpath / fname).read_text()
-            results[key].append(float(txt))
+            results[tablecol_name].append(float(txt))
 
     df = pl.DataFrame(results)
     if outfile is not None:
