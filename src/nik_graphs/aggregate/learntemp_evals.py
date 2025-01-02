@@ -82,11 +82,9 @@ def aggregate_path(path, outfile=None):
                     df_ = pl.read_csv(f)
                 # subtract 1 from the step so it aligns with the steps
                 # in train_df
-                df_ = (
-                    df_.select(pl.all(), s=pl.col("step") - 1)
-                    .drop("step")
-                    .rename(dict(s="step", score=key))
-                )
+                df_ = df_.select(
+                    pl.all().exclude("step"), pl.col("step") - 1
+                ).rename(dict(score=key))
                 df_ = df_.with_columns(
                     pl.lit(dataset).alias("dataset"),
                     # pl.lit(r, dtype=pl.Int32).alias("random_state"),
