@@ -83,7 +83,7 @@ async def send_txt(fname, bot, chat_id):
         text = f.read()
 
     return await bot.send_message(
-        chat_id=chat_id, text=text, parse_mode="Markdown"
+        chat_id=chat_id, text=f"<pre>{text}</pre>", parse_mode="HTML"
     )
 
 
