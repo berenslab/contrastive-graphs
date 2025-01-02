@@ -67,8 +67,7 @@ def aggregate_path(path, outfile=None):
                         temp = (
                             train_df.filter(
                                 pl.col("step") == train_df["step"].max()
-                            )
-                            .select("logtemp")
+                            )["logtemp"]
                             .exp()
                             .item()
                         )
