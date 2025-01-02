@@ -13,10 +13,17 @@ def format_table(dispatch, outfile, format="tex"):
         std = s.std()
         return f"{mean * 100:5.2f}±{std:3.1%}"
 
+    def mean_std_fmt_time(s: pl.Series) -> str:
+        hrs = s / (60 * 60)
+        mean = hrs.mean()
+        std = hrs.std()
+        return f"{mean:.2f}±{std:.1f} hr"
+
     df_fmt = df.group_by(["dataset", "name"], maintain_order=True).agg(
         pl.col("knn").map_elements(mean_std_fmt, return_dtype=str),
         pl.col("lin").map_elements(mean_std_fmt, return_dtype=str),
         pl.col("recall").map_elements(mean_std_fmt, return_dtype=str),
+        pl.col("time").map_elements(mean_std_fmt_time, return_dtype=str),
     )
     # df_fmt looks something like:
     #
