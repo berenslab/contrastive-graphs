@@ -2,7 +2,7 @@ import itertools
 import zipfile
 from pathlib import Path
 
-DATASETS = ["cora", "computer", "photo", "citeseer", "mnist"]
+DATASETS = ["cora", "computer", "photo", "citeseer", "pubmed", "mnist"]
 LAYOUTS = ["fa2", "tfdp", "drgraph", "sgtsnepi", "tsne"]
 
 
