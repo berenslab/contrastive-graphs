@@ -1,4 +1,4 @@
-redo-ifchange $2
+redo-ifchange $2 telegram_send.py
 
 # import certifi; certifi.where()
 # SSL file in the singularity container
