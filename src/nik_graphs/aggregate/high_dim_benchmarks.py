@@ -62,7 +62,7 @@ def aggregate_path(path, outfile=None):
                 # hacky way to get the last temperature value when we
                 # make this parameter learnable
                 if ",loss=infonce-temp" in modelstr:
-                    with (zpath / "metrics.csv").open() as f:
+                    with (zpath / "lightning_logs/metrics.csv").open() as f:
                         train_df = pl.read_csv(f)
                         temp = (
                             train_df.filter(
