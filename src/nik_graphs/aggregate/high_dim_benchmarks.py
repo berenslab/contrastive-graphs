@@ -3,12 +3,13 @@ from pathlib import Path
 
 DATASETS = ["cora", "computer", "photo", "citeseer", "mnist"]
 DATASETS = ["cora", "computer"]
-MODELDICT = dict(
-    CNE="cne,metric=cosine",
-    CNEτ="cne,metric=cosine,loss=infonce-temp",
-    deepwalk="deepwalk",
-    node2vec="node2vec",
-)
+MODELDICT = {
+    "CNE (τ=0.5)": "cne,metric=cosine",
+    # "CNE (τ=0.05)": "cne,metric=cosine,temp=0.05",
+    "CNEτ": "cne,metric=cosine,loss=infonce-temp",
+    "deepwalk": "deepwalk",
+    "node2vec": "node2vec",
+}
 N_EPOCHS = 10
 RANDOM_STATES = [None, 1111, 2222]
 
