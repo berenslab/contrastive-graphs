@@ -1,8 +1,5 @@
 from pathlib import Path
 
-COLORS = ["#820008", "#be241c", "#eb7135", "#1c69ff", "#007100"]
-# ["#0414d2", "#0061f7", "#61aaf7", "#c23900", "#a20075"]
-
 
 def deplist(dispatch: Path):
     return ["../dataframes/high_dim_benchmarks.parquet"]
@@ -36,14 +33,12 @@ def plot(df_full, outfile, format="pdf"):
             pl.mean(key).alias("mean"),
             pl.std(key).alias("std"),
         )
-        for color, ((_,), df) in zip(
-            COLORS, df_metric.group_by("run_name", maintain_order=True)
-        ):
+        for (_,), df in df_metric.group_by("run_name", maintain_order=True):
             df = df.sort(by="n_edges")
             label = df["name"].head(1).item()
             x, m, std = df[["n_edges", "mean", "std"]]
             ax.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
-            (line,) = ax.plot(x, m, label=label, marker="o", color=color)
+            (line,) = ax.plot(x, m, label=label, marker="o")
             ax.fill_between(
                 x, m + std, m - std, color=line.get_color(), alpha=0.618
             )
