@@ -13,5 +13,7 @@ elif [ $(command -v convert) ]; then
     redo-ifcreate ../bin/magick
 else
     redo-ifchange ../bin/magick
-    ../bin/magick convert -density 600 "$2.pdf" -resize 2000x2000 png:- > $3 2>/dev/null
+    # add bin/ to PATH because the executable `gs` is located in there
+    # (in case it is not found on the system).
+    PATH=$PATH:$PWD/../bin ../bin/magick convert -density 600 "$2.pdf" -resize 2000x2000 png:- > $3 2>/dev/null
 fi
