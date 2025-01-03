@@ -80,7 +80,7 @@ def add_dataset_names(ax, df1, ykey):
             case "computer":
                 m, std = df[["mean", "std"]].min()
                 y = m - std
-                kwargs = dict(ha="left", va="top", xytext=(-3, 0))
+                kwargs = dict(ha="center", va="top", xytext=(1, -0.5))
             case "photo":
                 m, std = df[["mean", "std"]].max()
                 y = m + std
@@ -89,6 +89,10 @@ def add_dataset_names(ax, df1, ykey):
                 m, std = df[["mean", "std"]].max()
                 y = m + std
                 kwargs = dict(ha="right", va="baseline", xytext=(-1.5, 0))
+            case "arxiv":
+                m, std = df[["mean"]].min(), df[["std"]].max()
+                y = m - std
+                kwargs = dict(ha="right", va="center", xytext=(-1, 0))
             case _:
                 import warnings
 
