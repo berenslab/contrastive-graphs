@@ -14,8 +14,14 @@ rm $TMP
 
 tar xf $TMPTAR
 rm $TMPTAR
+BINDIR=$PWD
 cd ImageMagick-${MAGICK_VERSION}
-./configure --disable-installed
+if [ $(command -v gs) ];then
+    ./configure --disable-installed
+else
+    redo-ifchange $BINDIR/gs
+    PSDelegate=$BINDIR/gs ./configure --disable-installed
+fi
 make -j 16
-cd ..
-ln -s ImageMagick-${MAGICK_VERSION}/utilities/magick $3
+cd $BINDIR
+cp ImageMagick-${MAGICK_VERSION}/utilities/magick $3
