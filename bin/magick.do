@@ -18,4 +18,4 @@ BINDIR=$PWD
 ./configure --disable-installed
 make -j 16
 cd $BINDIR
-cp ImageMagick-${MAGICK_VERSION}/utilities/magick $3
+mv ImageMagick-${MAGICK_VERSION}/utilities/magick $3
