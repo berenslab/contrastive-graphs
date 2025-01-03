@@ -15,6 +15,8 @@ def run_path(path, outfile):
     name, kwargs = path_to_kwargs(path)
     assert name == "recall"
 
+    eval_all_embeddings = kwargs.pop("all", False)
+
     with open(path / "files.dep", "a") as f:
         f.write(f"{inspect.getfile(path_to_kwargs)}\n")
 
@@ -38,29 +40,15 @@ def run_path(path, outfile):
 
     score = graph_knn_recall(X, A, **kwargs)
 
-    npz = np.load(embeddings_dir / "1.zip")
-    other_embks = [k for k in npz.keys() if k.startswith("embeddings/step-")]
-    n = len("embeddings/step-")
-    step_keys = [int(k[n:]) for k in other_embks]
-    scores = [graph_knn_recall(npz[k], A, **kwargs) for k in other_embks]
-    df_scores = pl.DataFrame(dict(step=step_keys, score=scores))
-    with zipfile.ZipFile(embeddings_dir / "1.zip") as zf:
-        if "lightning_logs/steps.csv" in zf.namelist():
-            with zf.open("lightning_logs/steps.csv") as f:
-                df_epochs = pl.read_csv(f)
-        else:
-            df_epochs = pl.DataFrame(
-                dict(global_step=step_keys, epoch=step_keys)
-            )
-
-    df = df_scores.join(df_epochs, left_on="step", right_on="global_step")
-
     with zipfile.ZipFile(outfile, "x") as zf:
         with zf.open("score.txt", "w") as f:
             f.write(f"{score}\n".encode())
 
-        with zf.open("scores.csv", "w") as f:
-            df.write_csv(f)
+    if eval_all_embeddings:
+        df = recall_other_embeddings(embeddings_dir, A, **kwargs)
+        with zipfile.ZipFile(outfile, "a") as zf:
+            with zf.open("scores.csv", "w") as f:
+                df.write_csv(f)
 
 
 def graph_knn_recall(
@@ -92,3 +80,22 @@ def graph_knn_recall(
     fraction /= test_size
 
     return fraction
+
+
+def recall_other_embeddings(embeddings_dir, A, **kwargs):
+    npz = np.load(embeddings_dir / "1.zip")
+    other_embks = [k for k in npz.keys() if k.startswith("embeddings/step-")]
+    n = len("embeddings/step-")
+    step_keys = [int(k[n:]) for k in other_embks]
+    scores = [graph_knn_recall(npz[k], A, **kwargs) for k in other_embks]
+    df_scores = pl.DataFrame(dict(step=step_keys, score=scores))
+    with zipfile.ZipFile(embeddings_dir / "1.zip") as zf:
+        if "lightning_logs/steps.csv" in zf.namelist():
+            with zf.open("lightning_logs/steps.csv") as f:
+                df_epochs = pl.read_csv(f)
+        else:
+            df_epochs = pl.DataFrame(
+                dict(global_step=step_keys, epoch=step_keys)
+            )
+
+    return df_scores.join(df_epochs, left_on="step", right_on="global_step")
