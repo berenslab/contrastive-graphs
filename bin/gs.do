@@ -1,6 +1,7 @@
 # -*- mode: sh -*-
-
 set -e
+
+exec >&2
 TMPTAR=$(mktemp)
 TMPSHA=$(mktemp)
 GSVERSION=10.04.0
