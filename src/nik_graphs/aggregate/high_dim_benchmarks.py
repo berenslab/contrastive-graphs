@@ -72,8 +72,9 @@ def aggregate_path(path, outfile=None):
                             .exp()
                             .item()
                         )
-                        mname = f"CNE (̂τ ≅ {temp:.1g})"
-
+                    results["learned_temp"].append(temp)
+                else:
+                    results["learned_temp"].append(None)
                 results["dataset"].append(dataset)
                 results["name"].append(mname)
                 results["run_name"].append(modelstr)
