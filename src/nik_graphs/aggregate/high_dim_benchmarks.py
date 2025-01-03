@@ -1,7 +1,15 @@
 import itertools
 from pathlib import Path
 
-DATASETS = ["cora", "computer", "photo", "citeseer", "mnist"]
+DATASETS = [
+    "cora",
+    "computer",
+    "photo",
+    "citeseer",
+    "mnist",
+    "arxiv",
+    "pubmed",
+]
 MODELDICT = {
     "CNE (τ=0.5)": "cne,metric=cosine",
     "CNE (τ=0.05)": "cne,metric=cosine,temp=0.05",
