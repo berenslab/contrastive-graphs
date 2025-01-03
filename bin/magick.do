@@ -15,6 +15,7 @@ rm $TMP
 tar xf $TMPTAR
 rm $TMPTAR
 BINDIR=$PWD
+cd ImageMagick-${MAGICK_VERSION}
 ./configure --disable-installed
 make -j 16
 cd $BINDIR
