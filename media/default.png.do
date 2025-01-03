@@ -15,5 +15,5 @@ else
     redo-ifchange ../bin/magick
     # add bin/ to PATH because the executable `gs` is located in there
     # (in case it is not found on the system).
-    PATH=$PATH:$PWD/../bin ../bin/magick convert -density 600 "$2.pdf" -resize 25% png:- > $3 2>/dev/null
+    PATH=$PATH:$PWD/../bin ../bin/magick convert -density 600 "$2.pdf" -resize 50% png:- > $3 2>/dev/null
 fi
