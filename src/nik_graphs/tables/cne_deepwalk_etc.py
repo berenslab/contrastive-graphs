@@ -48,6 +48,9 @@ def format_table(dispatch, outfile, format="tex"):
             return tex_table(df_fmt, outfile=outfile)
         case "txt":
             return txt_table(df_fmt, outfile=outfile)
+        case "parquet":
+            df_fmt.write_parquet(outfile)
+            return df_fmt
         case _:
             raise ValueError(
                 f"{format=!r} is not valid for formatting the table"
