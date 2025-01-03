@@ -15,7 +15,7 @@ figure.dpi         : 300         ## figure dots per inch
 #figure.edgecolor   : white     ## figure edgecolor
 #figure.frameon     : True      ## enable figure frame
 
-font.sans-serif: Roboto, Roboto Condensed, Inter
+font.sans-serif: Roboto, Noto Sans, Roboto Condensed, Inter
 font.monospace: Iosevka
 
 font.size : 5
