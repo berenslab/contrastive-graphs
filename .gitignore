@@ -549,3 +549,10 @@ media/fonts/ttf/*/all-fonts
 /dataframes/*.h5
 /*.sif
 /bin/drgraph
+/bin/julia/Manifest.toml
+/bin/julia/Project.toml
+/bin/julia/artifacts/
+/bin/julia/logs/
+/bin/julia/packages/
+/bin/julia/registries/
+/bin/julia/scratchspaces/
