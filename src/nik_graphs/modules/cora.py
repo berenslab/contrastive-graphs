@@ -9,7 +9,11 @@ import networkx as nx
 import numpy as np
 from dgl.data import CoraGraphDataset
 
-from ..graph_utils import save_dataset_split, save_graph
+from ..graph_utils import (
+    save_dataset_split,
+    save_graph,
+    save_public_dataset_split,
+)
 from ..path_utils import path_to_kwargs
 
 __partition__ = "cpu-galvani"
@@ -59,24 +63,25 @@ def dgl_dataset(cls, p, outfile):
 
     save_graph(outfile, A, features, labels)
 
-    if "train_mask" not in g.ndata:
-        n = A.shape[0]
-        train_size = n * 8 // 10
-        test_size = n // 10
-        # val_size = n // 10
-        inds = rng.permutation(A.shape[0]).astype("uint32")
-        train_inds = inds[:train_size]
-        test_inds = inds[train_size : train_size + test_size]
-        val_inds = inds[train_size + test_size :]
-    else:
+    n = A.shape[0]
+    train_size = n * 8 // 10
+    test_size = n // 10
+    # val_size = n // 10
+    inds = rng.permutation(A.shape[0]).astype("uint32")
+    train_inds = inds[:train_size]
+    test_inds = inds[train_size : train_size + test_size]
+    val_inds = inds[train_size + test_size :]
+    save_dataset_split(outfile, train_inds, test_inds, val_inds)
+
+    if "train_mask" in g.ndata:
 
         def key2ind(k):
-            return np.where(g.ndata[k][sel])[0]
+            return g.ndata[k][sel].nonzero()[0]
 
         train_inds = key2ind("train_mask")
         test_inds = key2ind("test_mask")
         val_inds = key2ind("val_mask")
-    save_dataset_split(outfile, train_inds, test_inds, val_inds)
+        save_public_dataset_split(outfile, train_inds, test_inds, val_inds)
 
     with zipfile.ZipFile(outfile, "a") as zf:
         with zf.open("dgl_class_info.txt", "w") as f:
