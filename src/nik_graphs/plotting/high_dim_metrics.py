@@ -73,10 +73,10 @@ def add_dataset_names(ax, df1, ykey):
                 m, std = df[["mean", "std"]].max()
                 y = m + std
                 kwargs = dict(ha="left", va="bottom", xytext=(-1.5, 1.75))
-            case "citeseer":
+            case "pubmed":
                 m, std = df[["mean", "std"]].min()
                 y = m - std
-                kwargs = dict(ha="left", va="baseline", xytext=(2.25, 0))
+                kwargs = dict(ha="center", va="top", xytext=(-2.25, 0))
             case "computer":
                 m, std = df[["mean", "std"]].min()
                 y = m - std
@@ -92,7 +92,7 @@ def add_dataset_names(ax, df1, ykey):
             case "arxiv":
                 m, std = df[["mean"]].min(), df[["std"]].max()
                 y = m - std
-                kwargs = dict(ha="right", va="center", xytext=(-1, 0))
+                kwargs = dict(ha="right", va="center", xytext=(-1.5, 0))
             case _:
                 import warnings
 
