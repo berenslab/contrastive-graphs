@@ -1,7 +1,7 @@
 import Pkg
+Pkg.activate(".")
 pkgs = ["SGtSNEpi", "SparseArrays", "NPZ", "ArgParse", "PackageCompiler"]
 Pkg.add(pkgs)
-
 import PackageCompiler
 
 function (@main)(ARGS)
