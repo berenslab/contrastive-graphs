@@ -49,12 +49,6 @@ def dgl_dataset(cls, p, outfile):
     # Isolate the largest connected component
     sel = list(sorted(nx.connected_components(G), key=len, reverse=True)[0])
 
-    # Additionally remove nodes without features (happens in Citeseer)
-    norms = np.sum(features**2, axis=1)
-    if (norms == 0).any():
-        sel = np.isin(np.arange(len(norms)), sel)
-        sel = sel & (norms != 0)
-
     G = G.subgraph(sel)
     G = nx.relabel_nodes(G, mapping={g: i for i, g in enumerate(G.nodes)})
     labels = labels[sel]
