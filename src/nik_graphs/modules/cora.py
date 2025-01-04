@@ -48,6 +48,7 @@ def dgl_dataset(cls, p, outfile):
     # Additionally remove nodes without features (happens in Citeseer)
     norms = np.sum(features**2, axis=1)
     if (norms == 0).any():
+        sel = np.isin(np.arange(len(norms)), sel)
         sel = sel & (norms != 0)
 
     G = G.subgraph(sel)
