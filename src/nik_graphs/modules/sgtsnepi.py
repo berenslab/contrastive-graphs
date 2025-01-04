@@ -1,4 +1,5 @@
 import inspect
+import os
 import re
 import subprocess
 import tempfile
@@ -18,6 +19,7 @@ PROJROOT = Path(__file__).parent.parent.parent.parent
 JULIAEXE = "/opt/julia-1.11.2/bin/julia"
 JULIAFLAGS = ["-J", str(PROJROOT / "bin/julia/nik.so")]
 JULIAFILE = PROJROOT / "bin/julia/sgtsnepi.jl"
+JULIA_DEPOT_PATH = PROJROOT / "bin/julia"
 
 
 def run_path(path, outfile):
@@ -101,9 +103,12 @@ def sgtsnepi(
         args += ["--init", str(tmpdir / "init.npy")]
 
         args += ["--outfile", f"{tmpdir}/out.npy"]
+        env = os.environ.copy()
+        env["JULIA_DEPOT_PATH"] = JULIA_DEPOT_PATH
         julialist = [JULIAEXE, *JULIAFLAGS, str(JULIAFILE)]
         proc = subprocess.run(
             julialist + args,
+            env=env,
             check=True,
             capture_output=True,
             encoding="utf8",
