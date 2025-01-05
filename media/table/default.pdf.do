@@ -6,7 +6,7 @@ set -e
 # adapted from https://redo.readthedocs.io/en/latest/cookbook/latex/
 redo-ifchange $2.tex
 TMPDIR=$(mktemp --directory)
-LATEX=lualatex
+LATEX=pdflatex
 
 touch "$TMPDIR/$2.aux.old"
 OK=1

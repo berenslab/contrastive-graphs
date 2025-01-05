@@ -84,6 +84,7 @@ def tex_table(df, outfile):
         fw.writeln(r"\documentclass{article}")
         fw.writeln(r"\usepackage{booktabs}")
         fw.writeln(r"\usepackage{icml2025}")
+        fw.writeln(r"\usepackage[T1]{fontenc}")
 
         fw.writeln(r"\begin{document}")
         for key in ["knn", "lin", "recall"]:
