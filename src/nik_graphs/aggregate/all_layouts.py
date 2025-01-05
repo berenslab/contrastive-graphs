@@ -12,7 +12,7 @@ DATASETS = [
     "arxiv",
     "mag",
 ]
-LAYOUTS = ["fa2", "tfdp", "drgraph", "sgtsnepi", "tsne"]
+LAYOUTS = ["fa2", "tfdp", "drgraph", "sgtsnepi", "tsne", "cne"]
 
 
 # example plotname = "temperatures"
@@ -30,8 +30,6 @@ def deps(dispatch):
         match layout:
             case "cne":
                 x = "cne,dim=2"
-            case "fdp":
-                x = "nx,layout=spring"
             case _:
                 x = layout
         paths.append(Path("../runs") / dataset / x)
