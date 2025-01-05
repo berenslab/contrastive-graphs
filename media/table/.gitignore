@@ -1,2 +1,5 @@
 *.txt
 *.parquet
+*.tex
+*.png
+*.pdf
