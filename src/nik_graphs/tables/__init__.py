@@ -28,7 +28,7 @@ def main():
     )
 
     if args.printdeps:
-        deps = mod.deplist(dispatch)
+        deps = mod.deplist(dispatch, format=args.format)
         [print(dep) for dep in deps + [mod.__file__, __file__]]
     else:
         return mod.format_table(dispatch, outfile, format=args.format)
