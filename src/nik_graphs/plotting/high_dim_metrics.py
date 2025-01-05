@@ -29,14 +29,14 @@ def plot(df_full, outfile, format="pdf"):
         df_metric = df_full.group_by(
             ["dataset", "run_name"], maintain_order=True
         ).agg(
-            pl.first("name", "n_edges"),
+            pl.first("name", "n_pts"),
             pl.mean(key).alias("mean"),
             pl.std(key).alias("std"),
         )
         for (_,), df in df_metric.group_by("run_name", maintain_order=True):
-            df = df.sort(by="n_edges")
+            df = df.sort(by="n_pts")
             label = df["name"].head(1).item()
-            x, m, std = df[["n_edges", "mean", "std"]]
+            x, m, std = df[["n_pts", "mean", "std"]]
             ax.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
             (line,) = ax.plot(x, m, label=label, marker="o")
             ax.fill_between(
@@ -55,7 +55,7 @@ def plot(df_full, outfile, format="pdf"):
                 handlelength=1.5,
             )
 
-    [ax.set_xlabel("number of edges") for ax in axs[-1]]
+    [ax.set_xlabel("number of pts") for ax in axs[-1]]
     add_letters(axs.flat)
     fig.savefig(outfile, format=format)
 
@@ -111,7 +111,7 @@ def add_dataset_names(ax, df1, ykey):
                 y = df[["mean"]].mean()
                 kwargs = dict(xytext=(0, 0))
 
-        x = df["n_edges"].head(1).item()
+        x = df["n_pts"].head(1).item()
         ax.annotate(
             text=dataset,
             xy=(x, y.item()),
