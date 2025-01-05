@@ -43,6 +43,7 @@ def tsne(
     n_jobs=-1,
     initialization="spectral",
     random_state=505**3,
+    row_norm=True,
     negative_gradient_method="fft",
     **kwargs,
 ):
@@ -64,7 +65,7 @@ def tsne(
     # normalize affinities row-wise, then symmetrize.  Will be
     # normalized into a joint probability distribution by
     # `PrecomputedAffinities`
-    P = preprocessing.normalize(A, norm="l1", axis=1)
+    P = preprocessing.normalize(A, norm="l1", axis=1) if row_norm else A
     affinities = openTSNE.affinity.PrecomputedAffinities((P + P.T) / 2)
     return tsne.fit(affinities=affinities)
 
