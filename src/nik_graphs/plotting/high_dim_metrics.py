@@ -37,7 +37,9 @@ def plot(df_full, outfile, format="pdf"):
             df = df.sort(by="n_edges")
             label = df["name"].head(1).item()
             x, m, std = df[["n_edges", "mean", "std"]]
-            ax.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
+            ax.yaxis.set_major_formatter(
+                mpl.ticker.PercentFormatter(1, decimals=0)
+            )
             (line,) = ax.plot(x, m, label=label, marker="o")
             ax.fill_between(
                 x, m + std, m - std, color=line.get_color(), alpha=0.618
