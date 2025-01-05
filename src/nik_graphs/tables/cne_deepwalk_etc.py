@@ -73,6 +73,8 @@ def format_table(dispatch, outfile, format="tex"):
 
 
 def tex_table(df, outfile):
+    import re
+
     datasets = df["dataset"].unique()
     begintable = r"\begin{table*}[b]"
     begintabular = rf"\begin{{tabular}}{{l{'c' * len(datasets)}}}"
@@ -105,10 +107,16 @@ def tex_table(df, outfile):
                     fw.writeln(r"\midrule")
 
                     for row in df1.rows():
-                        row_tex = (
-                            r.replace("%", r"\tiny\%").replace("±", r"\pm")
-                            for r in row
-                        )
+
+                        def tr(x):
+                            # need to double-escape in re.sub because
+                            # it interprets e.g. \(, so we need to add
+                            # the second backslash.
+                            x = re.sub("τ([^)]*)", r"$\\tau\1\\)", x)
+                            x = x.replace("%", r"\tiny\%")
+                            return x.replace("±", r"\({}\pm{}\)")
+
+                        row_tex = (tr(r) for r in row)
                         fw.writeln(" & ".join(row_tex) + r" \\")
 
                     fw.writeln(r"\bottomrule")
