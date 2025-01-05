@@ -46,7 +46,14 @@ def plot(df_full, outfile, format="pdf"):
             add_dataset_names(ax, df_metric, key)
         ax.set(title=key, xscale="log")
         if i == 0:
-            ax.legend(fontsize="xx-small")
+            ax.legend(
+                loc="lower center",
+                ncols=2,
+                fontsize="xx-small",
+                columnspacing=0.8,
+                handletextpad=0.4,
+                handlelength=1.5,
+            )
 
     [ax.set_xlabel("number of edges") for ax in axs[-1]]
     add_letters(axs.flat)
