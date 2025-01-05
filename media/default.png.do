@@ -14,9 +14,9 @@ elif [ $(command -v convert) ]; then
 else
     redo-ifchange ../bin/magick
     if [ $(command -v gs) ]; then
-        redo-ifchange ../bin/gs
-    else
         redo-ifcreate ../bin/gs
+    else
+        redo-ifchange ../bin/gs
     fi
 
     # add bin/ to PATH because the executable `gs` is located in there
