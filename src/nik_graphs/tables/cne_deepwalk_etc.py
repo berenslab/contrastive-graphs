@@ -74,10 +74,10 @@ def format_table(dispatch, outfile, format="tex"):
 
 def tex_table(df, outfile):
     datasets = df["dataset"].unique()
-    begintable = r"\begin{table}"
-    begintabular = rf"\begin{{tabular}}{{l{'r' * len(datasets)}}}"
+    begintable = r"\begin{table*}[b]"
+    begintabular = rf"\begin{{tabular}}{{l{'c' * len(datasets)}}}"
     endtabular = r"\end{tabular}"
-    endtable = r"\end{table}"
+    endtable = r"\end{table*}"
 
     with open(outfile, "x") as f:
         fw = IndentedWriter(f)
@@ -87,13 +87,16 @@ def tex_table(df, outfile):
         fw.writeln(r"\usepackage[T1]{fontenc}")
 
         fw.writeln(r"\begin{document}")
+        fw.writeln(begintable)
         for key in ["knn", "lin", "recall"]:
             df1 = df.pivot("dataset", index="name", values=key)
 
             # write out a header comment showing the knn/lin/...
             fw.writeln("%" * 20 + f"\n%%%{key:^14s}%%%\n" + "%" * 20)
-            fw.writeln(begintable)
             with fw.indent():
+                fw.writeln(rf"\caption{{{key} accuracy table.}}")
+                fw.writeln(r"\vskip0.075in")
+                fw.writeln(r"\footnotesize")
                 fw.writeln(begintabular)
                 with fw.indent():
                     fw.writeln(r"\toprule")
@@ -103,14 +106,14 @@ def tex_table(df, outfile):
 
                     for row in df1.rows():
                         row_tex = (
-                            r.replace("%", r"\%").replace("±", r"\pm")
+                            r.replace("%", r"\tiny\%").replace("±", r"\pm")
                             for r in row
                         )
                         fw.writeln(" & ".join(row_tex) + r" \\")
 
                     fw.writeln(r"\bottomrule")
                 fw.writeln(endtabular)
-            fw.writeln(endtable)
+        fw.writeln(endtable)
         fw.writeln(r"\end{document}")
 
 
