@@ -43,7 +43,7 @@ def plot(df_full, outfile, format="pdf"):
                 x, m + std, m - std, color=line.get_color(), alpha=0.618
             )
         if key == "lin":
-            add_dataset_names(ax, df, key)
+            add_dataset_names(ax, df_metric, key)
         ax.set(title=key, xscale="log")
         if i == 0:
             ax.legend(fontsize="xx-small")
@@ -72,35 +72,35 @@ def add_dataset_names(ax, df1, ykey):
             case "citeseer":
                 m, std = df[["mean", "std"]].min()
                 y = m - std
-                kwargs = dict(ha="left", va="top", xytext=(0, 0))
+                kwargs = dict(ha="left", va="top", xytext=(2, 0))
             case "cora":
-                m, std = df[["mean", "std"]].max()
-                y = m + std
+                m = df[["mean"]].max()
+                y = m
                 kwargs = dict(ha="left", va="bottom", xytext=(-1.5, 1.75))
             case "pubmed":
                 m, std = df[["mean", "std"]].min()
                 y = m - std
                 kwargs = dict(ha="center", va="top", xytext=(-2.25, -1.5))
             case "computer":
-                m, std = df[["mean", "std"]].min()
+                m, std = df[["mean"]].min(), df[["std"]].max()
                 y = m - std
                 kwargs = dict(ha="center", va="top", xytext=(0.5, -0.5))
             case "photo":
                 m, std = df[["mean", "std"]].max()
                 y = m + std
-                kwargs = dict(ha="right", va="center", xytext=(-1.5, 0))
+                kwargs = dict(ha="right", va="center", xytext=(-0.5, 0))
             case "mnist":
-                m, std = df[["mean", "std"]].max()
-                y = m + std
+                m = df[["mean"]].max()
+                y = m
                 kwargs = dict(ha="right", va="baseline", xytext=(-1.5, 0))
             case "arxiv":
-                m, std = df[["mean"]].min(), df[["std"]].max()
-                y = m - std
-                kwargs = dict(ha="right", va="center", xytext=(-1.5, 0))
+                m = df[["mean"]].min()
+                y = m
+                kwargs = dict(ha="right", va="baseline", xytext=(-1.5, 0))
             case _:
                 import warnings
 
-                warnings.warn(f"Uknown {dataset=!r}, default annotation")
+                warnings.warn(f"Unknown {dataset=!r}, default annotation")
                 y = df[["mean"]].mean()
                 kwargs = dict(xytext=(0, 0))
 
