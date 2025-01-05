@@ -78,9 +78,12 @@ def main():
         import matplotlib.style
         from matplotlib import font_manager
 
-        fonts = font_manager.findSystemFonts(
-            [project_root / "media/fonts/ttf"]
-        )
+        fonts = [
+            p / f
+            for p in (project_root / "media/fonts/ttf").glob("*")
+            for f in (p / "all-fonts").read_text().split("\n")
+            if f != ""
+        ]
         [font_manager.fontManager.addfont(fontpath) for fontpath in fonts]
         with matplotlib.style.context(stylefile):
             mod.plot_path(plotname, outfile, format=args.format)
