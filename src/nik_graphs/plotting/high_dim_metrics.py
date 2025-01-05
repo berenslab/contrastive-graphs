@@ -69,6 +69,10 @@ def add_dataset_names(ax, df1, ykey):
         # all of those alginment and xytext values have been
         # determined manually by looking at the plot
         match dataset:
+            case "citeseer":
+                m, std = df[["mean", "std"]].min()
+                y = m - std
+                kwargs = dict(ha="left", va="top", xytext=(0, 0))
             case "cora":
                 m, std = df[["mean", "std"]].max()
                 y = m + std
@@ -76,11 +80,11 @@ def add_dataset_names(ax, df1, ykey):
             case "pubmed":
                 m, std = df[["mean", "std"]].min()
                 y = m - std
-                kwargs = dict(ha="center", va="top", xytext=(-2.25, 0))
+                kwargs = dict(ha="center", va="top", xytext=(-2.25, -1.5))
             case "computer":
                 m, std = df[["mean", "std"]].min()
                 y = m - std
-                kwargs = dict(ha="center", va="top", xytext=(1, -0.5))
+                kwargs = dict(ha="center", va="top", xytext=(0.5, -0.5))
             case "photo":
                 m, std = df[["mean", "std"]].max()
                 y = m + std
