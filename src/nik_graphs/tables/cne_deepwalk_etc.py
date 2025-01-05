@@ -76,7 +76,7 @@ def tex_table(df, outfile):
     import re
 
     datasets = df["dataset"].unique()
-    begintable = r"\begin{table*}[b]"
+    begintable = r"\begin{table*}[t]"
     begintabular = rf"\begin{{tabular}}{{l{'c' * len(datasets)}}}"
     endtabular = r"\end{tabular}"
     endtable = r"\end{table*}"
@@ -94,11 +94,11 @@ def tex_table(df, outfile):
             df1 = df.pivot("dataset", index="name", values=key)
 
             # write out a header comment showing the knn/lin/...
-            fw.writeln("%" * 20 + f"\n%%%{key:^14s}%%%\n" + "%" * 20)
             with fw.indent():
+                fw.writeln("%" * 20 + f"\n%%%{key:^14s}%%%\n" + "%" * 20)
                 fw.writeln(rf"\caption{{{key} accuracy table.}}")
                 fw.writeln(r"\vskip0.075in")
-                fw.writeln(r"\footnotesize")
+                fw.writeln(r"\small\centering")
                 fw.writeln(begintabular)
                 with fw.indent():
                     fw.writeln(r"\toprule")
