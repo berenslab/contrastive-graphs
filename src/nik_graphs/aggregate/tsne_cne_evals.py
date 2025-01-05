@@ -22,7 +22,6 @@ MODELDICT = {
     "CNEτ 2D": "cne,dim=2,loss=infonce-temp",
     "tsne": "tsne",
 }
-N_EPOCHS = 100
 RANDOM_STATES = [None, 1111, 2222]
 
 
@@ -33,20 +32,14 @@ def deplist(dispatch: Path):
 
 
 def deps(dispatch):
-    # dataset, algo, _name = dispatch.name.split(".")
-    assert str(dispatch) == "high_dim_benchmarks"
-
     paths = []
-
-    # the default n_epochs for cne, node2vec, deepwalk is 100
-    n_epochs = f",n_epochs={N_EPOCHS}" if 100 != N_EPOCHS else ""
 
     for dataset, (mname, modelstr), r in iterator():
         # modname = model.split(",")[0]
 
         path = Path("../runs") / dataset
         randstr = f",random_state={r}" if r is not None else ""
-        paths.append(path / (modelstr + n_epochs + randstr))
+        paths.append(path / (modelstr + randstr))
 
     depdict = {
         k: [p / k / "1.zip" for p in paths]
@@ -92,7 +85,6 @@ def aggregate_path(path, outfile=None):
                 results["name"].append(mname)
                 results["run_name"].append(modelstr)
                 results["random_state"].append(r)
-                results["n_epochs"].append(N_EPOCHS)
                 secs = (zpath / "elapsed_secs.txt").read_text()
                 results["time"].append(float(secs))
             elif key == "..":
