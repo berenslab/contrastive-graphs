@@ -128,7 +128,13 @@ def tsimcne_nonparam(
         drop_last=drop_last,
         data_on_gpu=True,
     )
-    if initialization == "spectral":
+    if (
+        isinstance(initialization, np.ndarray)
+        and initialization.shape[0] == A.shape[0]
+    ):
+        # leave it as is
+        pass
+    elif initialization == "spectral":
         X = spectral(
             sparse.csr_matrix(A).astype("float32"),
             n_components=initial_dim,
@@ -144,12 +150,6 @@ def tsimcne_nonparam(
         )
     elif initialization == "random":
         backbone = torch.nn.Embedding(A.shape[0], initial_dim)
-    elif (
-        isinstance(initialization, np.ndarray)
-        and initialization.shape[0] == A.shape[0]
-    ):
-        # leave it as is
-        pass
     else:
         raise ValueError(f"Wrong {initialization=!r} passed")
     with contextlib.redirect_stdout(sys.stderr):

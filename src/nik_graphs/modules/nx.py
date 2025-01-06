@@ -64,7 +64,12 @@ def nx_layout(
 
 def _get_init(A, initialization, dim, random_state):
     rng = np.random.default_rng(random_state)
-    if initialization == "spectral":
+    if (
+        isinstance(initialization, np.ndarray)
+        and initialization.shape[0] == A.shape[0]
+    ):
+        Y_init = initialization[:, :dim]
+    elif initialization == "spectral":
         _init = openTSNE.initialization.spectral(
             sparse.csr_matrix(A).asfptype(),
             n_components=dim,
@@ -76,9 +81,4 @@ def _get_init(A, initialization, dim, random_state):
         )
     elif initialization == "random":
         Y_init = rng.uniform(size=(A.shape[0], dim))
-    elif (
-        isinstance(initialization, np.ndarray)
-        and initialization.shape[0] == A.shape[0]
-    ):
-        Y_init = initialization[:, :dim]
     return Y_init
