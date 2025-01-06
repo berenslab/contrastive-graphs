@@ -29,6 +29,11 @@ def run_path(path, outfile):
     kwargs["callbacks_every_iters"] = callbacks_every_iters
     kwargs["callbacks"] = callbacks
 
+    sig = inspect.signature(tsne)
+    default_init = sig.parameters["initialization"].default
+    if kwargs.get("initialization", default_init) == "spectral":
+        kwargs["initialization"] = np.load(zipf)["spectral"][:, :2]
+
     Y = tsne(A, **kwargs)
 
     with zipfile.ZipFile(outfile, "a") as zf:

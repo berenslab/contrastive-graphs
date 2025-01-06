@@ -76,4 +76,9 @@ def _get_init(A, initialization, dim, random_state):
         )
     elif initialization == "random":
         Y_init = rng.uniform(size=(A.shape[0], dim))
+    elif (
+        isinstance(initialization, np.ndarray)
+        and initialization.shape[0] == A.shape[0]
+    ):
+        Y_init = initialization[:, :dim]
     return Y_init

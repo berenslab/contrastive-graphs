@@ -22,6 +22,11 @@ def run_path(path, outfile):
     name, kwargs = path_to_kwargs(path)
     assert name == "tfdp"
 
+    sig = inspect.signature(tfdp)
+    default_init = sig.parameters["initialization"].default
+    if kwargs.get("initialization", default_init) == "spectral":
+        kwargs["initialization"] = np.load(zipf)["spectral"][:, :2]
+
     Y = tfdp(A, **kwargs)
 
     with zipfile.ZipFile(outfile, "a") as zf:
