@@ -43,7 +43,14 @@ def make_adj_mat(
     return adj, t
 
 
-def save_graph(outfile, adjacency_mat, features, labels):
+def save_graph(
+    outfile,
+    adjacency_mat,
+    features,
+    labels,
+    save_spectral=True,
+    random_state=None,
+):
     # Will save the adjacency matrix `adj` in the outfile directly.
     # This way it can be loaded from the zip archive without first
     # opening the zip file and then opening the file pointer within
@@ -57,6 +64,23 @@ def save_graph(outfile, adjacency_mat, features, labels):
             np.save(f, features)
         with zf.open("labels.npy", "w") as f:
             np.save(f, labels)
+
+        if save_spectral:
+            from sklearn.manifold import SpectralEmbedding
+
+            spectral = SpectralEmbedding(
+                128,
+                affinity="precomputed",
+                eigen_solver="lobpcg",
+                n_jobs=-1,
+                random_state=random_state,
+            )
+            X_spectral = spectral.fit_transform(
+                adjacency_mat.astype("float32")
+            )
+
+            with zf.open("spectral.npy", "w") as f:
+                np.save(f, X_spectral)
 
         with zf.open("drgraph.txt", "w") as f:
 

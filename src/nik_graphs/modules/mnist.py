@@ -35,7 +35,14 @@ def run_path(p, outfile):
     # G = nx.from_scipy_sparse_array(adj).to_undirected()
 
     assert not Path(outfile).exists(), f"{outfile} must not exist."
-    save_graph(outfile, adj, X.astype("float32"), labels)
+    save_graph(
+        outfile,
+        adj,
+        X.astype("float32"),
+        labels,
+        save_spectral=True,
+        random_state=rng.integers(2**31 - 1),
+    )
 
     train_size = 50_000
     test_size = 10_000

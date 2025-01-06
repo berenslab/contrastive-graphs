@@ -55,7 +55,14 @@ def dgl_dataset(cls, p, outfile):
     features = features[sel, :]
     A = nx.adjacency_matrix(G).astype("uint8")
 
-    save_graph(outfile, A, features, labels)
+    save_graph(
+        outfile,
+        A,
+        features,
+        labels,
+        save_spectral=True,
+        random_state=rng.integers(2**31 - 1),
+    )
 
     n = A.shape[0]
     train_size = n * 8 // 10

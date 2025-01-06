@@ -50,17 +50,19 @@ def ogb_dataset(dataset_key, p, outfile):
     # Isolate the largest connected component
     sel = list(sorted(nx.connected_components(G), key=len, reverse=True)[0])
 
-    # Additionally remove nodes without features (happens in Citeseer)
-    norms = np.sum(features**2, axis=1)
-    if (norms == 0).any():
-        sel = sel & (norms != 0)
-
     G = G.subgraph(sel)
     labels = labels[sel]
     features = features[sel, :]
     A = nx.adjacency_matrix(G).astype("uint8")
 
-    save_graph(outfile, A, features, labels)
+    save_graph(
+        outfile,
+        A,
+        features,
+        labels,
+        save_spectral=True,
+        random_state=rng.integers(2**31 - 1),
+    )
 
     m = "train_mask"
     has_split = m in g.ndata and g.ndata[m] != dict()
