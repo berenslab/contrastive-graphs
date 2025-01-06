@@ -7,9 +7,9 @@ DATASETS = [
     "photo",
     "citeseer",
     "mnist",
-    "arxiv",
+    # "arxiv",
     "pubmed",
-    "mag",
+    # "mag",
 ]
 MODELDICT = {
     "CNE cosine": "cne,metric=cosine",
