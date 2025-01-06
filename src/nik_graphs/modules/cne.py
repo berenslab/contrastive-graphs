@@ -1,4 +1,5 @@
 import contextlib
+import inspect
 import logging
 import subprocess
 import sys
@@ -30,7 +31,8 @@ def run_path(path, outfile):
     zipf = path.parent / "1.zip"
 
     A = sparse.load_npz(zipf)
-    labels = np.load(zipf)["labels"]
+    npz = np.load(zipf)
+    labels = npz["labels"]
 
     [
         logging.getLogger(name).setLevel(logging.ERROR)
@@ -50,6 +52,14 @@ def run_path(path, outfile):
 
     name, kwargs = path_to_kwargs(path)
     assert name == "cne"
+
+    sig = inspect.signature(tsimcne_nonparam)
+    default_init = sig.parameters["initialization"].default
+    default_dim = sig.parameters["initial_dim"].default
+    if kwargs.get("initialization", default_init) == "spectral":
+        dim = kwargs.get("initial_dim", default_dim)
+        kwargs["initialization"] = npz["spectral"][:, :dim]
+
     Y = tsimcne_nonparam(
         A, labels, trainer_kwargs=trainer_kwargs, logger=logger, **kwargs
     )
@@ -120,7 +130,7 @@ def tsimcne_nonparam(
     )
     if initialization == "spectral":
         X = spectral(
-            sparse.csr_matrix(A).asfptype(),
+            sparse.csr_matrix(A).astype("float32"),
             n_components=initial_dim,
             random_state=random_state,
         )
@@ -134,6 +144,12 @@ def tsimcne_nonparam(
         )
     elif initialization == "random":
         backbone = torch.nn.Embedding(A.shape[0], initial_dim)
+    elif (
+        isinstance(initialization, np.ndarray)
+        and initialization.shape[0] == A.shape[0]
+    ):
+        # leave it as is
+        pass
     else:
         raise ValueError(f"Wrong {initialization=!r} passed")
     with contextlib.redirect_stdout(sys.stderr):
