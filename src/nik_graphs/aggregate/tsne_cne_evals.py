@@ -6,7 +6,7 @@ DATASETS = [
     "computer",
     "photo",
     "citeseer",
-    "mnist",
+    # "mnist",
     # "arxiv",
     "pubmed",
     # "mag",
