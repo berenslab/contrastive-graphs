@@ -17,13 +17,13 @@ def deplist(dispatch=None, format="txt"):
     else:
         d = []
 
-    return d + ["../../dataframes/high_dim_benchmarks.parquet"]
+    return ["../../dataframes/high_dim_benchmarks.parquet"] + d
 
 
 def format_table(dispatch, outfile, format="tex"):
     import polars as pl
 
-    df = pl.read_parquet(deplist()[0])
+    df = pl.read_parquet(deplist(format=format)[0])
 
     def mean_std_fmt(s: pl.Series) -> str:
         mean = s.mean()
