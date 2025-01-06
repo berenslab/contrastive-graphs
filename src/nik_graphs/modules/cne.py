@@ -44,7 +44,6 @@ def run_path(path, outfile):
         log_every_n_steps=5,
         # val_check_interval=20,
         check_val_every_n_epoch=10,
-        precision="bf16-mixed",
         devices=1,
         accelerator="gpu",
         enable_model_summary=False,
@@ -155,6 +154,7 @@ def tsimcne_nonparam(
             # eval_function=EvalCB(A),
             **kwargs,
         )
+        mod = torch.compile(mod)
         trainer = lightning.Trainer(
             max_epochs=n_epochs, logger=logger, **trainer_kwargs
         )
@@ -170,6 +170,14 @@ def tsimcne_nonparam(
                 "directory will be deleted when the new ones are saved!"
             )
             warnings.filterwarnings(action="ignore", message=msg)
+            msg = (
+                "`torch._prims_common.check` is deprecated and will "
+                "be removed in the future. "
+                "Please use `torch._check*` functions instead."
+            )
+            warnings.filterwarnings(
+                category=FutureWarning, action="ignore", message=msg
+            )
             trainer.fit(mod, datamodule=dm)
         if not isinstance(mod.backbone, torch.nn.Embedding):
             trainer.save_checkpoint(Path(trainer.log_dir) / "cne.ckpt")
