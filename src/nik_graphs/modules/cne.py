@@ -195,13 +195,11 @@ def tsimcne_nonparam(
             )
             warnings.filterwarnings(action="ignore", message=msg)
             msg = (
-                "`torch._prims_common.check` is deprecated and will "
+                ".*`torch._prims_common.check` is deprecated and will "
                 "be removed in the future. "
-                "Please use `torch._check*` functions instead."
+                r"Please use `torch._check\*` functions instead..*"
             )
-            warnings.filterwarnings(
-                category=FutureWarning, action="ignore", message=msg
-            )
+            warnings.filterwarnings(action="ignore", message=msg)
             trainer.fit(mod, datamodule=dm)
         if not isinstance(mod.backbone, torch.nn.Embedding):
             trainer.save_checkpoint(Path(trainer.log_dir) / "cne.ckpt")
