@@ -15,13 +15,20 @@ figure.dpi         : 300         ## figure dots per inch
 #figure.edgecolor   : white     ## figure edgecolor
 #figure.frameon     : True      ## enable figure frame
 
-font.sans-serif: Roboto, Noto Sans, Roboto Condensed, Inter
+font.sans-serif: Roboto Condensed, Noto Sans
+font.stretch: 300
 font.monospace: Iosevka
 
-font.size : 5
-axes.titlesize : larger
+font.size : 8
+
+axes.titlesize : 9
+axes.labelsize : 7
+xtick.labelsize : 6
+ytick.labelsize : 6
+
 axes.titlepad : 3
 axes.linewidth : .3
+axes.labelpad: 2
 xtick.major.width: .4
 ytick.major.width: .4
 xtick.minor.width: .3
@@ -41,3 +48,6 @@ axes.spines.top: False
 legend.frameon : False
 
 axes.unicode_minus : True
+
+pdf.compression: 9
+pdf.fonttype: 42

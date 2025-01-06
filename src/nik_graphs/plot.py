@@ -10,8 +10,9 @@ def letter_dict():
     return dict(
         loc="left",
         horizontalalignment="right",
-        fontsize="x-large",
+        fontsize=10,
         weight="bold",
+        family="Roboto",
     )
 
 

@@ -21,11 +21,13 @@ def plot(df_full, outfile, format="pdf"):
     from ..plot import add_letters
 
     keys = ["knn", "lin", "recall"]  # , "time"]
+    legend = ["legend"] * len(keys)
 
-    fig, axs = plt.subplots(
-        1, 3, figsize=(3.25, 1), sharex=True, squeeze=False
+    fig, axd = plt.subplot_mosaic(
+        [keys, legend], figsize=(3.25, 1.1), height_ratios=[1, 0.05]
     )
-    for i, (key, ax) in enumerate(zip(keys, axs.flat)):
+    ax_legend = axd.pop("legend")
+    for key, ax in axd.items():
         df_metric = df_full.group_by(
             ["dataset", "run_name"], maintain_order=True
         ).agg(
@@ -47,18 +49,25 @@ def plot(df_full, outfile, format="pdf"):
         if key == "lin":
             add_dataset_names(ax, df_metric, key)
         ax.set(title=key, xscale="log")
-        if i == 0:
-            ax.legend(
-                loc="lower center",
-                ncols=2,
-                fontsize="xx-small",
-                columnspacing=0.8,
-                handletextpad=0.4,
-                handlelength=1.5,
-            )
+        ax.set_title(key, family="Roboto")
 
-    [ax.set_xlabel("number of edges") for ax in axs[-1]]
-    add_letters(axs.flat)
+    handles, labels = ax.get_legend_handles_labels()
+    ax_legend.set_axis_off()
+    ax_legend.legend(
+        handles=handles,
+        labels=labels,
+        ncols=len(handles),
+        loc="center right",
+        borderaxespad=0,
+        borderpad=0,
+        labelspacing=0,
+        columnspacing=0.5,
+        handletextpad=0.25,
+        handlelength=1.25,
+        fontsize=7,
+    )
+    [ax.set_xlabel("number of edges") for ax in axd.values()]
+    add_letters(axd.values())
     fig.savefig(outfile, format=format)
 
 
@@ -81,23 +90,24 @@ def add_dataset_names(ax, df1, ykey):
             case "citeseer":
                 m, std = df[["mean", "std"]].min()
                 y = m - std
-                kwargs = dict(ha="left", va="top", xytext=(2, 0))
+                kwargs = dict(ha="left", va="top", xytext=(0, 0))
             case "cora":
                 m = df[["mean"]].max()
                 y = m
-                kwargs = dict(ha="left", va="bottom", xytext=(-1.5, 1.75))
+                kwargs = dict(ha="left", va="bottom", xytext=(-4, 1.75))
             case "pubmed":
                 m, std = df[["mean", "std"]].min()
-                y = m - std
-                kwargs = dict(ha="center", va="top", xytext=(-2.25, -1.5))
+                y = m
+                kwargs = dict(ha="center", va="top", xytext=(-4, -0.5))
             case "computer":
                 m, std = df[["mean"]].min(), df[["std"]].max()
                 y = m - std
-                kwargs = dict(ha="center", va="top", xytext=(0.5, -0.5))
+                dataset = "comp."
+                kwargs = dict(ha="center", va="top", xytext=(0, 0))
             case "photo":
                 m, std = df[["mean", "std"]].max()
                 y = m + std
-                kwargs = dict(ha="right", va="center", xytext=(-0.5, 0))
+                kwargs = dict(ha="right", va="center", xytext=(-2.0, 0))
             case "mnist":
                 m = df[["mean"]].max()
                 y = m
@@ -119,5 +129,5 @@ def add_dataset_names(ax, df1, ykey):
             xy=(x, y.item()),
             **kwargs,
             textcoords="offset points",
-            fontsize="small",
+            fontsize=6,
         )
