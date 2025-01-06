@@ -41,9 +41,6 @@ def run_path(path, outfile):
         save_dir=path, name=None, version=0
     )
     trainer_kwargs = dict(
-        log_every_n_steps=5,
-        # val_check_interval=20,
-        check_val_every_n_epoch=10,
         devices=1,
         accelerator="gpu",
         enable_model_summary=False,
@@ -96,17 +93,24 @@ def tsimcne_nonparam(
     **kwargs,
 ):
     assert initial_dim >= dim
-    if trainer_kwargs is None:
-        trainer_kwargs = dict()
 
     torch.manual_seed(random_state)
 
     if batch_size == "auto":
         batch_size = min(A.nnz // 10, 2**13)
+
+    if trainer_kwargs is None:
+        trainer_kwargs = dict()
+
+    trainer_kwargs.setdefault("check_val_every_n_epoch", n_epochs // 10)
+    n_batches = A.nnz // batch_size
+    trainer_kwargs.setdefault("log_every_n_steps", max(5, n_batches // 10))
+
     if labels is None:
         y = torch.zeros(A.shape[0], dtype=int)
     else:
         y = labels
+
     dm = GraphDM(
         A,
         labels=y,
