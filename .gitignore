@@ -544,6 +544,8 @@ media/fonts/ttf/*/fontlist.txt
 media/fonts/ttf/*/all-fonts
 /bin/ImageMagick-*/**
 /bin/magick
+/bin/.libs/
+/bin/gs
 /dataframes/*.csv
 /dataframes/*.parquet
 /dataframes/*.h5
