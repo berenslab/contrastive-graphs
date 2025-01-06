@@ -133,7 +133,9 @@ def tsimcne_nonparam(
         and initialization.shape[0] == A.shape[0]
     ):
         # leave it as is
-        pass
+        backbone = torch.nn.Embedding.from_pretrained(
+            torch.from_numpy(initialization), freeze=False
+        )
     elif initialization == "spectral":
         X = spectral(
             sparse.csr_matrix(A).astype("float32"),
