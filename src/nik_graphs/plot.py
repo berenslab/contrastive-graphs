@@ -90,5 +90,18 @@ def main():
             mod.plot_path(plotname, outfile, format=args.format)
 
 
+def translate_plotname(x):
+    match x:
+        case "lin":
+            s = "linear"
+        case "knn":
+            s = "$k$NN"
+        case "recall":
+            s = "recall"
+        case _:
+            raise ValueError(f"Unknown value {x!r} for translating")
+    return s
+
+
 if __name__ == "__main__":
     main()

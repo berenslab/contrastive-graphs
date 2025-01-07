@@ -26,7 +26,7 @@ def plot_bars(df_full, keys, x_sort_col="n_edges"):
     import polars as pl
     from matplotlib import pyplot as plt
 
-    from ..plot import add_letters
+    from ..plot import add_letters, translate_plotname
 
     n_bars = len(df_full["name"].unique())
     bar_width = 1 / (n_bars + 1.62)
@@ -78,7 +78,7 @@ def plot_bars(df_full, keys, x_sort_col="n_edges"):
             ha="right",
             rotation_mode="anchor",
         )
-        ax.set_title(key, family="Roboto")
+        ax.set_title(translate_plotname(key), family="Roboto")
         [ax.axhline(y, color="white") for y in [0.25, 0.5, 0.75]]
         ax.spines.left.set_visible(False)
         ax.tick_params("both", length=0, labelsize=8)

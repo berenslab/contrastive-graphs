@@ -16,8 +16,10 @@ figure.dpi         : 300         ## figure dots per inch
 #figure.frameon     : True      ## enable figure frame
 
 font.sans-serif: Roboto Condensed, Noto Sans
-font.stretch: 300
 font.monospace: Iosevka
+mathtext.fontset: custom
+font.cursive: Noto Sans
+
 
 font.size : 8
 
