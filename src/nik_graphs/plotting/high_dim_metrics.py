@@ -31,14 +31,12 @@ def plot_bars(df_full, keys, x_sort_col="n_edges"):
     n_bars = len(df_full["name"].unique())
     bar_width = 1 / (n_bars + 1.62)
 
-    legend = ["legend"] * len(keys)
-
     fig, axd = plt.subplot_mosaic(
-        [keys, legend],
-        figsize=(3.25, 1.3),
-        height_ratios=[1, 0.05],
+        [keys + ["legend"]],
+        figsize=(6.75, 1.5),
+        width_ratios=[1] * len(keys) + [0.1],
         sharey=True,
-        constrained_layout=dict(h_pad=0, w_pad=0 / 72),
+        constrained_layout=dict(h_pad=0),
     )
     ax_legend = axd.pop("legend")
     for key, ax in axd.items():
@@ -80,11 +78,10 @@ def plot_bars(df_full, keys, x_sort_col="n_edges"):
             ha="right",
             rotation_mode="anchor",
         )
-        ax.get_xticklabels()[0].set_in_layout(False)
         ax.set_title(key, family="Roboto")
         [ax.axhline(y, color="white") for y in [0.25, 0.5, 0.75]]
         ax.spines.left.set_visible(False)
-        ax.tick_params("both", width=0, length=0, labelsize=6)
+        ax.tick_params("both", length=0, labelsize=8)
         ax.set_yticks([0, 0.25, 0.5, 0.75])
         ax.hlines(
             [0] * len(_dftix),
@@ -102,7 +99,7 @@ def plot_bars(df_full, keys, x_sort_col="n_edges"):
     ax_legend.legend(
         handles=handles,
         labels=labels,
-        ncols=len(handles),
+        ncols=1,
         loc="center",
         borderaxespad=0,
         borderpad=0,
