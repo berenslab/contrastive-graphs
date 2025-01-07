@@ -68,6 +68,7 @@ def save_graph(
         if save_spectral:
             from sklearn.manifold import SpectralEmbedding
 
+            affinity_mat = adjacency_mat / adjacency_mat.sum()
             spectral = SpectralEmbedding(
                 128,
                 affinity="precomputed",
@@ -75,17 +76,13 @@ def save_graph(
                 n_jobs=-1,
                 random_state=random_state,
             )
-            X_spectral = spectral.fit_transform(
-                adjacency_mat.astype("float32")
-            )
+            X_spectral = spectral.fit_transform(affinity_mat)
 
             with zf.open("spectral.npy", "w") as f:
                 np.save(f, X_spectral)
             for r in [1111, 2222, 3333, 4444]:
                 spectral = spectral.set_params(random_state=r)
-                X_spectral = spectral.fit_transform(
-                    adjacency_mat.astype("float32")
-                )
+                X_spectral = spectral.fit_transform(affinity_mat)
                 with zf.open(f"spectral/{r}.npy", "w") as f:
                     np.save(f, X_spectral)
 
