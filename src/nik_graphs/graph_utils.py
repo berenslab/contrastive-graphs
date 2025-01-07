@@ -81,6 +81,13 @@ def save_graph(
 
             with zf.open("spectral.npy", "w") as f:
                 np.save(f, X_spectral)
+            for r in [1111, 2222, 3333, 4444]:
+                spectral = spectral.set_params(random_state=r)
+                X_spectral = spectral.fit_transform(
+                    adjacency_mat.astype("float32")
+                )
+                with zf.open(f"spectral/{r}.npy", "w") as f:
+                    np.save(f, X_spectral)
 
         with zf.open("drgraph.txt", "w") as f:
 

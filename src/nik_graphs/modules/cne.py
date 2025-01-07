@@ -58,7 +58,12 @@ def run_path(path, outfile):
     default_dim = sig.parameters["initial_dim"].default
     if kwargs.get("initialization", default_init) == "spectral":
         dim = kwargs.get("initial_dim", default_dim)
-        kwargs["initialization"] = npz["spectral"][:, :dim]
+        random_state = kwargs.get("random_state", None)
+        if random_state is not None:
+            spectral_key = f"spectral/{random_state}"
+        else:
+            spectral_key = "spectral"
+        kwargs["initialization"] = np.load(zipf)[spectral_key][:, :dim]
 
     Y = tsimcne_nonparam(
         A, labels, trainer_kwargs=trainer_kwargs, logger=logger, **kwargs

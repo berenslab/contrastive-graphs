@@ -3,6 +3,7 @@ import zipfile
 
 import numpy as np
 from scipy import sparse
+
 from tfdp.tfdp import tFDP
 
 from ..path_utils import path_to_kwargs
@@ -25,7 +26,12 @@ def run_path(path, outfile):
     sig = inspect.signature(tfdp)
     default_init = sig.parameters["initialization"].default
     if kwargs.get("initialization", default_init) == "spectral":
-        kwargs["initialization"] = np.load(zipf)["spectral"][:, :2]
+        random_state = kwargs.get("random_state", None)
+        if random_state is not None:
+            spectral_key = f"spectral/{random_state}"
+        else:
+            spectral_key = "spectral"
+        kwargs["initialization"] = np.load(zipf)[spectral_key][:, :2]
 
     Y = tfdp(A, **kwargs)
 

@@ -33,7 +33,12 @@ def run_path(path, outfile):
     sig = inspect.signature(forceatlas2)
     default_init = sig.parameters["initialization"].default
     if kwargs.get("initialization", default_init) == "spectral":
-        kwargs["initialization"] = np.load(zipf)["spectral"][:, :2]
+        random_state = kwargs.get("random_state", None)
+        if random_state is not None:
+            spectral_key = f"spectral/{random_state}"
+        else:
+            spectral_key = "spectral"
+        kwargs["initialization"] = np.load(zipf)[spectral_key][:, :2]
 
     Y = forceatlas2(A, **kwargs)
 
