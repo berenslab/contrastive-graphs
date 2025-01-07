@@ -14,6 +14,14 @@ def plot_path(plotname, outfile, format="pdf"):
 
 
 def plot(df_full, outfile, format="pdf"):
+
+    keys = ["knn", "lin", "recall"]  # , "time"]
+
+    fig = plot_bars(df_full, keys)
+    fig.savefig(outfile, format=format)
+
+
+def plot_bars(df_full, keys, x_sort_col="n_edges"):
     import matplotlib as mpl
     import polars as pl
     from matplotlib import pyplot as plt
@@ -23,7 +31,6 @@ def plot(df_full, outfile, format="pdf"):
     n_bars = len(df_full["name"].unique())
     bar_width = 1 / (n_bars + 1.62)
 
-    keys = ["knn", "lin", "recall"]  # , "time"]
     legend = ["legend"] * len(keys)
 
     fig, axd = plt.subplot_mosaic(
@@ -38,14 +45,14 @@ def plot(df_full, outfile, format="pdf"):
         df_metric = df_full.group_by(
             ["dataset", "name"], maintain_order=True
         ).agg(
-            pl.first("n_edges"),
+            pl.first(x_sort_col),
             pl.mean(key).alias("mean"),
             pl.std(key).alias("std"),
         )
         for i, ((_,), df) in enumerate(
             df_metric.group_by("name", maintain_order=True)
         ):
-            df = df.sort(by="n_edges")
+            df = df.sort(by=x_sort_col)
             x, m, std = df.with_row_index()[["index", "mean", "std"]]
             ax.yaxis.set_major_formatter(
                 mpl.ticker.PercentFormatter(1, decimals=0)
@@ -61,9 +68,9 @@ def plot(df_full, outfile, format="pdf"):
             )
 
         _dftix = (
-            df_full[["dataset", "n_edges"]]
+            df_full[["dataset", x_sort_col]]
             .unique()
-            .sort("n_edges")
+            .sort(x_sort_col)
             .with_row_index()[["dataset", "index"]]
         )
         ax.set_xticks(
@@ -73,6 +80,7 @@ def plot(df_full, outfile, format="pdf"):
             ha="right",
             rotation_mode="anchor",
         )
+        ax.get_xticklabels()[0].set_in_layout(False)
         ax.set_title(key, family="Roboto")
         [ax.axhline(y, color="white") for y in [0.25, 0.5, 0.75]]
         ax.spines.left.set_visible(False)
@@ -105,4 +113,4 @@ def plot(df_full, outfile, format="pdf"):
         fontsize=7,
     )
     add_letters(axd.values())
-    fig.savefig(outfile, format=format)
+    return fig
