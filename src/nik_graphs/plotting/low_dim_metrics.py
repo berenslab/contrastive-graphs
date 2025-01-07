@@ -26,7 +26,7 @@ def plot(h5, outfile, format="pdf"):
 
     from .high_dim_metrics import plot_bars
 
-    keys = ["recall", "knn", "lin"]
+    keys = ["knn", "lin", "recall"]
 
     datadict = defaultdict(list)
     for ds in h5:
