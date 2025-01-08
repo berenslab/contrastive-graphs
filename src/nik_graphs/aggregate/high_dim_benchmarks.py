@@ -62,6 +62,7 @@ def aggregate_path(path, outfile=None):
     import polars as pl
 
     results = defaultdict(list)
+    pathdict = dict()
     for key, ziplist in deps(path).items():
         for (dataset, (mname, modelstr), r), zipf in zip(iterator(), ziplist):
             zpath = zipfile.Path(zipf)
@@ -91,11 +92,18 @@ def aggregate_path(path, outfile=None):
                 secs = (zpath / "elapsed_secs.txt").read_text()
                 results["time"].append(float(secs))
             elif key == "..":
-                npz = np.load(zipf)
-                n, m = npz["shape"]
-                nnz = npz["data"].shape[0]
-                results["n_pts"].append(n)
-                results["n_edges"].append(nnz)
+                path = zipf.resolve()
+                if path not in pathdict:
+                    npz = np.load(zipf)
+                    n, m = npz["shape"]
+                    nnz = npz["data"].shape[0]
+                    results["n_pts"].append(n)
+                    results["n_edges"].append(nnz)
+                    pathdict[path] = n, nnz
+                else:
+                    n, nnz = pathdict[path]
+                    results["n_pts"].append(n)
+                    results["n_edges"].append(nnz)
             else:
                 acctxt = (zpath / "score.txt").read_text()
                 results[key].append(float(acctxt))
