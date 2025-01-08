@@ -88,7 +88,7 @@ def tsimcne_nonparam(
     A,
     labels=None,
     loss="infonce",
-    metric="euclidean",
+    metric="cosine",
     batch_size="auto",
     trainer_kwargs=None,
     logger=None,
