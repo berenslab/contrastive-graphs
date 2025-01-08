@@ -1,6 +1,7 @@
 from collections import defaultdict
 from pathlib import Path
 
+from ..plot import translate_plotname
 from ..tex_utils import IndentedWriter
 
 DATASETS = [
@@ -23,6 +24,7 @@ def deplist(dispatch=None, format="txt"):
         tdir = projroot / "media/table"
         d = [
             inspect.getfile(IndentedWriter),
+            inspect.getfile(translate_plotname),
             tdir / "icml2025.sty",
             tdir / "icml2025.bst",
         ]
@@ -66,7 +68,8 @@ def assemble_df(deps):
 
     dic = defaultdict(list)
     for dataset, zipf in zip(DATASETS, deps):
-        dic["name"].append(zipf.parent.name)
+        name = translate_plotname(zipf.parent.name).replace("$k$", "k")
+        dic["name"].append(name)
         A = sparse.load_npz(zipf)
         dic["n_pts"].append(A.shape[0])
         dic["n_edges"].append(A.nnz)
