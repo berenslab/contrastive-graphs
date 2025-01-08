@@ -90,7 +90,7 @@ def main():
             mod.plot_path(plotname, outfile, format=args.format)
 
 
-def translate_plotname(x):
+def translate_plotname(x, return_identity=False):
     match x:
         case "lin":
             s = "linear"
@@ -98,8 +98,24 @@ def translate_plotname(x):
             s = "$k$NN"
         case "recall":
             s = "recall"
+        case "tsne":
+            s = "graph $t$-SNE"
+        case "tfdp":
+            s = "$t$-FDP"
+        case "fa2":
+            s = "ForceAtlas2"
+        case "sgtsnepi":
+            s = "SGtSNEpi"
+        case "drgraph":
+            s = "DRGraph"
         case _:
-            raise ValueError(f"Unknown value {x!r} for translating")
+            if return_identity:
+                s = x
+            else:
+                raise ValueError(f"Unknown value {x!r} for translating")
+
+    if x in ["lin", "knn", "recall"]:
+        s += " accuracy"
     return s
 
 
