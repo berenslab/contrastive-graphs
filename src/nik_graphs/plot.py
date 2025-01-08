@@ -91,6 +91,9 @@ def main():
 
 
 def translate_plotname(x, return_identity=False):
+    dataset_capitalize = ["cora", "citeseer", "pubmed", "computer", "photo"]
+    dataset_allcaps = ["mag", "sbm"]
+    dataset_mapping = dict(arxiv="arXiv", mnist="MNIST $k$NN")
     match x:
         case "lin":
             s = "linear"
@@ -108,6 +111,12 @@ def translate_plotname(x, return_identity=False):
             s = "SGtSNEpi"
         case "drgraph":
             s = "DRGraph"
+        case str(x) if x in dataset_capitalize:
+            s = x.title()
+        case str(x) if x in dataset_allcaps:
+            s = x.upper()
+        case str(x) if x in dataset_mapping:
+            s = dataset_mapping[x]
         case _:
             if return_identity:
                 s = x
