@@ -12,9 +12,9 @@ DATASETS = [
     "mag",
 ]
 MODELDICT = {
-    "CNE (τ=0.5)": "cne,metric=cosine",
-    "CNE (τ=0.05)": "cne,metric=cosine,temp=0.05",
-    "CNEτ": "cne,metric=cosine,loss=infonce-temp",
+    "CNE, τ=0.5": "cne",
+    "CNE, τ=0.05": "cne,temp=0.05",
+    "CNEτ": "cne,loss=infonce-temp",
     "deepwalk": "deepwalk",
     "node2vec": "node2vec",
 }
