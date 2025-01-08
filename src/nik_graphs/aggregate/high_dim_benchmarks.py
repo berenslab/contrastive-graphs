@@ -48,7 +48,13 @@ def deps(dispatch):
 
 
 def iterator():
-    return itertools.product(DATASETS, MODELDICT.items(), RANDOM_STATES)
+    return (
+        row
+        for row in itertools.product(
+            DATASETS, MODELDICT.items(), RANDOM_STATES
+        )
+        if not (row[0] in ["arxiv", "mag"] and row[1][0] == "deepwalk")
+    )
 
 
 def aggregate_path(path, outfile=None):
