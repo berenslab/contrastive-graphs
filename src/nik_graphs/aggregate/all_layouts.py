@@ -12,7 +12,7 @@ DATASETS = [
     "arxiv",
     "mag",
 ]
-LAYOUTS = ["fa2", "tfdp", "drgraph", "sgtsnepi", "tsne", "cne"]
+LAYOUTS = ["spectral", "fa2", "tfdp", "drgraph", "sgtsnepi", "tsne"]
 
 
 # example plotname = "temperatures"
