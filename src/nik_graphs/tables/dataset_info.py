@@ -12,6 +12,7 @@ DATASETS = [
     "photo",
     "computer",
     "arxiv",
+    "mag",
 ]
 
 
