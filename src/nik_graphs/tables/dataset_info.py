@@ -71,11 +71,8 @@ def assemble_df(deps):
         dic["n_pts"].append(A.shape[0])
         dic["n_edges"].append(A.nnz)
 
-        npz = np.load(zipf)
-        n_labels = len(np.unique(npz["labels"]))
-        n_dim = npz["features"].shape[1]
+        n_labels = len(np.unique(np.load(zipf)["labels"]))
         dic["n_labels"].append(n_labels)
-        dic["n_dim"].append(n_dim)
 
     return pl.DataFrame(dic)
 
@@ -108,7 +105,6 @@ def tex_table(df, outfile):
                     n_pts="Nodes",
                     n_edges="Edges",
                     n_labels="Classes",
-                    n_dim="Dim.",
                 )
                 fw.writeln(" & ".join(tr_col[c] for c in df.columns) + r" \\")
                 fw.writeln(r"\midrule")
