@@ -59,10 +59,7 @@ def ogb_dataset(dataset_key, p, outfile):
     A = nx.adjacency_matrix(G).astype("uint8")
 
     with warnings.catch_warnings():
-        msg = "Exited postprocessing with accuracies.*"
-        warnings.filterwarnings(
-            category=UserWarning, action="ignore", message=msg
-        )
+        warnings.filterwarnings(category=UserWarning, action="ignore")
 
         save_graph(
             outfile,
