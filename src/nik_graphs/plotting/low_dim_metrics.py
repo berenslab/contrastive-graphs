@@ -27,6 +27,7 @@ def plot(h5, outfile, format="pdf"):
     from .high_dim_metrics import plot_bars
 
     keys = ["knn", "lin", "recall"]
+    order_dict = dict(tsne=0, sgtsnepi=1, drgraph=2, fa2=3, tfdp=4)
 
     datadict = defaultdict(list)
     for ds in h5:
@@ -38,11 +39,12 @@ def plot(h5, outfile, format="pdf"):
             datadict["dataset"].append(ds)
             datadict["name"].append(lk)
             datadict["n_edges"].append(n_edges)
+            datadict["bar_order"].append(order_dict[lk])
             for key in keys:
                 acc = h5[ds][lk].attrs[key]
                 datadict[key].append(acc)
 
-    df = pl.DataFrame(datadict)
+    df = pl.DataFrame(datadict).sort("bar_order")
 
     fig = plot_bars(df, keys)
     fig.savefig(outfile, format=format)
