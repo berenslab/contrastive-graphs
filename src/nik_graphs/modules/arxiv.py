@@ -2,6 +2,7 @@ import contextlib
 import inspect
 import io
 import os
+import warnings
 import zipfile
 from pathlib import Path
 
@@ -57,14 +58,20 @@ def ogb_dataset(dataset_key, p, outfile):
     features = features[sel, :]
     A = nx.adjacency_matrix(G).astype("uint8")
 
-    save_graph(
-        outfile,
-        A,
-        features,
-        labels,
-        save_spectral=True,
-        random_state=rng.integers(2**31 - 1),
-    )
+    with warnings.catch_warnings():
+        msg = "Exited postprocessing with accuracies.*"
+        warnings.filterwarnings(
+            category=UserWarning, action="ignore", message=msg
+        )
+
+        save_graph(
+            outfile,
+            A,
+            features,
+            labels,
+            save_spectral=True,
+            random_state=rng.integers(2**31 - 1),
+        )
 
     m = "train_mask"
     has_split = m in g.ndata and g.ndata[m] != dict()
