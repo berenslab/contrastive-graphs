@@ -12,6 +12,8 @@ from ogb.nodeproppred import DglNodePropPredDataset
 from ..graph_utils import save_dataset_split, save_graph
 from ..path_utils import path_to_kwargs
 
+__partition__ = "cpu-galvani"
+
 
 def run_path(p, outfile):
 
