@@ -9,6 +9,7 @@ DATASETS = [
     "mnist",
     "arxiv",
     "pubmed",
+    "mag",
 ]
 MODELDICT = {
     "CNE (τ=0.5)": "cne,metric=cosine",
