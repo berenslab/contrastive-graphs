@@ -38,7 +38,9 @@ def run_path(path, outfile):
             spectral_key = f"spectral/{random_state}"
         else:
             spectral_key = "spectral"
-        kwargs["initialization"] = np.load(zipf)[spectral_key][:, :2]
+        Y_init = np.load(zipf)[spectral_key][:, :2]
+        Y_init /= Y_init[:, 0].std() / 100
+        kwargs["initialization"] = Y_init
 
     Y = forceatlas2(A, **kwargs)
 
