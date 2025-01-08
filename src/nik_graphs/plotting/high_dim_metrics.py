@@ -35,7 +35,6 @@ def plot_bars(df_full, keys, x_sort_col="n_edges"):
         [keys + ["legend"]],
         figsize=(6.75, 1.5),
         width_ratios=[1] * len(keys) + [0.1],
-        sharey=True,
         constrained_layout=dict(h_pad=0),
     )
     ax_legend = axd.pop("legend")
@@ -82,7 +81,8 @@ def plot_bars(df_full, keys, x_sort_col="n_edges"):
         [ax.axhline(y, color="white") for y in [0.25, 0.5, 0.75]]
         ax.spines.left.set_visible(False)
         ax.tick_params("both", length=0, labelsize=8)
-        ax.set_yticks([0, 0.25, 0.5, 0.75])
+        ax.set_yticks([0, 0.25, 0.5, 0.75, 1.0])
+        ax.update_datalim([(0, 1)])
         ax.hlines(
             [0] * len(_dftix),
             xmin=_dftix["index"] - bar_width / 2,
@@ -92,7 +92,7 @@ def plot_bars(df_full, keys, x_sort_col="n_edges"):
             clip_on=False,
         )
         ax.spines.bottom.set_visible(False)
-        ax.margins(0)
+        ax.margins(x=0)
 
     handles, labels = ax.get_legend_handles_labels()
     ax_legend.set_axis_off()
