@@ -1,11 +1,3 @@
-import zipfile
-from pathlib import Path
-
-import numpy as np
-from matplotlib import pyplot as plt
-from scipy import sparse
-
-
 # example plotname = "mnist.tsne.summary". The middle part must not
 # contain dots as part of the arguments.
 def deplist(plotname):
@@ -13,6 +5,8 @@ def deplist(plotname):
 
 
 def deps(plotname):
+    from pathlib import Path
+
     dataset, algo, _name = plotname.name.split(".")
     assert _name == "summary"
 
@@ -24,6 +18,11 @@ def deps(plotname):
 
 
 def plot_path(plotname, outfile, format="pdf"):
+    import zipfile
+
+    import numpy as np
+    from scipy import sparse
+
     files = deps(plotname)
 
     embedding = np.load(files["embedding"])["embedding"]
@@ -33,7 +32,7 @@ def plot_path(plotname, outfile, format="pdf"):
         )
 
     labels = np.load(files["data"])["labels"]
-    # A = sparse.load_npz(files["data"])
+    A = sparse.load_npz(files["data"])
     accd = dict()
     for k in ["lin", "knn", "recall"]:
         with zipfile.ZipFile(files[k]) as zf:
@@ -41,10 +40,14 @@ def plot_path(plotname, outfile, format="pdf"):
                 acc = float(f.read())
         accd[k] = acc
 
-    return plot(embedding, labels, accd, outfile=outfile, format=format)
+    return plot(embedding, labels, accd, A=A, outfile=outfile, format=format)
 
 
-def plot(embedding, labels, accd, outfile=None, format="pdf"):
+def plot(embedding, labels, accd, A=None, outfile=None, format="pdf"):
+    import matpotlib as mpl
+    import numpy as np
+    from matplotlib import pyplot as plt
+
     fig, ax = plt.subplots(figsize=(2.5, 2.5))
 
     ax.scatter(*embedding.T, c=labels, alpha=0.6, rasterized=True)
@@ -61,5 +64,20 @@ def plot(embedding, labels, accd, outfile=None, format="pdf"):
         ma="right",
         family="monospace",
     )
+
+    if A is not None:
+        A = A.tocoo()
+        pts = np.hstack((embedding[A.row], embedding[A.col])).reshape(
+            len(A.row), 2, 2
+        )
+        lines = mpl.collections.LineCollection(
+            pts,
+            alpha=0.05,
+            color="xkcd:dark grey",
+            antialiaseds=True,
+            zorder=0.9,
+            rasterized=True,
+        )
+        ax.add_collection(lines)
 
     fig.savefig(outfile, format=format)
