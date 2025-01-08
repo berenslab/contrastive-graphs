@@ -54,7 +54,7 @@ def plot_bars(df_full, keys, x_sort_col="n_edges"):
             ax.yaxis.set_major_formatter(
                 mpl.ticker.PercentFormatter(1, decimals=0)
             )
-            label = translate_plotname(df["name"][0], return_identity=True)
+            label = translate_plotname(df["name"][0], _return="identity")
             ax.bar(x + i * bar_width, m, label=label, width=bar_width)
             ax.errorbar(
                 x + i * bar_width,
@@ -73,7 +73,7 @@ def plot_bars(df_full, keys, x_sort_col="n_edges"):
         )
         ax.set_xticks(
             _dftix["index"] + (bar_width * (n_bars - 1)) / 2,
-            _dftix["dataset"],
+            [translate_plotname(d) for d in _dftix["dataset"]],
             rotation=45,
             ha="right",
             rotation_mode="anchor",

@@ -90,7 +90,7 @@ def main():
             mod.plot_path(plotname, outfile, format=args.format)
 
 
-def translate_plotname(x, return_identity=False):
+def translate_plotname(x, _return="error"):
     dataset_capitalize = ["cora", "citeseer", "pubmed", "computer", "photo"]
     dataset_allcaps = ["mag", "sbm"]
     dataset_mapping = dict(arxiv="arXiv", mnist="MNIST $k$NN")
@@ -100,7 +100,7 @@ def translate_plotname(x, return_identity=False):
         case "knn":
             s = "$k$NN"
         case "recall":
-            s = "recall"
+            s = "$k$NN recall"
         case "tsne":
             s = "graph $t$-SNE"
         case "tfdp":
@@ -118,14 +118,29 @@ def translate_plotname(x, return_identity=False):
         case str(x) if x in dataset_mapping:
             s = dataset_mapping[x]
         case _:
-            if return_identity:
+            if _return == "identity":
                 s = x
-            else:
+            elif _return == "error":
                 raise ValueError(f"Unknown value {x!r} for translating")
-
-    if x in ["lin", "knn", "recall"]:
+            else:
+                raise ValueError(
+                    f"Unknown value {x!r} and {_return=!r} (for translating"
+                )
+    if x in ["lin", "knn"]:
         s += " accuracy"
     return s
+
+
+def plotname_to_color(x, _return="raise_error"):
+    match x:
+        case "tsne":
+            c = "xkcd:cornflower"
+        case "sgtsnepi":
+            c = "xkcd:rose pink"
+        case "tfdp":
+            c = "xkcd:greyish purple"
+        case "fa2":
+            c = "xkcd:light lavender"
 
 
 if __name__ == "__main__":
