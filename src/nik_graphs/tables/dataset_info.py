@@ -123,8 +123,14 @@ def tex_table(df, outfile):
                 for row in df.rows():
 
                     def tr(x):
-                        s = x if isinstance(x, str) else f"{x:,d}"
-                        return s.replace(",", r"\thinspace")
+                        match x:
+                            case str(x):
+                                s = x
+                            case int(x):
+                                s = f"{x:,d}".replace(",", r"\thinspace")
+                            case float(x):
+                                s = f"{x:.1f}"
+                        return s
 
                     row_tex = (tr(r) for r in row)
                     fw.writeln(" & ".join(row_tex) + r" \\")
