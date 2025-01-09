@@ -18,6 +18,22 @@ MODELDICT = {
     "deepwalk": "deepwalk",
     "node2vec": "node2vec",
 }
+LAYOUTDICT = {
+    k: k for k in ["tsne", "spectral", "sgtsnepi", "drgraph", "fa2", "tfdp"]
+}
+MODELS = [
+    "tsne",
+    "spectral",
+    "sgtsnepi",
+    "drgraph",
+    "fa2",
+    "tfdp",
+    "deepwalk",
+    "node2vec",
+    "cne",
+    "cne,temp=0.05",
+    "cne,loss=infonce-temp",
+]
 RANDOM_STATES = [None, 1111, 2222]
 
 
@@ -48,13 +64,7 @@ def deps(dispatch):
 
 
 def iterator():
-    return (
-        row
-        for row in itertools.product(
-            DATASETS, MODELDICT.items(), RANDOM_STATES
-        )
-        if not (row[0] in ["arxiv", "mag"] and row[1][0] == "deepwalk")
-    )
+    return itertools.product(DATASETS, MODELDICT.items(), RANDOM_STATES)
 
 
 def aggregate_path(path, outfile=None):
