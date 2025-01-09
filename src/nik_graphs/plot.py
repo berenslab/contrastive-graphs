@@ -30,7 +30,8 @@ def letter_iterator():
 def add_letters(axs):
     ld = letter_dict()
     for letter, ax in zip(letter_iterator(), axs):
-        ax.set_title(letter, **ld)
+        n_newlines = len(ax.get_title().split("\n")) - 1
+        ax.set_title(letter + "\n" * n_newlines, **ld)
 
 
 def add_scalebars(ax, **kwargs):
