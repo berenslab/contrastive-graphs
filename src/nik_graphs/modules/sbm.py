@@ -1,5 +1,4 @@
 import inspect
-import os
 from pathlib import Path
 
 from ..graph_utils import save_dataset_split, save_graph
@@ -12,10 +11,6 @@ def run_path(p, outfile):
 
     name, kwargs = path_to_kwargs(p)
     assert name == "sbm"
-
-    cache_dir = os.environ.get("XDG_CACHE_DIR", Path.home() / ".cache")
-    data_dir = Path(cache_dir) / "stochastic_block_model"
-    data_dir.mkdir(parents=True, exist_ok=True)
 
     with open(p / "files.dep", "a") as f:
         pyobjs = [path_to_kwargs, save_graph]
