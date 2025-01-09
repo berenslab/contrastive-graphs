@@ -51,7 +51,7 @@ def sbm(
         [p_inter] * i + [p_intra] + [p_inter] * (n_blocks - (i + 1))
         for i in range(n_blocks)
     ]
-    G = nx.stochastic_block_model(block_sizes, block_probs)
+    G = nx.stochastic_block_model(block_sizes, block_probs).to_undirected()
     adj = nx.adjacency_matrix(G).astype("uint8")
     features = np.ones(adj.shape[0], dtype="uint8")
     labels = np.repeat(range(n_blocks), n_pts)
