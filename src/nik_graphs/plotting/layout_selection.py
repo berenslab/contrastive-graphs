@@ -25,7 +25,12 @@ def plot(h5, dataset, outfile, format="pdf"):
     from matplotlib import pyplot as plt
     from scipy import linalg
 
-    from ..plot import add_scalebars, letter_dict, letter_iterator
+    from ..plot import (
+        add_scalebars,
+        letter_dict,
+        letter_iterator,
+        translate_plotname,
+    )
 
     letters = letter_iterator()
     ldict = letter_dict()
@@ -42,7 +47,7 @@ def plot(h5, dataset, outfile, format="pdf"):
     for key, ax in axd.items():
         anchor = h5_ds["tsne"]  # take any array
 
-        ax.set_title(key)
+        ax.set_title(translate_plotname(key))
 
         data = np.array(h5_ds[key])
         rot, _scale = linalg.orthogonal_procrustes(data, anchor)
