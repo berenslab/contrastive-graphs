@@ -69,7 +69,7 @@ def assemble_df(deps):
 
     dic = defaultdict(list)
     for dataset, zipf in zip(DATASETS, deps):
-        name = translate_plotname(zipf.parent.name).replace("$k$", "k")
+        name = translate_plotname(zipf.parent.name)
         dic["name"].append(name)
         A = sparse.load_npz(zipf)
         dic["n_pts"].append(A.shape[0])
@@ -144,6 +144,7 @@ def tex_table(df, outfile):
 def txt_table(df, outfile=None):
     import polars as pl
 
+    df = df.with_columns(pl.col("name").replace("MNIST $k$NN", "MNIST kNN"))
     if outfile is not None:
         with open(outfile, "x") as f:
             with pl.Config(
