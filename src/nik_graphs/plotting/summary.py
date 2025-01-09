@@ -44,7 +44,7 @@ def plot_path(plotname, outfile, format="pdf"):
 
 
 def plot(embedding, labels, accd, A=None, outfile=None, format="pdf"):
-    import matpotlib as mpl
+    import matplotlib as mpl
     import numpy as np
     from matplotlib import pyplot as plt
 
