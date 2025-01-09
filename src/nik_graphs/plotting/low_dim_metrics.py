@@ -27,9 +27,8 @@ def plot(h5, outfile, format="pdf"):
     from .high_dim_metrics import plot_bars
 
     keys = ["knn", "lin", "recall"]
-    order_dict = dict(
-        tsne=0, sgtsnepi=1, drgraph=2, spectral=2.5, fa2=3, tfdp=4
-    )
+    order = "tsne sgtnsepi drgraph spectral fa2 tfdp".split()
+    order_dict = {k: i for i, k in enumerate(order)}
 
     datadict = defaultdict(list)
     for ds in h5:
