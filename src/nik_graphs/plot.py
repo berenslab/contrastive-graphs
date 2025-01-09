@@ -112,6 +112,8 @@ def translate_plotname(x, _return="error"):
             s = "SGtSNEpi"
         case "drgraph":
             s = "DRGraph"
+        case "spectral":
+            s = "Laplacian E."
         case str(x) if x in dataset_capitalize:
             s = x.title()
         case str(x) if x in dataset_allcaps:
