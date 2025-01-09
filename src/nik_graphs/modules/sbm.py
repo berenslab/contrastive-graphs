@@ -2,8 +2,6 @@ import inspect
 import os
 from pathlib import Path
 
-import numpy as np
-
 from ..graph_utils import save_dataset_split, save_graph
 from ..path_utils import path_to_kwargs
 
@@ -46,11 +44,13 @@ def sbm(
             f"{p_intra=} is smaller than {p_inter=}, results may be weird."
         )
 
-    block_sizes = [n_pts] * n_blocks
+    # creates a matrix that has p_intra on the diagonal and p_inter
+    # everywhere else.
     block_probs = [
         [p_inter] * i + [p_intra] + [p_inter] * (n_blocks - (i + 1))
         for i in range(n_blocks)
     ]
+    block_sizes = [n_pts] * n_blocks
     G = nx.stochastic_block_model(block_sizes, block_probs).to_undirected()
     adj = nx.adjacency_matrix(G).astype("uint8")
     features = np.ones(adj.shape[0], dtype="uint8")
