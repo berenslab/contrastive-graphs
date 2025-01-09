@@ -78,7 +78,7 @@ def assemble_df(deps):
         n_labels = len(np.unique(np.load(zipf)["labels"]))
         dic["n_labels"].append(n_labels)
 
-    return pl.DataFrame(dic)
+    return pl.DataFrame(dic).sort("n_edges")
 
 
 def tex_table(df, outfile):
