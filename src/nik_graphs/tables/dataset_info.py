@@ -84,7 +84,7 @@ def assemble_df(deps):
 def tex_table(df, outfile):
     import polars as pl
 
-    df.with_columns(
+    df = df.with_columns(
         (pl.col("n_edges") / pl.col("n_pts")).alias("edge_pts_ratio")
     )
 
