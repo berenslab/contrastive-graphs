@@ -82,6 +82,12 @@ def assemble_df(deps):
 
 
 def tex_table(df, outfile):
+    import polars as pl
+
+    df.with_columns(
+        (pl.col("n_edges") / pl.col("n_pts")).alias("edge_pts_ratio")
+    )
+
     begintable = r"\begin{table}[t]"
     begintabular = r"\begin{tabular}{lrrrr}"
     endtabular = r"\end{tabular}"
@@ -109,6 +115,7 @@ def tex_table(df, outfile):
                     n_pts="Nodes",
                     n_edges="Edges",
                     n_labels="Classes",
+                    edge_pts_ratio="$E/N$",
                 )
                 fw.writeln(" & ".join(tr_col[c] for c in df.columns) + r" \\")
                 fw.writeln(r"\midrule")
