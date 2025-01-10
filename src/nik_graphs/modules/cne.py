@@ -127,7 +127,7 @@ def tsimcne_nonparam(
         trainer_kwargs.setdefault("log_every_n_steps", max(5, n_batches // 10))
     else:
         trainer_kwargs.setdefault("check_val_every_n_epoch", None)
-        trainer_kwargs.setdefault("log_every_n_steps", max(5, n_batches // 10))
+        trainer_kwargs.setdefault("log_every_n_steps", 5)
         trainer_kwargs.setdefault("val_check_interval", 5)
         if n_epochs > 10:
             warnings.warn(
