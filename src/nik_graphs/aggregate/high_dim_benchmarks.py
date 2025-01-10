@@ -88,21 +88,6 @@ def aggregate_path(path, outfile=None):
 
             # "." is the first entry, so here we store all columns
             if key == ".":
-                # hacky way to get the last temperature value when we
-                # make this parameter learnable
-                if ",loss=infonce-temp" in modelstr:
-                    with (zpath / "lightning_logs/metrics.csv").open() as f:
-                        train_df = pl.read_csv(f)
-                        temp = (
-                            train_df["logtemp"]
-                            .drop_nulls()
-                            .tail(1)
-                            .exp()
-                            .item()
-                        )
-                    results["learned_temp"].append(temp)
-                else:
-                    results["learned_temp"].append(None)
                 results["dataset"].append(dataset)
                 results["name"].append(mname)
                 results["run_name"].append(modelstr)
