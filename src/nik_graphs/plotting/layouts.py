@@ -35,7 +35,7 @@ def plot(h5, df, outfile, format="pdf"):
             fontsize=plt.rcParams["axes.titlesize"],
         )
         h5_ds = h5[dataset]
-        keys = [k for k in h5_ds if k not in ["edges", "labels"]]
+        keys = "tsne sgtsnepi drgraph fa2 tfdp spectral".split()
         labels = h5_ds["labels"]
         row = h5_ds["edges/row"]
         col = h5_ds["edges/col"]
@@ -43,7 +43,7 @@ def plot(h5, df, outfile, format="pdf"):
         axd = sfig.subplot_mosaic([keys])
         anchor = h5_ds["tsne"]  # take any array
         # this is the same order as in low_dim_metrics.py
-        for key in "tsne sgtsnepi drgraph fa2 tfdp spectral".split():
+        for key, ax in axd.items():
             ax = axd[key]
             ax.set_title(translate_plotname(key)) if i == 0 else None
 
