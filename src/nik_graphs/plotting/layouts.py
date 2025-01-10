@@ -25,7 +25,7 @@ def plot(h5, outfile, format="pdf"):
 
     fig = plt.figure(figsize=(6.75, 1.1 * len(h5)))
     figs = fig.subfigures(len(h5))
-    for sfig, dataset in zip(figs, h5):
+    for i, (sfig, dataset) in enumerate(zip(figs, h5)):
         sfig.supylabel(
             translate_plotname(dataset),
             fontsize=plt.rcParams["axes.labelsize"],
@@ -39,7 +39,7 @@ def plot(h5, outfile, format="pdf"):
         axd = sfig.subplot_mosaic([keys])
         anchor = h5_ds["tsne"]  # take any array
         for key, ax in axd.items():
-            ax.set_title(key)
+            ax.set_title(key) if i == 0 else None
 
             data = np.array(h5_ds[key])
             rot, _scale = linalg.orthogonal_procrustes(data, anchor)
