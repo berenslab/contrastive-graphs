@@ -3,7 +3,7 @@ from pathlib import Path
 
 def deplist(dispatch: Path):
     assert dispatch.name == "layouts"
-    return ["../dataframes/all_layouts.h5", "tables/dataset_info.parquet"]
+    return ["../dataframes/all_layouts.h5", "table/dataset_info.parquet"]
 
 
 def plot_path(plotname, outfile, format="pdf"):
