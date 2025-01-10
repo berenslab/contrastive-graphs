@@ -27,13 +27,14 @@ def plot(h5, df, outfile, format="pdf"):
     from ..plot import translate_plotname
 
     dataset_keys = df.sort("n_edges")["dataset_key"]
-    fig = plt.figure(figsize=(6.75, 1 * len(dataset_keys)))
+    fig = plt.figure(
+        figsize=(6.75, 1 * len(dataset_keys)), constrained_layout=dict(h_pad=0)
+    )
     figs = fig.subfigures(len(dataset_keys))
     for i, (sfig, dataset) in enumerate(zip(figs, dataset_keys)):
         sfig.supylabel(
             translate_plotname(dataset),
             fontsize=plt.rcParams["axes.titlesize"],
-            constrained_layout=dict(h_pad=0),
         )
         h5_ds = h5[dataset]
         keys = "tsne sgtsnepi drgraph fa2 tfdp spectral".split()
