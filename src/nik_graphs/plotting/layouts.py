@@ -21,13 +21,15 @@ def plot(h5, outfile, format="pdf"):
     from matplotlib import pyplot as plt
     from scipy import linalg
 
-    from ..plot import add_scalebars, letter_dict, letter_iterator
+    from ..plot import translate_plotname
 
-    letters = letter_iterator()
     fig = plt.figure(figsize=(6.75, 1.1 * len(h5)))
     figs = fig.subfigures(len(h5))
     for sfig, dataset in zip(figs, h5):
-        sfig.suptitle(dataset)
+        sfig.supylabel(
+            translate_plotname(dataset),
+            fontsize=plt.rcParams["axes.labelsize"],
+        )
         h5_ds = h5[dataset]
         keys = [k for k in h5_ds if k not in ["edges", "labels"]]
         labels = h5_ds["labels"]
@@ -43,9 +45,8 @@ def plot(h5, outfile, format="pdf"):
             rot, _scale = linalg.orthogonal_procrustes(data, anchor)
             data = data @ rot.round(10)
             ax.scatter(*data.T, c=labels, rasterized=True)
-            ax.set_title(next(letters), **letter_dict())
             ax.axis("equal")
-            add_scalebars(ax)
+            ax.set_axis_off()
 
             lines = (
                 f"{k} = {v:5.1%}"
