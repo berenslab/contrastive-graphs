@@ -3,19 +3,22 @@ from pathlib import Path
 
 def deplist(dispatch: Path):
     assert dispatch.name == "layouts"
-    return ["../dataframes/all_layouts.h5"]
+    return ["../dataframes/all_layouts.h5", "tables/dataset_info.parquet"]
 
 
 def plot_path(plotname, outfile, format="pdf"):
     import h5py
+    import polarse as pl
 
-    h5file = deplist(plotname)[0]
+    deps = deplist(plotname)
+    h5file = deps[0]
+    df = pl.read_parquet(deps[1])
 
     with h5py.File(h5file) as h5:
-        return plot(h5, outfile=outfile, format=format)
+        return plot(h5, df, outfile=outfile, format=format)
 
 
-def plot(h5, outfile, format="pdf"):
+def plot(h5, df, outfile, format="pdf"):
     import matplotlib as mpl
     import numpy as np
     from matplotlib import pyplot as plt
@@ -23,9 +26,10 @@ def plot(h5, outfile, format="pdf"):
 
     from ..plot import translate_plotname
 
-    fig = plt.figure(figsize=(6.75, 1.1 * len(h5)))
-    figs = fig.subfigures(len(h5))
-    for i, (sfig, dataset) in enumerate(zip(figs, h5)):
+    dataset_keys = df.sort("n_edges")["dataset_key"]
+    fig = plt.figure(figsize=(6.75, 1.1 * len(dataset_keys)))
+    figs = fig.subfigures(len(dataset_keys))
+    for i, (sfig, dataset) in enumerate(zip(figs, dataset_keys)):
         sfig.supylabel(
             translate_plotname(dataset),
             fontsize=plt.rcParams["axes.titlesize"],
@@ -38,7 +42,9 @@ def plot(h5, outfile, format="pdf"):
 
         axd = sfig.subplot_mosaic([keys])
         anchor = h5_ds["tsne"]  # take any array
-        for key, ax in axd.items():
+        # this is the same order as in low_dim_metrics.py
+        for key in "tsne sgtsnepi drgraph fa2 tfdp spectral".split():
+            ax = axd[key]
             ax.set_title(translate_plotname(key)) if i == 0 else None
 
             data = np.array(h5_ds[key])

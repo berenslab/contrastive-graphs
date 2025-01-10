@@ -69,6 +69,7 @@ def assemble_df(deps):
 
     dic = defaultdict(list)
     for dataset, zipf in zip(DATASETS, deps):
+        dic["dataset_key"].append(zipf.parent.name)
         name = translate_plotname(zipf.parent.name)
         dic["name"].append(name)
         A = sparse.load_npz(zipf)
@@ -86,7 +87,7 @@ def tex_table(df, outfile):
 
     df = df.with_columns(
         (pl.col("n_edges") / pl.col("n_pts")).alias("edge_pts_ratio")
-    )
+    ).drop("dataset_key")
 
     begintable = r"\begin{table}[t]"
     begintabular = r"\begin{tabular}{lrrrr}"
