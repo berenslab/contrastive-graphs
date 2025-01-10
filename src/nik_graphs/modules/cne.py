@@ -183,7 +183,8 @@ def tsimcne_nonparam(
             # eval_function=EvalCB(A),
             **kwargs,
         )
-        mod = torch.compile(mod)
+        mod.model = torch.compile(mod.model)
+        mod.loss = torch.compile(mod.loss)
         trainer = lightning.Trainer(
             max_epochs=n_epochs, logger=logger, **trainer_kwargs
         )
