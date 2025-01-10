@@ -17,6 +17,7 @@ MODELDICT = {
     "CNEτ": "cne,loss=infonce-temp",
     "deepwalk": "deepwalk",
     "node2vec": "node2vec",
+    "spectral": "spectral,dim=128",
 }
 LAYOUTDICT = {
     k: k for k in ["tsne", "spectral", "sgtsnepi", "drgraph", "fa2", "tfdp"]
