@@ -121,7 +121,7 @@ def tsimcne_nonparam(
 
     if not detailed:
         trainer_kwargs.setdefault(
-            "check_val_every_n_epoch", max(1, n_epochs // 10)
+            "check_val_every_n_epoch", max(1, n_epochs // 5)
         )
         n_batches = A.nnz // batch_size
         trainer_kwargs.setdefault("log_every_n_steps", max(5, n_batches // 10))
