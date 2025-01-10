@@ -28,7 +28,7 @@ def plot(h5, outfile, format="pdf"):
     for i, (sfig, dataset) in enumerate(zip(figs, h5)):
         sfig.supylabel(
             translate_plotname(dataset),
-            fontsize=plt.rcParams["axes.labelsize"],
+            fontsize=plt.rcParams["axes.titlesize"],
         )
         h5_ds = h5[dataset]
         keys = [k for k in h5_ds if k not in ["edges", "labels"]]
@@ -39,7 +39,7 @@ def plot(h5, outfile, format="pdf"):
         axd = sfig.subplot_mosaic([keys])
         anchor = h5_ds["tsne"]  # take any array
         for key, ax in axd.items():
-            ax.set_title(key) if i == 0 else None
+            ax.set_title(translate_plotname(key)) if i == 0 else None
 
             data = np.array(h5_ds[key])
             rot, _scale = linalg.orthogonal_procrustes(data, anchor)
