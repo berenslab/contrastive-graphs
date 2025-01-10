@@ -8,7 +8,7 @@ def deplist(dispatch: Path):
 
 def plot_path(plotname, outfile, format="pdf"):
     import h5py
-    import polarse as pl
+    import polars as pl
 
     deps = deplist(plotname)
     h5file = deps[0]
