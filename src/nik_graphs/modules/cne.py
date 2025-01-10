@@ -103,6 +103,7 @@ def tsimcne_nonparam(
     weight_decay=0,
     warmup_epochs=0,
     drop_last=True,
+    detailed=False,
     save_intermediate_feat=True,
     initialization="spectral",
     random_state=4101661632,
@@ -118,9 +119,21 @@ def tsimcne_nonparam(
     if trainer_kwargs is None:
         trainer_kwargs = dict()
 
-    trainer_kwargs.setdefault("check_val_every_n_epoch", n_epochs // 10)
-    n_batches = A.nnz // batch_size
-    trainer_kwargs.setdefault("log_every_n_steps", max(5, n_batches // 10))
+    if not detailed:
+        trainer_kwargs.setdefault(
+            "check_val_every_n_epoch", min(1, n_epochs // 10)
+        )
+        n_batches = A.nnz // batch_size
+        trainer_kwargs.setdefault("log_every_n_steps", max(5, n_batches // 10))
+    else:
+        trainer_kwargs.setdefault("check_val_every_n_epoch", None)
+        trainer_kwargs.setdefault("log_every_n_steps", max(5, n_batches // 10))
+        trainer_kwargs.setdefault("val_check_interval", 5)
+        if n_epochs > 10:
+            warnings.warn(
+                f"{n_epochs=} is bigger than 10 "
+                "and detailed logging is activated"
+            )
 
     if labels is None:
         y = torch.zeros(A.shape[0], dtype=int)
