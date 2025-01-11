@@ -35,7 +35,7 @@ def plot_bars(df_full, keys, x_sort_col="n_edges"):
         [keys + ["legend"]],
         figsize=(6.75, 1.5),
         width_ratios=[1] * len(keys) + [0.1],
-        constrained_layout=dict(h_pad=0),
+        constrained_layout=dict(h_pad=0, w_pad=0),
     )
     ax_legend = axd.pop("legend")
     for key, ax in axd.items():
