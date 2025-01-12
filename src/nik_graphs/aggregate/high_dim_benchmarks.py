@@ -65,6 +65,18 @@ def deps(dispatch):
 
 
 def iterator():
+    return (
+        row
+        for row in itertools.product(
+            DATASETS, MODELDICT.items(), RANDOM_STATES
+        )
+        if not (
+            row[0] == "mag"
+            and row[1][1] == "cne,loss=infonce-temp"
+            and row[2] == None
+        )
+    )
+
     return itertools.product(DATASETS, MODELDICT.items(), RANDOM_STATES)
 
 
