@@ -7,20 +7,21 @@ def deplist(dispatch: Path):
     from .high_dim_metrics import plot_bars
 
     assert dispatch.name == "low_dim_metrics"
-    return ["../dataframes/all_layouts.h5", inspect.getfile(plot_bars)]
+    return [
+        "../dataframes/low_dim_benchmarks.parquet",
+        inspect.getfile(plot_bars),
+    ]
 
 
 def plot_path(plotname, outfile, format="pdf"):
-    import h5py
+    import polars as pl
 
-    h5file = deplist(plotname)[0]
+    df = pl.read_parquet(deplist(plotname)[0])
 
-    with h5py.File(h5file) as h5:
-        return plot(h5, outfile=outfile, format=format)
+    return plot(df, outfile=outfile, format=format)
 
 
-def plot(h5, outfile, format="pdf"):
-    from collections import defaultdict
+def plot(df, outfile, format="pdf"):
 
     import polars as pl
 
@@ -28,24 +29,9 @@ def plot(h5, outfile, format="pdf"):
 
     keys = ["knn", "recall", "lin"]
     order = "tsne sgtsnepi drgraph fa2 tfdp spectral".split()
-    order_dict = {k: i for i, k in enumerate(order)}
+    df_order = pl.DataFrame(dict(name=order)).with_row_index()
 
-    datadict = defaultdict(list)
-    for ds in h5:
-        layout_keys = [
-            k for k in h5["cora"] if k not in ["cne", "edges", "labels"]
-        ]
-        n_edges = len(h5[ds]["edges/row"])
-        for lk in layout_keys:
-            datadict["dataset"].append(ds)
-            datadict["name"].append(lk)
-            datadict["n_edges"].append(n_edges)
-            datadict["bar_order"].append(order_dict[lk])
-            for key in keys:
-                acc = h5[ds][lk].attrs[key]
-                datadict[key].append(acc)
+    df_ = df.join(df_order, on="name").sort("index").drop("index")
 
-    df = pl.DataFrame(datadict).sort("bar_order")
-
-    fig = plot_bars(df, keys)
+    fig = plot_bars(df_, keys)
     fig.savefig(outfile, format=format)
