@@ -15,7 +15,7 @@ def plot_path(plotname, outfile, format="pdf"):
 
 def plot(df_full, outfile, format="pdf"):
 
-    keys = ["knn", "lin", "recall"]  # , "time"]
+    keys = ["knn", "recall", "lin"]
 
     fig = plot_bars(df_full, keys)
     fig.savefig(outfile, format=format)
