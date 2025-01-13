@@ -17,7 +17,9 @@ def deplist(dispatch=None, format="txt"):
     else:
         d = []
 
-    return ["../../dataframes/high_dim_benchmarks.parquet"] + d
+    return [
+        "../../dataframes/all_benchmarks.parquet",
+    ] + d
 
 
 def format_table(dispatch, outfile, format="tex"):
@@ -37,7 +39,8 @@ def format_table(dispatch, outfile, format="tex"):
         return f"{mean:.2f}±{std:.1f} hr"
 
     df_fmt = (
-        df.group_by(["dataset", "run_name"], maintain_order=True)
+        df.sort("n_edges")
+        .group_by(["dataset", "run_name", "dim"], maintain_order=True)
         .agg(
             pl.col("name").first(),
             pl.col("knn").map_elements(mean_std_fmt, return_dtype=str),
@@ -75,11 +78,33 @@ def format_table(dispatch, outfile, format="tex"):
 def tex_table(df, outfile):
     import re
 
+    import polars as pl
+
+    from ..plot import translate_plotname
+
     datasets = df["dataset"].unique()
-    begintable = r"\begin{table*}[t]"
-    begintabular = rf"\begin{{tabular}}{{l{'c' * len(datasets)}}}"
+    begintable = r"\begin{table*}[t]\addtolength{\tabcolsep}{-1pt}"
+    begintabular = rf"\begin{{tabular}}{{cl{'c' * len(datasets)}}}"
     endtabular = r"\end{tabular}"
     endtable = r"\end{table*}"
+
+    def tr(x):
+
+        # this hack looks if we're dealing with an accuracy below 10%
+        # and then pads the table with an invisible 0 so that the
+        # alignment still works.
+        if len(x.strip()) == 9 and x.endswith("%"):
+            x = r"\phantom{0}" + x.strip()
+        if len(x.strip()) == 11 and x.endswith("%"):
+            m = re.match(r"(.*)±(\d+)\.", x)
+            x = rf"{m[1]}±\phantom{{.}}{m[2]}%"
+
+        # need to double-escape in re.sub because it interprets
+        # e.g. \(, so we need to add the second backslash.
+        x = re.sub("τ(.*)", r"$\\tau\1$", x)
+        x = x.replace("%", r"\tiny\%")
+        x = x.replace("±", r"\({}\pm{}\)")
+        return translate_plotname(x, _return="identity")
 
     with open(outfile, "x") as f:
         fw = IndentedWriter(f)
@@ -91,33 +116,43 @@ def tex_table(df, outfile):
         fw.writeln(r"\begin{document}")
         fw.writeln(begintable)
         for key in ["knn", "lin", "recall"]:
-            df1 = df.pivot("dataset", index="name", values=key)
-
             # write out a header comment showing the knn/lin/...
             with fw.indent():
                 fw.writeln("%" * 20 + f"\n%%%{key:^14s}%%%\n" + "%" * 20)
                 fw.writeln(rf"\caption{{{key} accuracy table.}}")
                 fw.writeln(r"\vskip0.075in")
-                fw.writeln(r"\small\centering")
+                fw.writeln(r"\scriptsize\centering")
                 fw.writeln(begintabular)
                 with fw.indent():
                     fw.writeln(r"\toprule")
 
-                    fw.writeln(" & ".join(df1.columns) + r" \\")
-                    fw.writeln(r"\midrule")
+                    fw.writeln(
+                        " & ".join(
+                            [
+                                "$d$",
+                                r"\vadjust{}\hfill{}Method\hfill\vadjust{}",
+                            ]
+                            + df.unique("dataset", maintain_order=True)
+                            .select(
+                                pl.col("dataset").map_elements(
+                                    translate_plotname, return_dtype=str
+                                )
+                            )
+                            .to_series()
+                            .to_list()
+                        )
+                        + r" \\"
+                    )
 
-                    for row in df1.rows():
+                    for (dim,), df_ in df.group_by("dim", maintain_order=True):
+                        fw.writeln(r"\midrule")
 
-                        def tr(x):
-                            # need to double-escape in re.sub because
-                            # it interprets e.g. \(, so we need to add
-                            # the second backslash.
-                            x = re.sub("τ([^)]*)", r"$\\tau\1\\)", x)
-                            x = x.replace("%", r"\tiny\%")
-                            return x.replace("±", r"\({}\pm{}\)")
+                        df1 = df_.pivot("dataset", index="name", values=key)
+                        dim_str = f"{dim:3d}".replace(" ", r"\phantom{0}")
 
-                        row_tex = (tr(r) for r in row)
-                        fw.writeln(" & ".join(row_tex) + r" \\")
+                        for row in df1.rows():
+                            fw.write(f"{dim_str} & ")
+                            fw.writeln(" & ".join(tr(r) for r in row) + r" \\")
 
                     fw.writeln(r"\bottomrule")
                 fw.writeln(endtabular)
