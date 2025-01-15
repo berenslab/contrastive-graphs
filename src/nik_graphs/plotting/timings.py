@@ -33,6 +33,7 @@ def plot_bars(df_full, x_sort_col="n_edges"):
         figsize=(6.75, 1.5),
         width_ratios=[1, 0.1] * len(panels),
         sharey=True,
+        constrained_layout=dict(w_pad=0, h_pad=0),
     )
     for key in panels:
         ax = axd[key]
@@ -81,7 +82,9 @@ def plot_bars(df_full, x_sort_col="n_edges"):
             ha="right",
             rotation_mode="anchor",
         )
-        ax.tick_params("both", length=0, labelsize=8)
+        ax.tick_params("both", length=0, labelsize=8, labelleft=True)
+        ax.yaxis.set_major_formatter("{x:,g} s")
+        ax.update_datalim([(0, 10**5)])
         ax.hlines(
             [0] * len(_dftix),
             xmin=_dftix["index"] - bar_width / 2,
@@ -89,7 +92,9 @@ def plot_bars(df_full, x_sort_col="n_edges"):
             lw=plt.rcParams["axes.linewidth"],
             color="black",
             clip_on=False,
+            transform=ax.get_xaxis_transform(),
         )
+        [ax.axhline(y, color="white") for y in [10**i for i in range(1, 5)]]
         ax.spines.bottom.set_visible(False)
         ax.margins(x=0)
 
@@ -108,5 +113,7 @@ def plot_bars(df_full, x_sort_col="n_edges"):
             handlelength=1.25,
             fontsize=7,
         )
+
+    axd["2"].set_ylabel("Runtime", fontsize=8)
     add_letters(axd[k] for k in panels)
     return fig
