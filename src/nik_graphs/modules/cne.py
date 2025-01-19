@@ -63,7 +63,12 @@ def run_path(path, outfile):
             spectral_key = f"spectral/{random_state}"
         else:
             spectral_key = "spectral"
-        kwargs["initialization"] = np.load(zipf)[spectral_key][:, :dim]
+        rng = np.random.default_rng(
+            52145 if random_state is None else random_state
+        )
+        kwargs["initialization"] = rng.normal(
+            npz[spectral_key][:, :dim], 0.00001
+        ).astype("float32")
 
     Y = tsimcne_nonparam(
         A, labels, trainer_kwargs=trainer_kwargs, logger=logger, **kwargs
@@ -223,7 +228,7 @@ def tsimcne_nonparam(
         if not isinstance(mod.backbone, torch.nn.Embedding):
             trainer.save_checkpoint(Path(trainer.log_dir) / "cne.ckpt")
         out_batches = trainer.predict(mod, datamodule=dm)
-    return torch.vstack([x[0] for x in out_batches]).cpu().numpy()
+    return torch.vstack([x[0] for x in out_batches]).cpu().float().numpy()
 
 
 class GraphDM(lightning.LightningDataModule):
