@@ -82,9 +82,10 @@ def plot_bars(df_full, x_sort_col="n_edges"):
             ha="right",
             rotation_mode="anchor",
         )
-        ax.tick_params("both", length=0, labelsize=8, labelleft=True)
+        ax.tick_params(
+            "both", which="both", length=0, labelsize=8, labelleft=True
+        )
         ax.yaxis.set_major_formatter("{x:,g} s")
-        ax.update_datalim([(0, 10**5)])
         ax.hlines(
             [0] * len(_dftix),
             xmin=_dftix["index"] - bar_width / 2,
@@ -97,6 +98,7 @@ def plot_bars(df_full, x_sort_col="n_edges"):
         [ax.axhline(y, color="white") for y in [10**i for i in range(1, 5)]]
         ax.spines.bottom.set_visible(False)
         ax.margins(x=0)
+        ax.set_ylim(1, None)
 
         handles, labels = ax.get_legend_handles_labels()
         axd[f"legend{key}"].set_axis_off()
