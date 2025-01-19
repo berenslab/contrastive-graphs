@@ -5,7 +5,9 @@ METRICS = ["knn", "recall", "ftsne"]
 
 
 def deplist(plotname=None):
-    sbm = Path("../runs/sbm")
+    sbm = Path(
+        "../runs/sbm,n_pts=8000,n_blocks=10,p_intra=0.0025,p_inter=5e-6"
+    )
 
     tempstrs = ["" if t == 0.5 else f",temp={t}" for t in TEMPS]
     cnes = ["cne" + t + ",n_epochs=10,detailed=1" for t in tempstrs]
