@@ -1,7 +1,7 @@
 from pathlib import Path
 
 TEMPS = [0.5, 0.05]
-METRICS = ["knn", "recall"]
+METRICS = ["knn", "recall", "ftsne"]
 
 
 def deplist(plotname=None):
@@ -24,6 +24,8 @@ def plot_path(plotname, outfile, format="pdf"):
     dfs = []
     for fname, (temp, metric) in zip(deps, itertools.product(TEMPS, METRICS)):
         zpath = zipfile.Path(fname)
+        if metric == "ftsne":
+            continue
         with (zpath / "scores.csv").open() as f:
             df_ = pl.read_csv(f).with_columns(
                 temp=pl.lit(temp),
@@ -40,15 +42,15 @@ def plot_path(plotname, outfile, format="pdf"):
 
     pdict = dict()
     for fname, (temp, metric) in zip(deps, itertools.product(TEMPS, METRICS)):
-        pdict[fname.parent.parent / "1.zip"] = 1
+        pdict[fname.parent.parent] = 1
 
     embd = dict()
     for key in pdict.keys():
-        npz = np.load(key)
+        npz = np.load(key / "ftsne,all=1/1.zip")
         embd[key] = {
             step: npz[f"embeddings/step-{step:05d}"] for step in emb_pts
         }
-    labels = np.load(key.parent.parent / "1.zip")["labels"]
+    labels = np.load(key.parent / "1.zip")["labels"]
 
     fig = plot(df, embd, labels)
     fig.savefig(outfile, format=format)
