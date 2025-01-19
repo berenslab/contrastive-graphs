@@ -63,7 +63,7 @@ def format_table(dispatch, outfile, format="tex"):
 
     match format:
         case "tex":
-            return tex_table(df_fmt, outfile=outfile)
+            return tex_table(df, outfile=outfile)
         case "txt":
             return txt_table(df_fmt, outfile=outfile)
         case "parquet":
@@ -82,29 +82,59 @@ def tex_table(df, outfile):
 
     from ..plot import translate_plotname
 
+    df = (
+        df.sort("n_edges")
+        .group_by(["dataset", "run_name", "dim"], maintain_order=True)
+        .agg(
+            pl.col("name").first(),
+            pl.col("knn", "lin", "recall").mean().name.prefix("mean_"),
+            pl.col("knn", "lin", "recall").std().name.prefix("std_"),
+        )
+        .drop("run_name")
+    )
+
+    def mean_std_fmt_tex(df, metric):
+        return (
+            df.with_columns(
+                (
+                    pl.col(f"mean_{metric}")
+                    >= pl.col(f"mean_{metric}").max().over("dataset", "dim")
+                    - 0.005
+                ).alias(f"bold_{metric}")
+            )
+            .with_columns(
+                pl.format(
+                    "{{}{}}±{}",
+                    pl.when(pl.col(f"bold_{metric}"))
+                    .then(pl.lit(r"\bf"))
+                    .otherwise(pl.lit("")),
+                    (pl.col(f"mean_{metric}") * 100).round(1),
+                    (pl.col(f"std_{metric}") * 100).round(1),
+                ).alias(metric)
+            )
+            .drop(f"bold_{metric}", f"mean_{metric}", f"std_{metric}")
+        )
+
+    for metric in ["knn", "lin", "recall"]:
+        df = df.pipe(mean_std_fmt_tex, metric=metric)
+
     datasets = df["dataset"].unique()
-    begintable = r"\begin{table*}[t]\addtolength{\tabcolsep}{-1pt}"
-    begintabular = rf"\begin{{tabular}}{{cl{'c' * len(datasets)}}}"
+    begintable = r"\begin{table*}[t]"
+    begintabular = rf"\begin{{tabular}}{{l{'r' * len(datasets)}}}"
     endtabular = r"\end{tabular}"
     endtable = r"\end{table*}"
 
     def tr(x):
 
-        # this hack looks if we're dealing with an accuracy below 10%
-        # and then pads the table with an invisible 0 so that the
-        # alignment still works.
-        if len(x.strip()) == 9 and x.endswith("%"):
-            x = r"\phantom{0}" + x.strip()
-        if len(x.strip()) == 11 and x.endswith("%"):
-            m = re.match(r"(.*)±(\d+)\.", x)
-            x = rf"{m[1]}±\phantom{{.}}{m[2]}%"
-
         # need to double-escape in re.sub because it interprets
         # e.g. \(, so we need to add the second backslash.
         x = re.sub("τ(.*)", r"$\\tau\1$", x)
-        x = x.replace("%", r"\tiny\%")
-        x = x.replace("±", r"\({}\pm{}\)")
-        return translate_plotname(x, _return="identity")
+        x = x.replace("±", r"${}\pm{}$")
+        x = translate_plotname(x, _return="identity")
+        return f"{x:>21s}"
+
+    def tex_table_center(s):
+        return r"\vadjust{}\hfill{}" f"{s}" r"\hfill\vadjust{}"
 
     with open(outfile, "x") as f:
         fw = IndentedWriter(f)
@@ -121,16 +151,15 @@ def tex_table(df, outfile):
                 fw.writeln("%" * 20 + f"\n%%%{key:^14s}%%%\n" + "%" * 20)
                 fw.writeln(rf"\caption{{{key} accuracy table.}}")
                 fw.writeln(r"\vskip0.075in")
-                fw.writeln(r"\scriptsize\centering")
+                fw.writeln(r"\small\centering")
                 fw.writeln(begintabular)
                 with fw.indent():
                     fw.writeln(r"\toprule")
 
                     fw.writeln(
-                        " & ".join(
+                        " &\n    ".join(
                             [
-                                "$d$",
-                                r"\vadjust{}\hfill{}Method\hfill\vadjust{}",
+                                tex_table_center("Method"),
                             ]
                             + df.unique("dataset", maintain_order=True)
                             .select(
@@ -139,6 +168,14 @@ def tex_table(df, outfile):
                                 )
                             )
                             .to_series()
+                            .map_elements(
+                                lambda row: tex_table_center(row).replace(
+                                    # rename "MNIST $k$NN" to just "MNIST"
+                                    " $k$NN",
+                                    "",
+                                ),
+                                return_dtype=str,
+                            )
                             .to_list()
                         )
                         + r" \\"
@@ -148,10 +185,8 @@ def tex_table(df, outfile):
                         fw.writeln(r"\midrule")
 
                         df1 = df_.pivot("dataset", index="name", values=key)
-                        dim_str = f"{dim:3d}".replace(" ", r"\phantom{0}")
 
                         for row in df1.rows():
-                            fw.write(f"{dim_str} & ")
                             fw.writeln(" & ".join(tr(r) for r in row) + r" \\")
 
                     fw.writeln(r"\bottomrule")
