@@ -134,6 +134,20 @@ def translate_plotname(x, _return="error"):
     return s
 
 
+def translate_acc_short(x):
+    match x:
+        case "knn":
+            s = "$k$NN acc."
+        case "lin":
+            s = "lin. acc."
+        case "recall":
+            s = x
+        case _:
+            raise ValueError(f"Unknown value {x!r} (for translating")
+
+    return s
+
+
 def plotname_to_color(x, _return="raise_error"):
     match x:
         case "tsne":
