@@ -1,121 +1,84 @@
 from pathlib import Path
 
-TEMPS = [0.5, 0.05]
-METRICS = ["knn", "recall"]
-
 
 def deplist(plotname=None):
-    sbm = Path(
-        "../runs/sbm,n_pts=8000,n_blocks=10,p_intra=0.0025,p_inter=5e-6"
-    )
-
-    tempstrs = ["" if t == 0.5 else f",temp={t}" for t in TEMPS]
-    cnes = ["cne" + t + ",n_epochs=10,detailed=1" for t in tempstrs]
-    return [sbm / cne / f"{m},all=1/1.zip" for cne in cnes for m in METRICS]
+    return ["../dataframes/sbm_temp.h5"]
 
 
 def plot_path(plotname, outfile, format="pdf"):
-    import itertools
-    import zipfile
+    import h5py
 
-    import numpy as np
-    import polars as pl
+    with h5py.File(deplist(plotname)[0]) as h5:
+        fig = plot(h5)
 
-    deps = deplist(plotname)
-
-    dfs = []
-    for fname, (temp, metric) in zip(deps, itertools.product(TEMPS, METRICS)):
-        zpath = zipfile.Path(fname)
-        with (zpath / "scores.csv").open() as f:
-            df_ = pl.read_csv(f).with_columns(
-                temp=pl.lit(temp),
-                metric=pl.lit(metric),
-            )
-        dfs.append(df_)
-
-    df = pl.concat(dfs, how="vertical").pivot("metric", values="score")
-
-    # https://stackoverflow.com/questions/72821244/
-    # polars-get-grouped-rows-where-column-value-is-maximum#72821688
-    dff = df.filter(pl.col("recall") == pl.max("recall").over("temp"))
-    emb_pts = dff["step"]
-
-    pdict = dict()
-    for fname, (temp, metric) in zip(deps, itertools.product(TEMPS, METRICS)):
-        pdict[fname.parent.parent / "1.zip"] = 1
-
-    embd = dict()
-    for key in pdict.keys():
-        npz = np.load(key)
-        embd[key] = {
-            step: npz[f"embeddings/step-{step:05d}"] for step in emb_pts
-        }
-    labels = np.load(key.parent.parent / "1.zip")["labels"]
-
-    fig = plot(df, embd, labels)
     fig.savefig(outfile, format=format)
 
 
-def plot(df_full, embd, labels):
+def plot(h5):
     import matplotlib as mpl
-    import polars as pl
+    import numpy as np
     from matplotlib import pyplot as plt
 
     from ..plot import letter_dict, translate_plotname
 
-    mosaic = "cd\nzz\nab"
+    mosaic = "ab\nzz\nde"
+    letters = iter("abde")
     fig, axd = plt.subplot_mosaic(
         mosaic, figsize=(3.25, 3), constrained_layout=dict(w_pad=0)
     )
 
     plot_ax = axd["z"]
-    letters = iter("abcdef")
-    for i, (((temp,), df), (k, vdict)) in enumerate(
-        zip(
-            df_full.group_by("temp", maintain_order=True),
-            embd.items(),
-        )
-    ):
-        (line,) = plot_ax.plot(*df[["step", "recall"]], label=f"{temp}")
+
+    labels = h5["labels"]
+    for i, (temp_str, h5_temp) in enumerate(reversed(h5.items())):
+        if temp_str == "labels":
+            continue
+
+        steps = np.asanyarray(h5_temp["step"])
+        recalls = np.asanyarray(h5_temp["recall"])
+        (line,) = plot_ax.plot(steps, recalls)
         plot_ax.text(
-            df["step"].max(),
-            df["recall"][-1],
-            f" {temp}",
+            steps.max(),
+            recalls[-1],
+            f" $τ={{}}${temp_str}",
             clip_on=False,
             ha="left",
             va="center",
         )
 
-        for step, emb in vdict.items():
+        for key, emb in h5_temp.items():
+            if not key.startswith("step-"):
+                continue
+            n = len("step-")
+            step = int(key[n:])
+            recall = recalls[steps == step]
+
             letter = next(letters)
             ax = axd[letter]
             ax.scatter(emb[:, 0], emb[:, 1], c=labels, rasterized=True)
             ax.set_aspect(1)
             ax.set_axis_off()
+            ax.set_title(temp_str)
 
-            xy = (step, df.filter(pl.col("step") == step)["recall"][0])
-            annot = mpl.text.Annotation(
-                "",
-                xy,
-                (0.5, 1 - i),
-                xycoords=plot_ax.transData,
-                textcoords=ax.transAxes,
-                arrowprops=dict(arrowstyle="->"),
-            )
-            fig.add_artist(annot)
+            x, y = step, recall
             plot_ax.scatter(
-                [xy[0]],
-                [xy[1]],
+                [x],
+                [y],
                 c=line.get_color(),
                 marker="o",
                 s=4,
                 clip_on=False,
             )
+            txtkwargs = dict(
+                va="bottom" if i == 1 or step == steps.max() else "top",
+                ha="center" if step < steps.max() else "right",
+            )
+            plot_ax.text(x, y, letter, **txtkwargs)
 
     plot_ax.set(
         xlabel="step",
         ylabel=translate_plotname("recall"),
-        xlim=(0, df["step"].max()),
+        xlim=(0, steps.max()),
     )
     plot_ax.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
     plot_ax.spines.left.set_bounds(0.4, 0.6)
