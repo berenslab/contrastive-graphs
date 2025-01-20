@@ -78,6 +78,7 @@ def feature_tsne(
         initialization = (
             X[:, :2] if pca_dim < features.shape[1] else pca.fit_transform(X)
         )
+        initialization /= initialization.std(axis=0)[0] * 1e4
 
     A, _ = make_adj_mat(X, seed=rng.integers(2**31 - 1))
 
