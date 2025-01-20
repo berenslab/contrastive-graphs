@@ -81,7 +81,7 @@ def plot(h5):
         xlim=(0, steps.max()),
     )
     plot_ax.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
-    plot_ax.spines.left.set_bounds(0.4, 0.6)
+    plot_ax.spines.left.set_bounds(0, 0.75)
     ld = letter_dict()
     ld.pop("loc")
     [
