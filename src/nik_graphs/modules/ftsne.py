@@ -80,7 +80,11 @@ def feature_tsne(
         )
         initialization /= initialization.std(axis=0)[0] * 1e4
 
-    A, _ = make_adj_mat(X, seed=rng.integers(2**31 - 1))
+    if "metric" in kwargs:
+        _kws = dict(metric=kwargs["metric"])
+    else:
+        _kws = dict()
+    A, _ = make_adj_mat(X, seed=rng.integers(2**31 - 1), **_kws)
 
     return tsne(
         A, initialization=initialization, random_state=random_state, **kwargs
