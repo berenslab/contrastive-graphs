@@ -101,7 +101,7 @@ def translate_plotname(x, _return="error"):
         case "knn":
             s = "$k$NN"
         case "recall":
-            s = "$k$NN recall"
+            s = "neighbor recall"
         case "tsne":
             s = "graph $t$-SNE"
         case "tfdp":
