@@ -2,14 +2,10 @@ import inspect
 import zipfile
 
 import numpy as np
-import openTSNE
-import openTSNE.callbacks
-from scipy import sparse
-from sklearn import preprocessing
 
 from ..graph_utils import make_adj_mat
 from ..path_utils import path_to_kwargs
-from .tsne import TSNECallback, tsne
+from .tsne import tsne
 
 __partition__ = "cpu-galvani"
 
