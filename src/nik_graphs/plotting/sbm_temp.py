@@ -31,7 +31,7 @@ def plot(h5):
 
     labels = np.asanyarray(h5["labels"])
     for i, (temp_str, h5_temp) in enumerate(h5.items()):
-        if temp_str == "labels":
+        if temp_str in ["labels", "edges"]:
             continue
 
         batches_per_epoch = h5_temp.attrs["batches_per_epoch"]
@@ -47,6 +47,8 @@ def plot(h5):
             va="center",
         )
 
+        row = h5["edges/row"]
+        col = h5["edges/col"]
         sample_keys = [key for key in h5_temp if key.startswith("step-")]
         shuf = rng.permutation(len(h5_temp[sample_keys[0]]))
         for key, emb in h5_temp.items():
@@ -66,6 +68,17 @@ def plot(h5):
                 rasterized=True,
                 clip_on=False,
             )
+            pts = np.hstack((Y[row], Y[col])).reshape(len(row), 2, 2)
+            lines = mpl.collections.LineCollection(
+                pts,
+                alpha=0.01,
+                color="xkcd:dark grey",
+                antialiaseds=True,
+                zorder=0.9,
+                rasterized=True,
+            )
+            ax.add_collection(lines)
+
             ax.set_aspect(1)
             ax.set_axis_off()
             ax.margins(0)
