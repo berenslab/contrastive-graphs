@@ -91,6 +91,6 @@ def aggregate_path(dispatch: Path, outfile):
             for k2, v in d1.items():
                 h5.create_dataset(f"{temp}/{k2}", data=v)
 
-            h5[f"{temp}"].attr["batches_per_epoch"] = bped[temp]
+            h5[f"{temp}"].attrs["batches_per_epoch"] = bped[temp]
 
         h5["labels"] = labels
