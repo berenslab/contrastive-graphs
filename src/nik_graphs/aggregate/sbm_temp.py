@@ -50,12 +50,7 @@ def aggregate_path(dispatch: Path, outfile):
                     temp=pl.lit(temp),
                     metric=pl.lit(m),
                 )
-            with (zpath / "lightning_logs/hparams.yaml").open() as f:
-                hparams = yaml.safe_load(f)
-            batches_per_epoch = hparams["batches_per_epoch"]
-            dfs.append(
-                df_.with_columns(batches_per_epoch=pl.lit(batches_per_epoch))
-            )
+            dfs.append(df_)
 
     df = pl.concat(dfs, how="vertical").pivot("metric", values="score")
 
@@ -68,6 +63,7 @@ def aggregate_path(dispatch: Path, outfile):
     emb_pts = dff["step"]
 
     embd = dict()
+    bped = dict()
     for temp, fname in zip(TEMPS, depd["cne"]):
         npz = np.load(fname)
         embd[f"{temp}"] = {
@@ -79,17 +75,22 @@ def aggregate_path(dispatch: Path, outfile):
             )
             for step in emb_pts
         }
+
+        zpath = zipfile.Path(fname)
+        with (zpath / "lightning_logs/hparams.yaml").open() as f:
+            hparams = yaml.safe_load(f)
+        bped[f"{temp}"] = hparams["batches_per_epoch"]
+
     labels = np.load(fname.parent.parent / "1.zip")["labels"]
 
     with h5py.File(outfile, "w") as h5:
         for s in ["step"] + METRICS:
             for (temp,), _df in df.group_by("temp"):
                 h5.create_dataset(f"{temp}/{s}", data=_df[s].to_numpy())
-                h5[f"{temp}"].attr["batches_per_epoch"] = _df[
-                    "batches_per_epoch"
-                ][0]
-        for k1, d1 in embd.items():
+        for temp, d1 in embd.items():
             for k2, v in d1.items():
-                h5.create_dataset(f"{k1}/{k2}", data=v)
+                h5.create_dataset(f"{temp}/{k2}", data=v)
+
+            h5[f"{temp}"].attr["batches_per_epoch"] = bped[temp]
 
         h5["labels"] = labels
