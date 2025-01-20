@@ -53,12 +53,12 @@ def aggregate_path(dispatch: Path, outfile):
 
     df = pl.concat(dfs, how="vertical").pivot("metric", values="score")
 
-    # https://stackoverflow.com/questions/72821244/
-    # polars-get-grouped-rows-where-column-value-is-maximum#72821688
-    #
-    # Here we take the steps where the two temperatures have their max
-    # recall.
-    dff = df.filter(pl.col("recall") == pl.max("recall").over("temp"))
+    dff = df.filter(
+        (pl.col("temp") == pl.max("temp"))
+        & (pl.col("recall") == pl.max("recall").over("temp"))
+        | (pl.col("temp") < pl.max("temp"))
+        & (pl.col("step") == pl.max("step"))
+    )
     emb_pts = dff["step"]
 
     embd = dict()
