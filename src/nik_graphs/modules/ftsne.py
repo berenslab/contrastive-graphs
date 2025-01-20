@@ -58,13 +58,13 @@ def run_path(path, outfile):
                     np.save(f, v)
 
 
-def feature_tsne(features, random_state=5015153, **kwargs):
+def feature_tsne(features, pca_dim=50, random_state=5015153, **kwargs):
     rng = np.random.default_rng(random_state)
 
-    if features.shape[1] > 50:
+    if pca_dim < features.shape[1]:
         from sklearn import decomposition
 
-        pca = decomposition.PCA(50, random_state=rng.integers(2**31 - 1))
+        pca = decomposition.PCA(pca_dim, random_state=rng.integers(2**31 - 1))
         X = pca.fit_transform(features)
     else:
         X = features
