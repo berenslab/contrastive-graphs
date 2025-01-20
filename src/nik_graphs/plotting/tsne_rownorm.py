@@ -37,7 +37,7 @@ def plot(depd, outfile=None, format="pdf"):
     from matplotlib import pyplot as plt
     from scipy import linalg, sparse
 
-    from ..plot import add_letters, translate_plotname
+    from ..plot import add_letters, translate_acc_short, translate_plotname
 
     fig, axs = plt.subplots(len(DATASETS), len(ROWNORM), figsize=(3.5, 3.75))
     prev_dataset = None
@@ -70,11 +70,9 @@ def plot(depd, outfile=None, format="pdf"):
             zpath = zipfile.Path(depdict[k]) / "score.txt"
             return float(zpath.read_text())
 
-        def translate_(k):
-            return "$k$NN acc." if k == "knn" else k
-
         txt = "\n".join(
-            f"{translate_(k)}$ = ${key2acc(k):.1%}" for k in ["knn", "recall"]
+            f"{translate_acc_short(k)}$ = ${key2acc(k):.1%}"
+            for k in ["knn", "recall"]
         )
         ax.text(
             1,
