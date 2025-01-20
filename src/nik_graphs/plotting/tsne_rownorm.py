@@ -70,7 +70,12 @@ def plot(depd, outfile=None, format="pdf"):
             zpath = zipfile.Path(depdict[k]) / "score.txt"
             return float(zpath.read_text())
 
-        txt = "\n".join(f"{k} = {key2acc(k):.1%}" for k in ["recall", "knn"])
+        def translate_(k):
+            return "$k$NN acc." if k == "knn" else k
+
+        txt = "\n".join(
+            f"{translate_(k)}$ = ${key2acc(k):.1%}" for k in ["knn", "recall"]
+        )
         ax.text(
             1,
             1,
@@ -79,7 +84,6 @@ def plot(depd, outfile=None, format="pdf"):
             ha="right",
             va="top",
             ma="right",
-            family="monospace",
         )
 
         pts = np.hstack((embedding[A.row], embedding[A.col])).reshape(
