@@ -81,7 +81,8 @@ def feature_tsne(
         initialization /= initialization.std(axis=0)[0] * 1e4
 
     if "metric" in kwargs:
-        _kws = dict(metric=kwargs["metric"])
+        metric = kwargs["metric"]
+        _kws = dict(metric=metric if metric != "cosine" else "angular")
     else:
         _kws = dict()
     A, _ = make_adj_mat(X, seed=rng.integers(2**31 - 1), **_kws)
