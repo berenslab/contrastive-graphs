@@ -58,7 +58,7 @@ def plot(h5):
             ax.scatter(emb[:, 0], emb[:, 1], c=labels, rasterized=True)
             ax.set_aspect(1)
             ax.set_axis_off()
-            ax.set_title(temp_str)
+            ax.margins(0)
 
             x, y = step, recall
             plot_ax.scatter(
@@ -70,8 +70,8 @@ def plot(h5):
                 clip_on=False,
             )
             txtkwargs = dict(
-                va="bottom" if i == 1 or step == steps.max() else "top",
-                ha="center" if step < steps.max() else "right",
+                va="bottom" if letter in ["d", "b"] else "top",
+                ha="right" if letter == "d" else "center",
             )
             plot_ax.text(x, y, letter, **txtkwargs)
 
