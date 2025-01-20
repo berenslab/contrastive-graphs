@@ -37,6 +37,7 @@ def aggregate_path(dispatch: Path, outfile):
     import h5py
     import numpy as np
     import polars as pl
+    import yaml
 
     depd = deps(dispatch)
 
@@ -49,7 +50,12 @@ def aggregate_path(dispatch: Path, outfile):
                     temp=pl.lit(temp),
                     metric=pl.lit(m),
                 )
-            dfs.append(df_)
+            with (zpath / "lightning_logs/hparams.yaml").open() as f:
+                hparams = yaml.safe_load(f)
+            batches_per_epoch = hparams["batches_per_epoch"]
+            dfs.append(
+                df_.with_columns(batches_per_epoch=pl.lit(batches_per_epoch))
+            )
 
     df = pl.concat(dfs, how="vertical").pivot("metric", values="score")
 
@@ -79,7 +85,9 @@ def aggregate_path(dispatch: Path, outfile):
         for s in ["step"] + METRICS:
             for (temp,), _df in df.group_by("temp"):
                 h5.create_dataset(f"{temp}/{s}", data=_df[s].to_numpy())
-
+                h5[f"{temp}"].attr["batches_per_epoch"] = _df[
+                    "batches_per_epoch"
+                ][0]
         for k1, d1 in embd.items():
             for k2, v in d1.items():
                 h5.create_dataset(f"{k1}/{k2}", data=v)
