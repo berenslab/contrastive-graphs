@@ -58,7 +58,9 @@ def run_path(path, outfile):
                     np.save(f, v)
 
 
-def feature_tsne(features, pca_dim=50, random_state=5015153, **kwargs):
+def feature_tsne(
+    features, pca_dim=50, initialization="pca", random_state=5015153, **kwargs
+):
     rng = np.random.default_rng(random_state)
 
     if pca_dim < features.shape[1]:
@@ -69,9 +71,17 @@ def feature_tsne(features, pca_dim=50, random_state=5015153, **kwargs):
     else:
         X = features
 
+    if initialization == "pca":
+        pca = decomposition.PCA(pca_dim, random_state=rng.integers(2**31 - 1))
+        initialization = (
+            X[:, :2] if pca_dim < features.shape[1] else pca.fit_transform(X)
+        )
+
     A, _ = make_adj_mat(X, seed=rng.integers(2**31 - 1))
 
-    return tsne(A, **kwargs)
+    return tsne(
+        A, initialization=initialization, random_state=random_state, **kwargs
+    )
 
 
 def tsne_other_embeddings(embeddings_dir, **kwargs):
