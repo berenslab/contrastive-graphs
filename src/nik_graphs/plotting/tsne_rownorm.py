@@ -79,6 +79,7 @@ def plot(depd, outfile=None, format="pdf"):
             1,
             txt,
             transform=ax.transAxes,
+            fontsize=6,
             ha="right",
             va="top",
             ma="right",

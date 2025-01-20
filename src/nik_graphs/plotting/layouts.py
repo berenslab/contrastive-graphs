@@ -20,15 +20,17 @@ def plot_path(plotname, outfile, format="pdf"):
 
 def plot(h5, df, outfile, format="pdf"):
     import matplotlib as mpl
+    import matplotlib.patheffects
     import numpy as np
     from matplotlib import pyplot as plt
     from scipy import linalg
 
-    from ..plot import translate_plotname
+    from ..plot import translate_acc_short, translate_plotname
 
     dataset_keys = df.sort("n_edges")["dataset_key"]
     fig = plt.figure(
-        figsize=(6.75, 1 * len(dataset_keys)), constrained_layout=dict(h_pad=0)
+        figsize=(6.75, 1 * len(dataset_keys)),
+        constrained_layout=dict(h_pad=0, w_pad=0),
     )
     figs = fig.subfigures(len(dataset_keys))
     for i, (sfig, dataset) in enumerate(zip(figs, dataset_keys)):
@@ -57,20 +59,23 @@ def plot(h5, df, outfile, format="pdf"):
             ax.set_axis_off()
 
             lines = (
-                f"{k} = {v:5.1%}"
+                f"{translate_acc_short(k)}$ = ${v:5.1%}"
                 for k, v in h5_ds[key].attrs.items()
                 if k != "lin"
             )
             txt = "\n".join(sorted(lines, key=len, reverse=True))
+            p_eff = [
+                mpl.patheffects.withStroke(linewidth=1.1, foreground="white")
+            ]
             ax.text(
                 1,
                 1,
                 txt,
                 transform=ax.transAxes,
-                fontsize="x-small",
-                family="monospace",
+                fontsize=5,
                 ha="right",
                 va="top",
+                path_effects=p_eff,
             )
 
             pts = np.hstack((data[row], data[col])).reshape(len(row), 2, 2)

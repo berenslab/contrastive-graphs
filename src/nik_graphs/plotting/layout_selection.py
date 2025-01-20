@@ -21,6 +21,7 @@ def plot_path(plotname, outfile, format="pdf"):
 
 def plot(h5, dataset, outfile, format="pdf"):
     import matplotlib as mpl
+    import matplotlib.patheffects
     import numpy as np
     from matplotlib import pyplot as plt
     from scipy import linalg
@@ -29,6 +30,7 @@ def plot(h5, dataset, outfile, format="pdf"):
         add_scalebars,
         letter_dict,
         letter_iterator,
+        translate_acc_short,
         translate_plotname,
     )
 
@@ -37,7 +39,9 @@ def plot(h5, dataset, outfile, format="pdf"):
     ldict.pop("horizontalalignment", None)
     keys = ["tsne", "drgraph", "fa2", "tfdp"]
     fig, axd = plt.subplot_mosaic(
-        np.array(keys).reshape(2, 2), figsize=(3.25, 3)
+        np.array(keys).reshape(2, 2),
+        figsize=(3.25, 3),
+        constrained_layout=dict(w_pad=0, h_pad=0),
     )
 
     h5_ds = h5[dataset]
@@ -58,20 +62,22 @@ def plot(h5, dataset, outfile, format="pdf"):
         add_scalebars(ax)
 
         lines = (
-            f"{k} = {v:5.1%}"
+            f"{translate_acc_short(k)}$ = ${v:5.1%}"
             for k, v in h5_ds[key].attrs.items()
             if k != "lin"
         )
         txt = "\n".join(sorted(lines, key=len, reverse=True))
+        p_eff = [mpl.patheffects.withStroke(linewidth=1.1, foreground="white")]
+
         ax.text(
             1,
             1,
             txt,
             transform=ax.transAxes,
-            fontsize="x-small",
-            family="monospace",
             ha="right",
             va="top",
+            fontsize=6,
+            path_effects=p_eff,
         )
 
         pts = np.hstack((data[row], data[col])).reshape(len(row), 2, 2)
