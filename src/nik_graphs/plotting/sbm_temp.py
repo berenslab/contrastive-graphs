@@ -11,7 +11,7 @@ def plot_path(plotname, outfile, format="pdf"):
     with h5py.File(deplist(plotname)[0]) as h5:
         fig = plot(h5)
 
-    fig.savefig(outfile, format=format)
+    fig.savefig(outfile, format=format, metadata=dict(creationDate=None))
 
 
 def plot(h5):
@@ -21,20 +21,21 @@ def plot(h5):
 
     from ..plot import letter_dict, translate_plotname
 
+    rng = np.random.default_rng(23890147)
     mosaic = "ab\nzz\nde"
     letters = iter("abde")
     fig, axd = plt.subplot_mosaic(
-        mosaic, figsize=(3.25, 3), constrained_layout=dict(w_pad=0)
+        mosaic, figsize=(3.25, 3), constrained_layout=dict(w_pad=0, h_pad=0.01)
     )
-
     plot_ax = axd["z"]
 
-    labels = h5["labels"]
-    for i, (temp_str, h5_temp) in enumerate(reversed(h5.items())):
+    labels = np.asanyarray(h5["labels"])
+    for i, (temp_str, h5_temp) in enumerate(h5.items()):
         if temp_str == "labels":
             continue
 
-        steps = np.asanyarray(h5_temp["step"])
+        batches_per_epoch = h5_temp.attrs["batches_per_epoch"]
+        steps = np.asanyarray(h5_temp["step"]) / batches_per_epoch
         recalls = np.asanyarray(h5_temp["recall"])
         (line,) = plot_ax.plot(steps, recalls)
         plot_ax.text(
@@ -46,16 +47,25 @@ def plot(h5):
             va="center",
         )
 
+        sample_keys = [key for key in h5_temp if key.startswith("step-")]
+        shuf = rng.permutation(len(h5_temp[sample_keys[0]]))
         for key, emb in h5_temp.items():
             if not key.startswith("step-"):
                 continue
             n = len("step-")
-            step = int(key[n:])
+            step = int(key[n:]) / batches_per_epoch
             recall = recalls[steps == step]
 
             letter = next(letters)
             ax = axd[letter]
-            ax.scatter(emb[:, 0], emb[:, 1], c=labels, rasterized=True)
+            Y = np.asanyarray(emb)
+            ax.scatter(
+                *Y[shuf].T,
+                c=labels[shuf],
+                alpha=0.7,
+                rasterized=True,
+                clip_on=False,
+            )
             ax.set_aspect(1)
             ax.set_axis_off()
             ax.margins(0)
@@ -70,22 +80,38 @@ def plot(h5):
                 clip_on=False,
             )
             txtkwargs = dict(
-                va="bottom" if letter in ["d", "b"] else "top",
-                ha="right" if letter == "d" else "center",
+                va="baseline" if letter in ["a", "e"] else "top",
+                ha=(
+                    "right"
+                    if letter == "a" or step == steps.max()
+                    else "center"
+                ),
             )
-            plot_ax.text(x, y, letter, **txtkwargs)
+            dy = -1 if txtkwargs["va"] == "top" else 1
+            t = mpl.transforms.offset_copy(
+                plot_ax.transData, fig, 0, dy * 1.75, units="points"
+            )
+            plot_ax.text(x, y, letter, transform=t, **txtkwargs)
 
     plot_ax.set(
-        xlabel="step",
         ylabel=translate_plotname("recall"),
         xlim=(0, steps.max()),
     )
     plot_ax.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
+    plot_ax.yaxis.set_major_locator(
+        mpl.ticker.FixedLocator([0, 0.25, 0.5, 0.75])
+    )
+    plot_ax.set_xlabel("epoch", labelpad=-1.5)
+    plot_ax.set_xticks([0, 10])
+    plot_ax.set_xticks(range(1, 10), minor=True)
     plot_ax.spines.left.set_bounds(0, 0.75)
     ld = letter_dict()
     ld.pop("loc")
-    [
-        ax.text(0, 1, ltr, transform=ax.transAxes, ha="left", va="top", **ld)
-        for ltr, ax in zip("abcdefg", axd.values())
-    ]
+    for ltr, ax in zip("abcdefg", axd.values()):
+        if ltr != "c":
+            ax.text(
+                0, 1, ltr, transform=ax.transAxes, ha="left", va="top", **ld
+            )
+        else:
+            ax.set_title(ltr, **ld, loc="left", pad=0)
     return fig
