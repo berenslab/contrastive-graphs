@@ -38,6 +38,7 @@ def aggregate_path(dispatch: Path, outfile):
     import numpy as np
     import polars as pl
     import yaml
+    from scipy import sparse
 
     depd = deps(dispatch)
 
@@ -82,6 +83,7 @@ def aggregate_path(dispatch: Path, outfile):
         bped[f"{temp}"] = hparams["batches_per_epoch"]
 
     labels = np.load(fname.parent.parent / "1.zip")["labels"]
+    A = sparse.load_npz(fname.parent.parent / "1.zip").tocoo()
 
     with h5py.File(outfile, "w") as h5:
         for s in ["step"] + METRICS:
@@ -91,6 +93,8 @@ def aggregate_path(dispatch: Path, outfile):
             for k2, v in d1.items():
                 h5.create_dataset(f"{temp}/{k2}", data=v)
 
-            h5[f"{temp}"].attrs["batches_per_epoch"] = bped[temp]
+            h5[temp].attrs["batches_per_epoch"] = bped[temp]
 
         h5["labels"] = labels
+        for a in ["row", "col"]:
+            h5.create_dataset(f"edges/{a}", data=getattr(A, a))
