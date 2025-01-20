@@ -62,7 +62,7 @@ def aggregate_path(dispatch: Path, outfile):
         npz = np.load(fname)
         embd[f"{temp}"] = {
             f"step-{step:05d}": feature_tsne(
-                npz[f"embeddings/step-{step:05d}"]
+                npz[f"embeddings/step-{step:05d}"], metric="cosine"
             )
             for step in emb_pts
         }
