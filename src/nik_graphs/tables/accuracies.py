@@ -99,7 +99,7 @@ def tex_table(df, outfile):
                 (
                     pl.col(f"mean_{metric}")
                     >= pl.col(f"mean_{metric}").max().over("dataset", "dim")
-                    - 0.005
+                    - 0.01
                 ).alias(f"bold_{metric}")
             )
             .with_columns(
