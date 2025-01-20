@@ -74,7 +74,7 @@ def feature_tsne(
     if initialization == "pca":
         from sklearn import decomposition
 
-        pca = decomposition.PCA(pca_dim, random_state=rng.integers(2**31 - 1))
+        pca = decomposition.PCA(2, random_state=rng.integers(2**31 - 1))
         initialization = (
             X[:, :2] if pca_dim < features.shape[1] else pca.fit_transform(X)
         )
