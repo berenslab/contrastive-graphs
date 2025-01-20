@@ -59,7 +59,7 @@ def deps(dispatch):
 
     depdict = {
         k: [p / k / "1.zip" for p in paths]
-        for k in [".", "..", "lin", "knn", "recall"]
+        for k in [".", "..", "lin", "knn,metric=cosine", "recall"]
     }
     return depdict
 
@@ -131,7 +131,8 @@ def aggregate_path(path, outfile=None):
                     results["n_edges"].append(nnz)
             else:
                 acctxt = (zpath / "score.txt").read_text()
-                results[key].append(float(acctxt))
+                shortkey = key.replace(",metric=cosine", "")
+                results[shortkey].append(float(acctxt))
 
     df = pl.DataFrame(results)
     if outfile is not None:
