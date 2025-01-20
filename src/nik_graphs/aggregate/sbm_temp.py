@@ -7,7 +7,11 @@ METRICS = ["knn", "recall"]
 
 
 def deplist(dispatch: Path | None = None):
-    return [x for v in deps(dispatch).values() for x in v]
+    import inspect
+
+    return [x for v in deps(dispatch).values() for x in v] + [
+        inspect.getfile(feature_tsne)
+    ]
 
 
 def deps(dispatch: Path | None = None):
