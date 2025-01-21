@@ -90,7 +90,7 @@ def tex_table(df, outfile):
     ).drop("dataset_key")
 
     begintable = r"\begin{table}[t]"
-    begintabular = r"\begin{tabular}{lrrrr}"
+    begintabular = r"\begin{tabular}{lrrcc}"
     endtabular = r"\end{tabular}"
     endtable = r"\end{table}"
 
@@ -112,9 +112,9 @@ def tex_table(df, outfile):
                 fw.writeln(r"\toprule")
 
                 tr_col = dict(
-                    name="Dataset",
-                    n_pts="Nodes",
-                    n_edges="Edges",
+                    name=r"\vadjust{}\hfill Dataset\hfill\vadjust{}",
+                    n_pts=r"\vadjust{}\hfill Nodes\hfill\vadjust{}",
+                    n_edges=r"\vadjust{}\hfill Edges\hfill\vadjust{}",
                     n_labels="Classes",
                     edge_pts_ratio="$E/N$",
                 )
@@ -128,9 +128,17 @@ def tex_table(df, outfile):
                             case str(x):
                                 s = x
                             case int(x):
-                                s = f"{x:,d}".replace(",", r"\thinspace")
+                                s = f"{x:3_d}".replace("_", r"\thinspace")
+                                # the "Classes" entries need to be
+                                # \phantom padded, they are the only
+                                # ints that will possibly be shorter
+                                # than 3 digits, so we can replace the
+                                # " " pad with \phantom{0}.
+                                s = s.replace(" ", r"\phantom{0}")
+
                             case float(x):
-                                s = f"{x:.1f}"
+                                s = f"{x:4.1f}".replace(" ", r"\phantom{0}")
+
                         return s
 
                     row_tex = (tr(r) for r in row)
