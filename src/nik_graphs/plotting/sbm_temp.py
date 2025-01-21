@@ -31,7 +31,7 @@ def plot(h5):
 
     labels = np.asanyarray(h5["labels"])
     for i, (temp_str, h5_temp) in enumerate(h5.items()):
-        if temp_str == "labels":
+        if temp_str in ["edges", "labels"]:
             continue
 
         batches_per_epoch = h5_temp.attrs["batches_per_epoch"]
