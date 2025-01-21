@@ -95,19 +95,15 @@ def plot(h5):
 
     plot_ax.set(
         ylabel=translate_plotname("recall"),
-        # xlim=(None, steps.max()),
-        xscale="log",
+        xlim=(0, steps.max()),
     )
     plot_ax.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
     plot_ax.yaxis.set_major_locator(
         mpl.ticker.FixedLocator([0, 0.25, 0.5, 0.75])
     )
     plot_ax.set_xlabel("epoch", labelpad=-1.5)
-    # plot_ax.set_xticks([0, 10])
-    # plot_ax.set_xticks(range(1, 10), minor=True)
-    plot_ax.xaxis.set_major_formatter("{x:g}")
-    plot_ax.set_xlim(None, steps.max())
-    # plot_ax.spines.bottom.set_bounds(steps.min(), steps.max())
+    plot_ax.set_xticks([0, 10])
+    plot_ax.set_xticks(range(1, 10), minor=True)
     plot_ax.spines.left.set_bounds(0, 0.75)
     ld = letter_dict()
     ld.pop("loc")
