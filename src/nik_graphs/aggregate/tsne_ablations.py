@@ -13,7 +13,9 @@ DATASETS = [
     # "mag",
 ]
 LAYOUTS = ["tsne"]
-VARIANTS = ["", ",row_norm=0", ",initialization=random"]
+VARIANTD = dict(
+    default="", no_row_norm="row_norm=0", random_init="initialization=random"
+)
 
 
 # example plotname = "temperatures"
@@ -28,9 +30,9 @@ def deps(dispatch):
 
     paths = []
     for dataset, layout, variant in itertools.product(
-        DATASETS, LAYOUTS, VARIANTS
+        DATASETS, LAYOUTS, VARIANTD.values()
     ):
-        paths.append(Path("../runs") / dataset / f"{layout}{variant}")
+        paths.append(Path("../runs") / dataset / f"{layout},{variant}")
 
     depdict = {
         k: [p / k / "1.zip" for p in paths]
@@ -57,15 +59,15 @@ def aggregate_path(path, outfile=None):
             # attributes.  Since the dictionary preserves insertion
             # order, this works.  But I don't really like this
             # solution.
-            for (dataset, layout, variant), zipf in zip(
-                itertools.product(DATASETS, LAYOUTS, VARIANTS), v
+            for (dataset, layout, variant_name), zipf in zip(
+                itertools.product(DATASETS, LAYOUTS, VARIANTD.keys()), v
             ):
                 if k == ".":
                     # read the loss from the run lightning_logs/metrics.csv
                     embedding = np.load(zipf)["embedding"]
-                    name = f"{layout}{variant.replace(",", "/")}"
-                    name += "/default" if variant == "" else ""
-                    f5.create_dataset(f"{dataset}/{name}", data=embedding)
+                    f5.create_dataset(
+                        f"{dataset}/{layout}/{variant_name}", data=embedding
+                    )
                 elif k == "..":
                     if f"{dataset}/labels" not in f5:
                         labels = np.load(zipf)["labels"]
