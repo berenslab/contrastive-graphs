@@ -75,7 +75,7 @@ def format_table(dispatch, outfile, format="tex"):
             )
 
 
-def tex_table(df, outfile):
+def tex_table(df, outfile, metric_keys=["knn", "lin", "recall"]):
     import re
 
     import polars as pl
@@ -115,7 +115,7 @@ def tex_table(df, outfile):
             .drop(f"bold_{metric}", f"mean_{metric}", f"std_{metric}")
         )
 
-    for metric in ["knn", "lin", "recall"]:
+    for metric in metric_keys:
         df = df.pipe(mean_std_fmt_tex, metric=metric)
 
     datasets = df["dataset"].unique()
@@ -145,7 +145,7 @@ def tex_table(df, outfile):
 
         fw.writeln(r"\begin{document}")
         fw.writeln(begintable)
-        for key in ["knn", "lin", "recall"]:
+        for key in metric_keys:
             # write out a header comment showing the knn/lin/...
             with fw.indent():
                 fw.writeln("%" * 20 + f"\n%%%{key:^14s}%%%\n" + "%" * 20)
