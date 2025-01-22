@@ -82,7 +82,14 @@ def aggregate_path(path, outfile=None):
                 acctxt = (zpath / "score.txt").read_text()
                 results[key].append(float(acctxt))
 
-    df = pl.DataFrame(results)
+    order = "tsne sgtsnepi drgraph fa2 tfdp spectral".split()
+    df = (
+        pl.DataFrame(results)
+        .join(pl.DataFrame(dict(name=order)).with_row_index(), on="name")
+        .sort("index")
+        .drop("index")
+    )
+
     if outfile is not None:
         with open(outfile, "xb") as f:
             df.write_parquet(f)
