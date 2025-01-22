@@ -24,7 +24,7 @@ def deplist(dispatch):
 
 def deps(dispatch):
     # dataset, algo, _name = dispatch.name.split(".")
-    assert str(dispatch) == "random_inits"
+    assert str(dispatch) == "tsne_ablations"
 
     paths = []
     for dataset, layout, variant in itertools.product(
