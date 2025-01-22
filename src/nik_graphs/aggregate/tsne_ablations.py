@@ -8,7 +8,7 @@ DATASETS = [
 ]
 LAYOUTS = ["tsne"]
 VARIANTD = dict(
-    default="", no_row_norm="row_norm=0", random_init="initialization=random"
+    default="", no_row_norm=",row_norm=0", random_init=",initialization=random"
 )
 
 
@@ -26,7 +26,7 @@ def deps(dispatch):
     for dataset, layout, variant in itertools.product(
         DATASETS, LAYOUTS, VARIANTD.values()
     ):
-        paths.append(Path("../runs") / dataset / f"{layout},{variant}")
+        paths.append(Path("../runs") / dataset / f"{layout}{variant}")
 
     depdict = {
         k: [p / k / "1.zip" for p in paths]
