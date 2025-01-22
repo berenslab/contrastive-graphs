@@ -130,8 +130,13 @@ def tex_table(df, outfile, metric_keys=["knn", "lin", "recall"]):
         # e.g. \(, so we need to add the second backslash.
         x = re.sub("τ(.*)", r"$\\tau\1$", x)
         x = x.replace("±", r"${}\pm{}$")
+        colorf = (
+            r"{{\bf\color{{purple}}{x}}}"
+            if "tsne" == x or "CNE" in x
+            else "{x}"
+        )
         x = translate_plotname(x, _return="identity")
-        return f"{x:>21s}"
+        return colorf.format(x=x)
 
     def tex_table_center(s):
         return r"\vadjust{}\hfill{}" f"{s}" r"\hfill\vadjust{}"
