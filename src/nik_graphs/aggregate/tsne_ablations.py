@@ -78,4 +78,4 @@ def aggregate_path(path, outfile=None):
                 else:
                     acctxt = (zipfile.Path(zipf) / "score.txt").read_text()
                     score = float(acctxt)
-                    f5[f"{dataset}/{layout}"].attrs[k] = score
+                    f5[f"{dataset}/{layout}/{variant_name}"].attrs[k] = score

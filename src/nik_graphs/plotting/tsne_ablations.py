@@ -71,7 +71,7 @@ def plot(h5, outfile, *, datasets=["computer", "photo"], format="pdf"):
 
             lines = (
                 f"{translate_acc_short(k)}$ = ${v:5.1%}".strip()
-                for k, v in h5[dataset]["tsne"].attrs.items()
+                for k, v in h5[dataset][f"tsne/{var_key}"].attrs.items()
                 if k != "lin"
             )
             txt = "\n".join(sorted(lines, key=len, reverse=True))
