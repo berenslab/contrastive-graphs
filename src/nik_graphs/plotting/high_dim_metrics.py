@@ -2,13 +2,13 @@ from pathlib import Path
 
 
 def deplist(dispatch: Path):
-    return ["../dataframes/high_dim_benchmarks.parquet"]
+    return ["../dataframes/main_benchmarks.parquet"]
 
 
 def plot_path(plotname, outfile, format="pdf"):
     import polars as pl
 
-    df = pl.read_parquet(deplist(plotname)[0])
+    df = pl.read_parquet(deplist(plotname)[0]).filter(pl.col("dim") == 128)
 
     return plot(df, outfile=outfile, format=format)
 
