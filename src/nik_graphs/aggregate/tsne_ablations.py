@@ -3,14 +3,8 @@ import zipfile
 from pathlib import Path
 
 DATASETS = [
-    "cora",
     "computer",
     "photo",
-    "citeseer",
-    "pubmed",
-    "mnist",
-    "arxiv",
-    # "mag",
 ]
 LAYOUTS = ["tsne"]
 VARIANTD = dict(
