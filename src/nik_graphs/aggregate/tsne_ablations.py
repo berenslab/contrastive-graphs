@@ -13,7 +13,7 @@ DATASETS = [
     # "mag",
 ]
 LAYOUTS = ["tsne"]
-VARIANTS = ["", ",rownorm=1", ",initialization=random"]
+VARIANTS = ["", ",row_norm=0", ",initialization=random"]
 
 
 # example plotname = "temperatures"
