@@ -158,16 +158,30 @@ def translate_acc_short(x):
     return s
 
 
-def plotname_to_color(x, _return="raise_error"):
+def name2color(x, _return="raise_error"):
     match x:
-        case "tsne":
-            c = "xkcd:cornflower"
+        case "tsne" | "cne,temp=0.05" | "cne,loss=infonce-temp":
+            c = "xkcd:blue"
         case "sgtsnepi":
-            c = "xkcd:rose pink"
+            c = "xkcd:orange"
         case "tfdp":
-            c = "xkcd:greyish purple"
+            c = "xkcd:deep lavender"
         case "fa2":
-            c = "xkcd:light lavender"
+            c = "xkcd:pink red"
+        case "drgraph":
+            c = "xkcd:kelly green"
+        case str(x) if x.startswith("spectral"):
+            c = "xkcd:brown"
+        case "deepwalk":
+            c = "tab:olive"
+        case "node2vec":
+            c = "xkcd:salmon"
+        case _:
+            if _return is None:
+                c = None
+            else:
+                raise ValueError(f"Uknown name to map to a color {x!r}")
+    return c
 
 
 if __name__ == "__main__":

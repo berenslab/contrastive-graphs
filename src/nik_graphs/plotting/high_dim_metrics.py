@@ -26,7 +26,7 @@ def plot_bars(df_full, keys, x_sort_col="n_edges"):
     import polars as pl
     from matplotlib import pyplot as plt
 
-    from ..plot import add_letters, translate_plotname
+    from ..plot import add_letters, name2color, translate_plotname
 
     n_bars = len(df_full["name"].unique())
     bar_width = 1 / (n_bars + 1.62)
@@ -55,7 +55,10 @@ def plot_bars(df_full, keys, x_sort_col="n_edges"):
                 mpl.ticker.PercentFormatter(1, decimals=0)
             )
             label = translate_plotname(df["name"][0], _return="identity")
-            ax.bar(x + i * bar_width, m, label=label, width=bar_width)
+            color = name2color(df["name"][0])
+            ax.bar(
+                x + i * bar_width, m, label=label, width=bar_width, color=color
+            )
             ax.errorbar(
                 x + i * bar_width,
                 m,
