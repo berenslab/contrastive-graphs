@@ -125,7 +125,6 @@ def tex_table(df, outfile, metric_keys=["knn", "lin", "recall"]):
 
         # need to double-escape in re.sub because it interprets
         # e.g. \(, so we need to add the second backslash.
-        x = re.sub("τ(.*)", r"$\\tau\1$", x)
         x = x.replace("±", r"${}\pm{}$")
         colorf = (
             r"{{\bf\color{{gne}}{x}}}"
@@ -133,6 +132,7 @@ def tex_table(df, outfile, metric_keys=["knn", "lin", "recall"]):
             else "{x}"
         )
         x = translate_plotname(x, _return="identity")
+        x = re.sub("τ(.*)", r"$\\tau\1$", x)
         return colorf.format(x=x)
 
     def tex_table_center(s):
