@@ -173,7 +173,7 @@ def name2color(x, _return="raise_error"):
         case str(x) if x.startswith("spectral"):
             c = "xkcd:brown"
         case "deepwalk":
-            c = "tab:olive"
+            c = "xkcd:light moss green"
         case "node2vec":
             c = "xkcd:salmon"
         case _:
