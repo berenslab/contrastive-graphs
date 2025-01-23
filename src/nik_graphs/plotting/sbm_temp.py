@@ -1,6 +1,3 @@
-from pathlib import Path
-
-
 def deplist(plotname=None):
     return ["../dataframes/sbm_temp.h5"]
 
@@ -11,7 +8,7 @@ def plot_path(plotname, outfile, format="pdf"):
     with h5py.File(deplist(plotname)[0]) as h5:
         fig = plot(h5)
 
-    fig.savefig(outfile, format=format, metadata=dict(creationDate=None))
+    fig.savefig(outfile, format=format, metadata=dict(Creationdate=None))
 
 
 def plot(h5):
