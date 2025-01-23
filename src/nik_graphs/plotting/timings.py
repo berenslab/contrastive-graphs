@@ -5,7 +5,7 @@ from ..plot import add_letters, translate_plotname
 
 def deplist(plotname=None):
     return [
-        "../dataframes/all_benchmarks.parquet",
+        "../dataframes/main_benchmarks.parquet",
         inspect.getfile(translate_plotname),
     ]
 
@@ -23,6 +23,8 @@ def plot_bars(df_full, x_sort_col="n_edges"):
     import numpy as np
     import polars as pl
     from matplotlib import pyplot as plt
+
+    from ..plot import name2color, translate_plotname
 
     df1 = df_full.filter(pl.col("name") != "spectral")
 
@@ -55,7 +57,9 @@ def plot_bars(df_full, x_sort_col="n_edges"):
             df = df.sort(by=x_sort_col)
             x, m, std = df.with_row_index()[["index", "mean", "std"]]
             label = translate_plotname(df["name"][0], _return="identity")
-            ax.bar(x + i * bar_width, m, label=label, width=bar_width)
+            color = name2color(df["name"][0])
+            kwargs = dict(label=label, width=bar_width, color=color)
+            ax.bar(x + i * bar_width, m, **kwargs)
             ax.errorbar(
                 x + i * bar_width,
                 m,
