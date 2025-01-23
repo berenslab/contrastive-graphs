@@ -76,9 +76,10 @@ def format_table(dispatch, outfile, format="tex"):
 def tex_table(df, outfile, metric_keys=["knn", "lin", "recall"]):
     import re
 
+    import matplotlib as mpl
     import polars as pl
 
-    from ..plot import translate_plotname
+    from ..plot import name2color, translate_plotname
 
     df = (
         df.sort("n_edges")
@@ -127,8 +128,8 @@ def tex_table(df, outfile, metric_keys=["knn", "lin", "recall"]):
         x = re.sub("τ(.*)", r"$\\tau\1$", x)
         x = x.replace("±", r"${}\pm{}$")
         colorf = (
-            r"{{\bf\color{{purple}}{x}}}"
-            if "tsne" == x or "CNE" in x
+            r"{{\bf\color{{gne}}{x}}}"
+            if x in ["tsne", "cne,temp=0.05", "cne,loss=infonce-temp"]
             else "{x}"
         )
         x = translate_plotname(x, _return="identity")
@@ -146,9 +147,11 @@ def tex_table(df, outfile, metric_keys=["knn", "lin", "recall"]):
 
         fw.writeln(r"\begin{document}")
         fw.writeln(begintable)
-        for key in metric_keys:
-            # write out a header comment showing the knn/lin/...
-            with fw.indent():
+        with fw.indent():
+            color_hex = mpl.colors.to_hex(name2color("tsne"))[1:].upper()
+            fw.writeln(r"\definecolor{gne}{HTML}" f"{{{color_hex}}}")
+            for key in metric_keys:
+                # write out a header comment showing the knn/lin/...
                 fw.writeln("%" * 20 + f"\n%%%{key:^14s}%%%\n" + "%" * 20)
                 fw.writeln(rf"\caption{{{key} accuracy table.}}")
                 fw.writeln(r"\vskip0.075in")
