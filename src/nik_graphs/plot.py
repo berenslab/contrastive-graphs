@@ -119,7 +119,7 @@ def translate_plotname(x, _return="error"):
         case "cne":
             s = "CNE, τ=0.5"
         case "cne,loss=infonce-temp":
-            s = "CNEτ"
+            s = "graph CNEτ"
         case "deepwalk":
             s = "DeepWalk"
         case "node2vec":
