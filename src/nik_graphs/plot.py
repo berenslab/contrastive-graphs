@@ -112,8 +112,18 @@ def translate_plotname(x, _return="error"):
             s = "SGtSNEpi"
         case "drgraph":
             s = "DRGraph"
-        case "spectral":
+        case str(x) if x.startswith("spectral"):
             s = "Laplacian E."
+        case "cne,temp=0.05":
+            s = "graph CNE"
+        case "cne":
+            s = "CNE, τ=0.5"
+        case "cne,loss=infonce-temp":
+            s = "CNEτ"
+        case "deepwalk":
+            s = "DeepWalk"
+        case "node2vec":
+            s = x
         case str(x) if x in dataset_capitalize:
             s = x.title()
         case str(x) if x in dataset_allcaps:
