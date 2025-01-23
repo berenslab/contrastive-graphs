@@ -40,15 +40,13 @@ def format_table(dispatch, outfile, format="tex"):
 
     df_fmt = (
         df.sort("n_edges")
-        .group_by(["dataset", "run_name", "dim"], maintain_order=True)
+        .group_by(["dataset", "name", "dim"], maintain_order=True)
         .agg(
-            pl.col("name").first(),
             pl.col("knn").map_elements(mean_std_fmt, return_dtype=str),
             pl.col("lin").map_elements(mean_std_fmt, return_dtype=str),
             pl.col("recall").map_elements(mean_std_fmt, return_dtype=str),
             pl.col("time").map_elements(mean_std_fmt_time, return_dtype=str),
         )
-        .drop("run_name")
     )
     # df_fmt looks something like:
     #
@@ -84,13 +82,11 @@ def tex_table(df, outfile, metric_keys=["knn", "lin", "recall"]):
 
     df = (
         df.sort("n_edges")
-        .group_by(["dataset", "run_name", "dim"], maintain_order=True)
+        .group_by(["dataset", "name", "dim"], maintain_order=True)
         .agg(
-            pl.col("name").first(),
             pl.col("knn", "lin", "recall").mean().name.prefix("mean_"),
             pl.col("knn", "lin", "recall").std().name.prefix("std_"),
         )
-        .drop("run_name")
     )
 
     def mean_std_fmt_tex(df, metric):
