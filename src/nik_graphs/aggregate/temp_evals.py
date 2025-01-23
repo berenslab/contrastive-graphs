@@ -3,10 +3,18 @@ import itertools
 import zipfile
 from pathlib import Path
 
-DATASETS = ["cora", "computer", "photo", "citeseer", "mnist"]
+DATASETS = [
+    "cora",
+    "computer",
+    "photo",
+    "citeseer",
+    "mnist",
+    "arxiv",
+    "pubmed",
+    "mag",
+]
 TEMPERATURES = [x * 10**i for i in range(-4, 1) for x in [1, 5]]
 RANDOM_STATES = [None, 1111, 2222]
-N_EPOCHS = 30
 
 
 # example plotname = "temperatures"
@@ -23,19 +31,13 @@ def deps(dispatch):
 
     sig = inspect.signature(tsimcne_nonparam)
     default_temp = sig.parameters["temp"].default
-    # default_loss = sig.parameters["loss"].default
-    default_n_epochs = sig.parameters["n_epochs"].default
-
-    n_epochs = f",n_epochs={N_EPOCHS}" if default_n_epochs != N_EPOCHS else ""
 
     paths = []
     for dataset, temp, r in iterator():
         path = Path("../runs") / dataset
         tempstr = f",temp={temp}" if temp != default_temp else ""
         randstr = f",random_state={r}" if r is not None else ""
-        paths.append(
-            path / ("cne,metric=cosine" + tempstr + n_epochs + randstr)
-        )
+        paths.append(path / ("cne" + tempstr + randstr))
 
     depdict = {
         k: [p / k / "1.zip" for p in paths]
