@@ -161,9 +161,9 @@ def translate_acc_short(x):
 def name2color(x, _return="raise_error"):
     match x:
         case "tsne" | "cne,temp=0.05" | "cne,loss=infonce-temp":
-            c = "xkcd:blue"
+            c = "tab:blue"
         case "sgtsnepi":
-            c = "xkcd:orange"
+            c = "tab:orange"
         case "tfdp":
             c = "xkcd:deep lavender"
         case "fa2":
