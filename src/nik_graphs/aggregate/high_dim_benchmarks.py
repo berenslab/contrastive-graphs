@@ -11,29 +11,13 @@ DATASETS = [
     "pubmed",
     "mag",
 ]
-MODELDICT = {
-    "CNE, τ=0.5": "cne",
-    "CNE, τ=0.05": "cne,temp=0.05",
-    "CNEτ": "cne,loss=infonce-temp",
-    "deepwalk": "deepwalk",
-    "node2vec": "node2vec",
-    "spectral": "spectral,dim=128",
-}
-LAYOUTDICT = {
-    k: k for k in ["tsne", "spectral", "sgtsnepi", "drgraph", "fa2", "tfdp"]
-}
 MODELS = [
-    "tsne",
-    "spectral",
-    "sgtsnepi",
-    "drgraph",
-    "fa2",
-    "tfdp",
-    "deepwalk",
-    "node2vec",
     "cne",
     "cne,temp=0.05",
     "cne,loss=infonce-temp",
+    "deepwalk",
+    "node2vec",
+    "spectral,dim=128",
 ]
 RANDOM_STATES = [None, 1111, 2222]
 
@@ -50,7 +34,7 @@ def deps(dispatch):
 
     paths = []
 
-    for dataset, (mname, modelstr), r in iterator():
+    for dataset, modelstr, r in iterator():
         # modname = model.split(",")[0]
 
         path = Path("../runs") / dataset
@@ -71,7 +55,7 @@ def deps(dispatch):
 
 
 def iterator():
-    return itertools.product(DATASETS, MODELDICT.items(), RANDOM_STATES)
+    return itertools.product(DATASETS, MODELS, RANDOM_STATES)
 
 
 def aggregate_path(path, outfile=None):
@@ -84,7 +68,7 @@ def aggregate_path(path, outfile=None):
     results = defaultdict(list)
     pathdict = dict()
     for key, ziplist in deps(path).items():
-        for (dataset, (mname, modelstr), r), zipf in zip(iterator(), ziplist):
+        for (dataset, modelstr, r), zipf in zip(iterator(), ziplist):
             zpath = zipfile.Path(zipf)
 
             # "." is the first entry, so here we store all columns
@@ -105,8 +89,7 @@ def aggregate_path(path, outfile=None):
                 else:
                     results["learned_temp"].append(None)
                 results["dataset"].append(dataset)
-                results["name"].append(mname)
-                results["run_name"].append(modelstr)
+                results["name"].append(modelstr)
                 results["random_state"].append(r)
                 secs = (zpath / "elapsed_secs.txt").read_text()
                 results["time"].append(float(secs))

@@ -13,7 +13,6 @@ def aggregate_path(path, outfile=None):
 
     df_low1 = df_low.with_columns(
         pl.lit(None, dtype=float).alias("learned_temp"),
-        pl.col("name").alias("run_name"),
         pl.lit(2).alias("dim"),
     ).select(colnames)
 
