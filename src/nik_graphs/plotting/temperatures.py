@@ -12,7 +12,7 @@ def deplist(plotname):
     # dataset, algo, _name = plotname.name.split(".")
     assert plotname.name == "temperatures"
 
-    path = Path("../dataframes/temp_evals.csv")
+    path = Path("../dataframes/temp_evals.parquet")
 
     return [path]
 
