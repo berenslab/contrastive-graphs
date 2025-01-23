@@ -26,7 +26,7 @@ def plot_bars(df_full, x_sort_col="n_edges"):
 
     from ..plot import name2color, translate_plotname
 
-    df1 = df_full.filter(pl.col("name") != "spectral")
+    df1 = df_full.filter(~pl.col("name").str.starts_with("spectral"))
 
     panels = ["2", "128"]
     mosaic = np.array([[d, f"legend{d}"] for d in panels]).reshape(1, -1)
