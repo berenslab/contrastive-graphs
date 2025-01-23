@@ -1,3 +1,4 @@
+from ..plot import name2color, translate_plotname
 from ..tex_utils import IndentedWriter
 
 
@@ -11,6 +12,7 @@ def deplist(dispatch=None, format="txt"):
         tdir = projroot / "media/table"
         d = [
             inspect.getfile(IndentedWriter),
+            inspect.getfile(name2color),
             tdir / "icml2025.sty",
             tdir / "icml2025.bst",
         ]
@@ -78,8 +80,6 @@ def tex_table(df, outfile, metric_keys=["knn", "lin", "recall"]):
 
     import matplotlib as mpl
     import polars as pl
-
-    from ..plot import name2color, translate_plotname
 
     df = (
         df.sort("n_edges")
