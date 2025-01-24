@@ -19,7 +19,7 @@ def deplist(plotname):
 
 def plot_path(plotname, outfile, format="pdf"):
     deps = deplist(plotname)
-    df = pl.read_csv(deps[0])
+    df = pl.read_parquet(deps[0])
 
     return plot(df, outfile=outfile, format=format)
 
