@@ -72,21 +72,9 @@ def aggregate_path(path, outfile=None):
 
             else:
                 with zipfile.ZipFile(zipf) as zf:
-                    with zf.open("scores.csv") as f:
-                        df1 = pl.read_csv(f).drop("step")
-
                     with zf.open("score.txt") as f:
                         score = float(f.read())
-                        df2 = pl.DataFrame(
-                            dict(epoch=[N_EPOCHS - 1], score=[score])
-                        )
-                # check if the final accuracy has already been
-                # computed because the last embedding has been saved
-                # (n_epochs % callback_freq == 0) in the training.
-                if df2["epoch"].item() in df1["epoch"]:
-                    df__ = df1
-                else:
-                    df__ = df1.vstack(df2)
+                        df__ = pl.DataFrame(dict(epoch=[99], score=[score]))
             df__ = df__.with_columns(
                 pl.lit(dataset).alias("dataset"),
                 pl.lit(float(temp)).alias("temp"),
