@@ -122,7 +122,9 @@ def add_scalebar(
     return sb
 
 
-def add_scalebar_frac(ax, frac_len=0.125, eps=0.5, only_x=True):
+def add_scalebar_frac(
+    ax, frac_len=0.125, eps=0.5, only_x=True, hidex=True, hidey=True
+):
     assert only_x, "Only usage in for this specific use case for now."
 
     xmin, xmax, *_ = ax.axis()
@@ -135,8 +137,8 @@ def add_scalebar_frac(ax, frac_len=0.125, eps=0.5, only_x=True):
         sizey=0,
         sizex=length,
         labelx=lbl,
-        hidex=True,
-        hidey=True,
+        hidex=hidex,
+        hidey=hidey,
     )
 
 
