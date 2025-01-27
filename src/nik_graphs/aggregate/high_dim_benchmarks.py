@@ -12,10 +12,10 @@ DATASETS = [
     "mag",
 ]
 MODELS = [
-    "cne",
     "cne,temp=0.05",
     "cne,loss=infonce-temp",
     "cne,temp=0.05,initialization=random",
+    "cne",
     "deepwalk",
     "node2vec",
     "spectral,dim=128",
