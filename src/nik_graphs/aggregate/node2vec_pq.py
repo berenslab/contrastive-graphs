@@ -31,7 +31,7 @@ def deps(dispatch):
         path = Path("../runs") / dataset
         randstr = f",random_state={r}" if r is not None else ""
         pstr = "" if p == 1 else f",{p=}"
-        qstr = "" if q == 1 else f",{p=}"
+        qstr = "" if q == 1 else f",{q=}"
         modelstr = f"node2vec{pstr}{qstr}"
         paths.append(path / (modelstr + randstr))
 
