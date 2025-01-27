@@ -49,15 +49,7 @@ def deps(dispatch):
 
 
 def iterator():
-    # mag/node2vec,p=0.25,q=4,random_state=1111
-    # mag/node2vec,p=2,q=2,random_state=2222
-    return (
-        row
-        for row in itertools.product(DATASETS, PS, QS, RANDOM_STATES)
-        if not (
-            (row == ("mag", 0.25, 4, 1111)) or (row == ("mag", 2, 2, 2222))
-        )
-    )
+    return itertools.product(DATASETS, PS, QS, RANDOM_STATES)
 
 
 def aggregate_path(path, outfile=None):
