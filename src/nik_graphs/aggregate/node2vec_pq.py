@@ -9,7 +9,6 @@ DATASETS = [
     "mnist",
     "pubmed",
     "arxiv",
-    "mag",
 ]
 RANDOM_STATES = [None, 1111, 2222]
 PS = [0.25, 0.5, 1, 2, 4]
