@@ -54,7 +54,9 @@ def iterator():
     return (
         row
         for row in itertools.product(DATASETS, PS, QS, RANDOM_STATES)
-        if not (row == ("mag", 0.25, 4, 1111)) or (row == ("mag", 2, 2, 2222))
+        if not (
+            (row == ("mag", 0.25, 4, 1111)) or (row == ("mag", 2, 2, 2222))
+        )
     )
 
 
