@@ -32,29 +32,52 @@ def plot(df_full):
     ):
         axs = sfig.subplots(1, 3)
         sfig.suptitle(translate_plotname(dataset))
+
+        n_bars = len(df["q"].unique())
+        bar_width = 1 / (n_bars + 1.62)
+        _dftix = df.unique("p").with_row_index()
+        cmap = plt.get_cmap("copper")
+        colors = [cmap(x) for x in np.linspace(0.2, 1, num=n_bars)]
+
         for m, ax in zip(metrics, axs):
             # ax.set_title(m)
-            df_ = df.pivot("q", index="p", values=m, aggregate_function="mean")
-            ps = df_["p"]
-            qs = [float(q) for q in df_.select(pl.all().exclude("p")).columns]
+            for i, (((p,), df_), color) in enumerate(
+                zip(df.group_by("p", maintain_order=True), colors)
+            ):
 
-            mat = df_.select(pl.all().exclude("p")).to_numpy()
+                x, mean, std = (
+                    df_.group_by("q", maintain_order=True)
+                    .agg(mean=pl.mean(m), std=pl.std(m))
+                    .with_row_index()
+                    .select("index", "mean", "std")
+                )
+                ax.bar(
+                    x + i * bar_width,
+                    mean,
+                    width=bar_width,
+                    color=color,
+                    label=f"${p=}$",
+                )
 
-            pix, qix = np.unravel_index(mat.argmax(), mat.shape)
-
-            mappbl = ax.imshow(mat.T, origin="lower", cmap="viridis")
-            sfig.colorbar(mappbl, ax=ax)
+            [ax.axhline(y, color="white") for y in [0.25, 0.5, 0.75]]
+            ax.update_datalim([(0, 1)])
             ax.tick_params("both", length=0)
-            ax.set_xticks([pix], [f"{ps[pix.item()]}"])
-            ax.set_yticks([qix], [f"{qs[qix.item()]}"])
-            # ax.pcolormesh(ps, qs, mat, cmap="viridis")
-            # ax.set_xscale("log", base=2)
-            # ax.set_yscale("log", base=2)
-            # ax.set_xlim(0.1875, 6)
-            # ax.set_ylim(0.1875, 6)
-            # ax.set_xticks(ps)
-            # ax.set_yticks(ps)
-            # # ax.margins(0)
-            # ax.set_aspect(1)
+            ax.set_yticks([])
+            ax.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
+            ax.hlines(
+                [0] * len(_dftix),
+                xmin=_dftix["index"] - bar_width / 2,
+                xmax=_dftix["index"] + bar_width * n_bars - bar_width / 2,
+                lw=plt.rcParams["axes.linewidth"],
+                color="black",
+                clip_on=False,
+            )
+            [ax.spines[x].set_visible(False) for x in ["bottom", "left"]]
+            ax.margins(x=0)
 
+    handles, labels = ax.get_legend_handles_labels()
+    figs[-1, -1].legend(handles=handles, labels=labels, ncols=2)
+    [fig.get_axes()[0].set_yticks([0.25, 0.5, 0.75, 1]) for fig in figs[0]]
+    # ax0 = fig.get_axes()[0]
+    # [ax.sharey(ax0) for ax in fig.get_axes()[1:]]
     return fig
