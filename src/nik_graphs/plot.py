@@ -92,9 +92,9 @@ def main():
 
 
 def translate_plotname(x, _return="error"):
-    dataset_capitalize = ["cora", "citeseer", "pubmed", "computer", "photo"]
+    dataset_capitalize = ["cora", "citeseer", "computer", "photo"]
     dataset_allcaps = ["mag", "sbm"]
-    dataset_mapping = dict(arxiv="arXiv", mnist="MNIST $k$NN")
+    dataset_mapping = dict(arxiv="arXiv", mnist="MNIST $k$NN", pubmed="PubMed")
     match x:
         case "lin":
             s = "linear"
