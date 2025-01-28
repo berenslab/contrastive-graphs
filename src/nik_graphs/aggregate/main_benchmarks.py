@@ -15,19 +15,28 @@ def aggregate_path(path, outfile=None):
         df_in.unpivot(
             ["recall", "knn", "lin"], index=["p", "q", "name", "dataset"]
         )
-        .group_by(["dataset", "name", "p", "q"])
+        .group_by(["dataset", "variable", "name", "p", "q"])
         .agg(pl.mean("value"))
-        .filter(pl.col("value") == pl.max("value").over("dataset", "name"))
+        .filter(
+            pl.col("value")
+            == pl.max("value").over("dataset", "variable", "name")
+        )
     ).drop("value")
 
-    df = df_in.join(
-        df_pq,
-        on=["dataset", "name", "p", "q"],
-        join_nulls=True,
-        how="semi",
-    ).filter(
-        (pl.col("name") == "cne,temp=0.05")
-        | ~pl.col("name").str.starts_with("cne"),
+    colnames = df_in.collect_schema().names()
+    df = (
+        df_in.unpivot(["recall", "knn", "lin"], index=colnames)
+        .join(
+            df_pq,
+            on=["dataset", "variable", "name", "p", "q"],
+            join_nulls=True,
+            how="semi",
+        )
+        .drop("variable", "value")
+        .filter(
+            (pl.col("name") == "cne,temp=0.05")
+            | ~pl.col("name").str.starts_with("cne"),
+        )
     )
 
     if outfile is not None:
