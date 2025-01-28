@@ -4,11 +4,13 @@ def deplist(plotname=None):
 
 def plot_path(plotname, outfile, format="pdf"):
     import polars as pl
+    from matplotlib import pyplot as plt
 
     df = pl.read_parquet(deplist(plotname)[0])
 
-    fig = plot(df)
-    fig.savefig(outfile, format=format)
+    with plt.rc_context({"xtick.labelsize": 6}):
+        fig = plot(df)
+        fig.savefig(outfile, format=format)
 
 
 def plot(df_full):
@@ -20,31 +22,25 @@ def plot(df_full):
     from ..plot import translate_plotname  # translate_acc_short,
 
     metrics = ["recall", "knn", "lin"]
-    # norms = [
-    #     mpl.colors.LogNorm(df_full[m].min(), df_full[m].max()) for m in metrics
-    # ]
 
-    fig = plt.figure(figsize=(6.75, 2.5))
-    figs = fig.subfigures(3, 3)
+    n_bars = len(df_full["q"].unique())
+    bar_width = 1 / (n_bars + 1.62)
+    _dftix = df_full.unique("p", maintain_order=True).with_row_index()
+    cmap = plt.get_cmap("copper")
+    colors = [cmap(x) for x in np.linspace(0.3, 1, num=n_bars)]
 
-    for ((dataset,), df), sfig in zip(
-        df_full.group_by("dataset", maintain_order=True), figs.flat
-    ):
-        axs = sfig.subplots(1, 3)
-        sfig.suptitle(translate_plotname(dataset))
+    fig, axxs = plt.subplots(3, 9, figsize=(6.75, 3))
 
-        n_bars = len(df["q"].unique())
-        bar_width = 1 / (n_bars + 1.62)
-        _dftix = df.unique("p", maintain_order=True).with_row_index()
-        cmap = plt.get_cmap("copper")
-        colors = [cmap(x) for x in np.linspace(0.3, 1, num=n_bars)]
+    ax_iter = iter(axxs.flat)
+    for (dataset,), df in df_full.group_by("dataset", maintain_order=True):
 
-        for m, ax in zip(metrics, axs):
-            # ax.set_title(m)
+        for m in metrics:
+            ax = next(ax_iter)
+            if m == "knn":
+                ax.set_title(translate_plotname(dataset))
             for i, (((q,), df_), color) in enumerate(
                 zip(df.group_by("q", maintain_order=True), colors)
             ):
-
                 x, mean, std = (
                     df_.group_by("p", maintain_order=True)
                     .agg(mean=pl.mean(m), std=pl.std(m))
@@ -56,7 +52,7 @@ def plot(df_full):
                     mean,
                     width=bar_width,
                     color=color,
-                    label=f"${q=}$",
+                    label=f"${q:g}$",
                 )
                 ax.errorbar(
                     x + i * bar_width,
@@ -70,7 +66,7 @@ def plot(df_full):
             [ax.axhline(y, color="white") for y in [0.25, 0.5, 0.75]]
             ax.update_datalim([(0, 1)])
             ax.tick_params("both", length=0)
-            ax.set_yticks([])
+            ax.set(yticks=[], xticks=[])
             ax.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
             ax.hlines(
                 [0] * len(_dftix),
@@ -80,22 +76,32 @@ def plot(df_full):
                 color="black",
                 clip_on=False,
             )
-            ax.set_xticks(
-                _dftix["index"] + (bar_width * (n_bars - 1)) / 2,
-                [f"{p:g}" for p in _dftix["p"]],
-                # _dftix.select(pl.format("{}", "p")).to_series().to_list(),
-                # rotation=45,
-                # ha="right",
-                # rotation_mode="anchor",
-            )
 
             [ax.spines[x].set_visible(False) for x in ["bottom", "left"]]
             ax.margins(x=0)
 
+    [ax.set_axis_off() for ax in ax_iter]
     handles, labels = ax.get_legend_handles_labels()
-    figs[-1, -1].legend(handles=handles, labels=labels, ncols=2)
-    [fig.get_axes()[0].set_yticks([0.25, 0.5, 0.75, 1]) for fig in figs[:, 0]]
-    # [ax.set_xlabel("p") for fig in figs[-1] for ax in fig.get_axes()]
-    # ax0 = fig.get_axes()[0]
-    # [ax.sharey(ax0) for ax in fig.get_axes()[1:]]
+    axxs[-1, -1].legend(
+        title="$q$",
+        handles=reversed(handles),
+        labels=reversed(labels),
+        ncols=1,
+        fontsize=7,
+        labelspacing=0.1,
+    )
+    [ax.set_yticks([0.25, 0.5, 0.75, 1]) for ax in axxs[:, 0]]
+    [
+        ax.set_xticks(
+            (_dftix["index"] + (bar_width * (n_bars - 1)) / 2)[i % 2 :: 2],
+            [f"{p:g}" for p in _dftix["p"]][i % 2 :: 2],
+            # _dftix.select(pl.format("{}", "p")).to_series().to_list(),
+            # rotation=45,
+            # ha="right",
+            # rotation_mode="anchor",
+        )[0].set_in_layout(False)
+        for i, ax in enumerate(axxs[-1])
+    ]
+
+    [ax.set_xlabel("$p$") for ax in axxs[-1]]
     return fig
