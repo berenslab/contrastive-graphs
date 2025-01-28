@@ -8,7 +8,7 @@ def plot_path(plotname, outfile, format="pdf"):
 
     df = pl.read_parquet(deplist(plotname)[0])
 
-    with plt.rc_context({"xtick.labelsize": 6}):
+    with plt.rc_context({"xtick.labelsize": 5}):
         fig = plot(df)
         fig.savefig(outfile, format=format)
 
@@ -19,7 +19,7 @@ def plot(df_full):
     import polars as pl
     from matplotlib import pyplot as plt
 
-    from ..plot import translate_plotname  # translate_acc_short,
+    from ..plot import translate_acc_short, translate_plotname
 
     metrics = ["recall", "knn", "lin"]
 
@@ -29,7 +29,9 @@ def plot(df_full):
     cmap = plt.get_cmap("copper")
     colors = [cmap(x) for x in np.linspace(0.3, 1, num=n_bars)]
 
-    fig, axxs = plt.subplots(3, 9, figsize=(6.75, 3))
+    fig, axxs = plt.subplots(
+        3, 9, figsize=(6.75, 3), gridspec_kw=dict(wspace=0)
+    )
 
     ax_iter = iter(axxs.flat)
     for (dataset,), df in df_full.group_by("dataset", maintain_order=True):
@@ -93,15 +95,18 @@ def plot(df_full):
     [ax.set_yticks([0.25, 0.5, 0.75, 1]) for ax in axxs[:, 0]]
     [
         ax.set_xticks(
-            (_dftix["index"] + (bar_width * (n_bars - 1)) / 2)[i % 2 :: 2],
-            [f"{p:g}" for p in _dftix["p"]][i % 2 :: 2],
-            # _dftix.select(pl.format("{}", "p")).to_series().to_list(),
-            # rotation=45,
+            (_dftix["index"] + (bar_width * (n_bars - 1)) / 2),
+            [f"{p:g}" for p in _dftix["p"]],
+            # rotation=90,
             # ha="right",
             # rotation_mode="anchor",
         )[0].set_in_layout(False)
         for i, ax in enumerate(axxs[-1])
     ]
+    for i, ax in enumerate(axxs[0]):
+        title = ax.get_title()
+        prefix = "" if title == "" else f"{title}\n"
+        ax.set_title(f"{prefix}{translate_acc_short(metrics[i % 3])}")
 
     [ax.set_xlabel("$p$") for ax in axxs[-1]]
     return fig
