@@ -29,13 +29,15 @@ def plot(df_full):
     cmap = plt.get_cmap("copper")
     colors = [cmap(x) for x in np.linspace(0.3, 1, num=n_bars)]
 
-    fig, axxs = plt.subplots(3, 9, figsize=(6.75, 3))
+    fig = plt.figure(figsize=(6.75, 3))
+    figs = fig.subfigures(3, 3)
 
-    ax_iter = iter(axxs.flat)
-    for (dataset,), df in df_full.group_by("dataset", maintain_order=True):
+    for ((dataset,), df), sfig in zip(
+        df_full.group_by("dataset", maintain_order=True), figs.flat
+    ):
 
-        for m in metrics:
-            ax = next(ax_iter)
+        axd = sfig.subplot_mosaic([metrics])
+        for m, ax in axd.items():
             if m == "knn":
                 ax.set_title(translate_plotname(dataset))
             for i, (((q,), df_), color) in enumerate(
@@ -80,9 +82,9 @@ def plot(df_full):
             [ax.spines[x].set_visible(False) for x in ["bottom", "left"]]
             ax.margins(x=0)
 
-    [ax.set_axis_off() for ax in ax_iter]
+    # [ax.set_axis_off() for ax in ax_iter]
     handles, labels = ax.get_legend_handles_labels()
-    axxs[-1, -1].legend(
+    figs[-1, -1].legend(
         title="$q$",
         handles=reversed(handles),
         labels=reversed(labels),
@@ -90,18 +92,19 @@ def plot(df_full):
         fontsize=7,
         labelspacing=0.1,
     )
-    [ax.set_yticks([0.25, 0.5, 0.75, 1]) for ax in axxs[:, 0]]
-    [
-        ax.set_xticks(
-            (_dftix["index"] + (bar_width * (n_bars - 1)) / 2)[i % 2 :: 2],
-            [f"{p:g}" for p in _dftix["p"]][i % 2 :: 2],
-            # _dftix.select(pl.format("{}", "p")).to_series().to_list(),
-            # rotation=45,
-            # ha="right",
-            # rotation_mode="anchor",
-        )[0].set_in_layout(False)
-        for i, ax in enumerate(axxs[-1])
-    ]
+    [fig.get_axes()[0].set_yticks([0.25, 0.5, 0.75, 1]) for fig in figs[:, 0]]
+    i = 0
+    for sfig in figs[-1]:
+        for ax in sfig.get_axes():
+            ax.set_xticks(
+                (_dftix["index"] + (bar_width * (n_bars - 1)) / 2)[i % 2 :: 2],
+                [f"{p:g}" for p in _dftix["p"]][i % 2 :: 2],
+                # _dftix.select(pl.format("{}", "p")).to_series().to_list(),
+                # rotation=45,
+                # ha="right",
+                # rotation_mode="anchor",
+            )
+            i += 1
 
-    [ax.set_xlabel("$p$") for ax in axxs[-1]]
+    [fig.supxlabel("$p$") for fig in figs[-1]]
     return fig
