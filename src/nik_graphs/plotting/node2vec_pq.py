@@ -35,18 +35,18 @@ def plot(df_full):
 
         n_bars = len(df["q"].unique())
         bar_width = 1 / (n_bars + 1.62)
-        _dftix = df.unique("p").with_row_index()
+        _dftix = df.unique("p", maintain_order=True).with_row_index()
         cmap = plt.get_cmap("copper")
-        colors = [cmap(x) for x in np.linspace(0.2, 1, num=n_bars)]
+        colors = [cmap(x) for x in np.linspace(0.3, 1, num=n_bars)]
 
         for m, ax in zip(metrics, axs):
             # ax.set_title(m)
-            for i, (((p,), df_), color) in enumerate(
-                zip(df.group_by("p", maintain_order=True), colors)
+            for i, (((q,), df_), color) in enumerate(
+                zip(df.group_by("q", maintain_order=True), colors)
             ):
 
                 x, mean, std = (
-                    df_.group_by("q", maintain_order=True)
+                    df_.group_by("p", maintain_order=True)
                     .agg(mean=pl.mean(m), std=pl.std(m))
                     .with_row_index()
                     .select("index", "mean", "std")
@@ -56,7 +56,15 @@ def plot(df_full):
                     mean,
                     width=bar_width,
                     color=color,
-                    label=f"${p=}$",
+                    label=f"${q=}$",
+                )
+                ax.errorbar(
+                    x + i * bar_width,
+                    mean,
+                    yerr=std,
+                    fmt="none",
+                    ecolor="xkcd:dark grey",
+                    zorder=5,
                 )
 
             [ax.axhline(y, color="white") for y in [0.25, 0.5, 0.75]]
@@ -72,12 +80,22 @@ def plot(df_full):
                 color="black",
                 clip_on=False,
             )
+            ax.set_xticks(
+                _dftix["index"] + (bar_width * (n_bars - 1)) / 2,
+                [f"{p:g}" for p in _dftix["p"]],
+                # _dftix.select(pl.format("{}", "p")).to_series().to_list(),
+                # rotation=45,
+                # ha="right",
+                # rotation_mode="anchor",
+            )
+
             [ax.spines[x].set_visible(False) for x in ["bottom", "left"]]
             ax.margins(x=0)
 
     handles, labels = ax.get_legend_handles_labels()
     figs[-1, -1].legend(handles=handles, labels=labels, ncols=2)
-    [fig.get_axes()[0].set_yticks([0.25, 0.5, 0.75, 1]) for fig in figs[0]]
+    [fig.get_axes()[0].set_yticks([0.25, 0.5, 0.75, 1]) for fig in figs[:, 0]]
+    # [ax.set_xlabel("p") for fig in figs[-1] for ax in fig.get_axes()]
     # ax0 = fig.get_axes()[0]
     # [ax.sharey(ax0) for ax in fig.get_axes()[1:]]
     return fig
