@@ -4,6 +4,8 @@ from matplotlib import pyplot as plt
 
 from ..plot import add_letters, translate_plotname
 
+usetex = False
+
 
 def deplist(plotname=None):
     return []
@@ -63,7 +65,7 @@ def plot():
             arrowstyle="-|>",
             color="xkcd:dark grey",
             connectionstyle="arc3,rad=-0.3",
-            shrinkB=15,
+            shrinkB=7.5,
         ),
     )
     fig.add_artist(annot)
@@ -103,7 +105,7 @@ def plot():
         r"$\mathbb{S}^{127}$",
         ha="left",
         va="top",
-        usetex=True,
+        usetex=usetex,
         transform=t,
         fontsize=14,
         # zdir="y",
@@ -147,18 +149,35 @@ def plot_tsne(ax, pts, A, random_state=5):
     data = Y @ rot.round(10)
 
     ax.tick_params("both", length=0)
-    ax.set(xticks=[], yticks=[], xlabel="$t$-SNE 1", ylabel="$t$-SNE 2")
+    ax.set(xticks=[], yticks=[])  # , xlabel="$t$-SNE 1", ylabel="$t$-SNE 2")
+    # [ax.spines[m].set_visible(True) for m in ["right", "top"]]
+    [ax.spines[m].set_visible(False) for m in ["left", "bottom"]]
+    kwargs = dict(
+        xycoords=ax.transAxes,
+        clip_on=False,
+        arrowprops=dict(
+            arrowstyle="<|-",
+            color="xkcd:dark grey",
+            # connectionstyle="arc3,rad=0.3",
+            shrinkA=0,
+            shrinkB=0,
+            lw=plt.rcParams["axes.linewidth"],
+        ),
+    )
+    ax.annotate("", (0, 0), (0, 1), **kwargs)
+    ax.annotate("", (0, 0), (1, 0), **kwargs)
 
+    ax.margins(0.1)
     ax.scatter(*data.T, c="xkcd:dark grey")
     ax.set_aspect(1)
     ax.add_collection(get_edgelines(data, A))
     ax.set_title(translate_plotname("tsne"))
     ax.text(
-        1,
+        1.025,
         0.95,
         r"$\mathbb{R}^2$",
         transform=ax.transAxes,
-        usetex=True,
+        usetex=usetex,
         ha="left",
         va="top",
         fontsize=14,
@@ -186,6 +205,13 @@ def plot_cne(ax, pts, A):
         xs, ys, zs, color="xkcd:slate grey", alpha=0.3, zorder=1, lw=0.1
     )
     # ax.plot_surface(xs, ys, zs, color="xkcd:light grey", alpha=0.5)
+
+    # theta = np.linspace(0, 2 * np.pi, 100)
+    # z = np.zeros(100)
+    # x = np.sin(theta)
+    # y = np.cos(theta)
+    # ax.plot(x, y, z, color="black", alpha=0.75)
+    # ax.plot(z, x, y, color="black", alpha=0.75)
 
     data = pts * 1.1
     lon, lat = data.T
@@ -224,7 +250,7 @@ def plot_kl(ax):
         0.5,
         0.5,
         loss,
-        usetex=True,
+        usetex=usetex,
         transform=ax.transAxes,
         ha="center",
         va="center",
@@ -244,7 +270,7 @@ def plot_infonce(ax):
         0.5,
         0.5,
         loss,
-        usetex=True,
+        usetex=usetex,
         transform=ax.transAxes,
         ha="center",
         va="center",
