@@ -46,7 +46,9 @@ def plot():
     )
 
     # pts1 = rng.normal(pts, 0.1)
-    with plt.rc_context({"lines.markersize": 15**0.5}):
+    with plt.rc_context(
+        {"lines.markersize": 20**0.5, "scatter.edgecolors": "white"}
+    ):
         plot_graph(axd["g"], pts, A)
         plot_tsne(axd["t"], pts, A, rng.integers(2**31 - 1))
         plot_cne(axd["c"], pts, A)
