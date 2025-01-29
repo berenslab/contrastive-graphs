@@ -8,9 +8,8 @@ def plot_path(plotname, outfile, format="pdf"):
 
     df = pl.read_parquet(deplist(plotname)[0])
 
-    with plt.rc_context({"xtick.labelsize": 5}):
-        fig = plot(df)
-        fig.savefig(outfile, format=format)
+    fig = plot(df)
+    fig.savefig(outfile, format=format)
 
 
 def plot(df_full):
@@ -92,11 +91,12 @@ def plot(df_full):
         fontsize=7,
         labelspacing=0.1,
     )
-    [ax.set_yticks([0.25, 0.5, 0.75, 1]) for ax in axxs[:, 0]]
+    [ax.set_yticks([0.25, 0.5, 0.75, 1]) for ax in axxs[:, ::3].flat]
     [
         ax.set_xticks(
-            (_dftix["index"] + (bar_width * (n_bars - 1)) / 2),
-            [f"{p:g}" for p in _dftix["p"]],
+            (_dftix["index"] + (bar_width * (n_bars - 1)) / 2)[i % 2 :: 2],
+            [f"{p:g}" for p in _dftix["p"]][i % 2 :: 2],
+            fontsize=5,
             # rotation=90,
             # ha="right",
             # rotation_mode="anchor",
@@ -106,7 +106,9 @@ def plot(df_full):
     for i, ax in enumerate(axxs[0]):
         title = ax.get_title()
         prefix = "" if title == "" else f"{title}\n"
-        ax.set_title(f"{prefix}{translate_acc_short(metrics[i % 3])}")
+        ax.set_title(
+            f"{prefix}{translate_acc_short(metrics[i % 3])}", linespacing=1.5
+        )
 
     [ax.set_xlabel("$p$") for ax in axxs[-1]]
     return fig
