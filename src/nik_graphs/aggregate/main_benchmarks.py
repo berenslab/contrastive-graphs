@@ -9,29 +9,19 @@ def aggregate_path(path, outfile=None):
 
     # get the best p, q parameter combination for node2vec and save
     # those off in df_pq, so that we can do a semi join on that.  It
-    # also carries along the p, q as nulls so that all other methods
-    # are also preserved
+    # also carries along the name (p, q as nulls) so that all other
+    # methods are also preserved
+    join_on = ["dataset", "name", "p", "q"]
     df_pq = (
-        df_in.unpivot(
-            ["recall", "knn", "lin"], index=["p", "q", "name", "dataset"]
-        )
-        .group_by(["dataset", "variable", "name", "p", "q"])
-        .agg(pl.mean("value"))
-        .filter(
-            pl.col("value")
-            == pl.max("value").over("dataset", "variable", "name")
-        )
-    ).drop("value")
+        df_in.group_by(join_on)
+        .agg(pl.mean("recall"))
+        .filter(pl.col("recall") == pl.max("recall").over("dataset", "name"))
+    )
 
     colnames = df_in.collect_schema().names()
     df = (
         df_in.unpivot(["recall", "knn", "lin"], index=colnames)
-        .join(
-            df_pq,
-            on=["dataset", "variable", "name", "p", "q"],
-            join_nulls=True,
-            how="semi",
-        )
+        .join(df_pq, on=join_on, join_nulls=True, how="semi")
         .drop("variable", "value")
         .filter(
             (pl.col("name") == "cne,temp=0.05")
