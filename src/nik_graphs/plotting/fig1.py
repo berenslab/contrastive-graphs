@@ -156,6 +156,15 @@ def plot():
 
 
 def plot_graph(ax, pts, A):
+    ax.text(
+        0,
+        0.5,
+        r"$(\mathcal V, \mathcal E)$",
+        usetex=usetex,
+        va="top",
+        transform=ax.transAxes,
+        fontsize=plt.rcParams["axes.titlesize"],
+    )
     ax.set_axis_off()
     ax.set_aspect(1)
     ax.scatter(*pts.T, c="xkcd:dark grey", s=15)
