@@ -1,14 +1,16 @@
+from pathlib import Path
+
 import matplotlib as mpl
 import numpy as np
 from matplotlib import pyplot as plt
 
 from ..plot import add_letters, translate_plotname
 
-usetex = False
+usetex = True
 
 
 def deplist(plotname=None):
-    return []
+    return ["../bin/latex"]
 
 
 def plot_path(plotname, outfile, format="pdf"):
@@ -18,8 +20,17 @@ def plot_path(plotname, outfile, format="pdf"):
 
 
 def plot():
+    import os
+
     import matplotlib as mpl
     import numpy as np
+
+    # bin/tex/texlive/2025/bin/x86_64-linux/pdflatex
+    project_root = Path(__file__).parent.parent.parent.parent
+    os.environ["PATH"] = (
+        f"{project_root / 'bin/tex/texlive/2025/bin/x86_64-linux'}:"
+        + os.environ["PATH"]
+    )
 
     rng = np.random.default_rng(101)
 
