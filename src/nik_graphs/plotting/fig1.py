@@ -253,8 +253,7 @@ def plot_cne(ax, pts, A):
     ax.plot(x2, -x1, ls="solid", **largs)
 
     data = pts * 0.5
-    data[:, 0] += 0.4
-    data[:, 1] *= -1
+    data[:, 0] += np.pi / 8
     lon, lat = data.T
     x1, x2 = project_sphere_points(lon, lat)
     for lo, la, c1, c2 in zip(lon, lat, x1, x2):
@@ -282,7 +281,7 @@ def plot_cne(ax, pts, A):
 
 
 def project_sphere_points(
-    lon_rad, lat_rad, radius=1.0, perspective_distance=15.0, view_angle=-80
+    lon_rad, lat_rad, radius=1.0, perspective_distance=15.0, view_angle=80
 ):
     """
     Project spherical coordinates to 3D and then to 2D with perspective.
