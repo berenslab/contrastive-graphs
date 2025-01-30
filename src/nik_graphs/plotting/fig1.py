@@ -59,12 +59,12 @@ def plot():
     fig, axd = plt.subplot_mosaic(
         mosaic,
         figsize=(5, 1.8),
-        constrained_layout=dict(w_pad=0, h_pad=0),
+        constrained_layout=dict(w_pad=0, h_pad=0.005),
         width_ratios=[0.75, 1, 1.6],
     )
 
     with plt.rc_context(
-        {"lines.markersize": 25**0.5, "scatter.edgecolors": "white"}
+        {"lines.markersize": 40**0.5, "scatter.edgecolors": "white"}
     ):
         plot_graph(axd["g"], pts, A)
         plot_tsne(axd["t"], pts, A, rng.integers(2**31 - 1))
@@ -108,10 +108,10 @@ def plot():
     t = mpl.transforms.blended_transform_factory(
         fig.transSubfigure, axd["t"].transAxes
     )
-    x_txt = 0.23
+    x_txt = 0.25
     fig.text(
         x_txt - 0.01,
-        0.45,
+        0.49,
         "graph\nlayout",
         ma="right",
         va="bottom",
@@ -122,7 +122,7 @@ def plot():
         fig.transSubfigure, axd["c"].transAxes
     )
     fig.text(
-        x_txt + 0.0,
+        x_txt - 0.02,
         0.6,
         "node\nembedding",
         ma="right",
@@ -160,6 +160,21 @@ def plot_graph(ax, pts, A):
         transform=t,
         fontsize=plt.rcParams["axes.titlesize"],
     ).set_in_layout(False)
+
+    for name, idx in dict(i=5, j=4).items():
+        t = ax.figure.dpi_scale_trans + mpl.transforms.ScaledTranslation(
+            *pts[idx], ax.transData
+        )
+        ax.text(
+            -2 / 72,
+            0,
+            f"${name}$",
+            usetex=usetex,
+            transform=t,
+            ha="right",
+            va="bottom",
+        )
+
     ax.set_axis_off()
     ax.set_aspect(1)
     ax.scatter(*pts.T, c="xkcd:dark grey")
@@ -208,14 +223,7 @@ def plot_cne(ax, pts, A):
     ax.set_aspect("equal")
     ax.set_axis_off()
     ax.set_title(translate_plotname("cne,temp=0.05"))
-    ax.margins(0.02)
-
-    nsamp = 20
-    u = np.linspace(0, 2 * np.pi, nsamp)
-    v = np.linspace(0, np.pi, nsamp)
-    xs = np.outer(np.cos(u), np.sin(v))
-    ys = np.outer(np.sin(u), np.sin(v))
-    zs = np.outer(np.ones(np.size(u)), np.cos(v))
+    ax.margins(0.01)
 
     lcolor = "xkcd:dark grey"
     largs = dict(color=lcolor, lw=plt.rcParams["axes.linewidth"])
@@ -231,9 +239,7 @@ def plot_cne(ax, pts, A):
     x1, x2 = project_sphere_points(
         *np.linspace([-np.pi / 2, 0], [np.pi / 2, 0], endpoint=False).T
     )
-    ax.plot(x1, x2, ls="dashed", **largs)
     ax.plot(x2, x1, ls="dashed", **largs)
-    ax.plot(-x1, x2, ls="solid", **largs)
     ax.plot(x2, -x1, ls="solid", **largs)
 
     data = pts * 0.5
