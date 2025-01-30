@@ -65,7 +65,7 @@ def plot():
     )
 
     with plt.rc_context(
-        {"lines.markersize": 20**0.5, "scatter.edgecolors": "white"}
+        {"lines.markersize": 25**0.5, "scatter.edgecolors": "white"}
     ):
         plot_graph(axd["g"], pts, A)
         plot_tsne(axd["t"], pts, A, rng.integers(2**31 - 1))
@@ -146,12 +146,6 @@ def plot():
         fontsize=14,
     )
 
-    ldict = letter_dict()
-    for k, ltr in zip("gtcki", "abcdef"):
-        ldict.update(ha="left" if k in "gki" else "right")
-        axd[k].set_title(ltr, **ldict)
-    fig.draw(fig.canvas.get_renderer())
-
     return fig
 
 
@@ -190,20 +184,7 @@ def plot_tsne(ax, pts, A, random_state=5):
 
     ax.tick_params("both", length=0)
     ax.set(xticks=[], yticks=[])
-    [ax.spines[m].set_visible(False) for m in ["left", "bottom"]]
-    kwargs = dict(
-        xycoords=ax.transAxes,
-        clip_on=False,
-        arrowprops=dict(
-            arrowstyle="<|-",
-            color="xkcd:dark grey",
-            shrinkA=0,
-            shrinkB=0,
-            lw=plt.rcParams["axes.linewidth"],
-        ),
-    )
-    ax.annotate("", (0, 0), (0, 1), **kwargs)
-    ax.annotate("", (0, 0), (1, 0), **kwargs)
+    [s.set_visible(True) for s in ax.spines.values()]
 
     ax.margins(0.1)
     ax.scatter(*data.T, c="xkcd:dark grey")
