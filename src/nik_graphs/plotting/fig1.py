@@ -4,12 +4,13 @@ import matplotlib as mpl
 import numpy as np
 from matplotlib import pyplot as plt
 
-from ..plot import letter_dict, translate_plotname
+from ..plot import translate_plotname
 
 usetex = True
 graph_color = "black"
 graph_edge_color = graph_color
 axes_edge_color = "xkcd:medium grey"
+
 
 plt.rcParams.update(
     {
@@ -61,9 +62,8 @@ def plot():
     """
     fig, axd = plt.subplot_mosaic(
         mosaic,
-        figsize=(5.2, 1.8),
+        figsize=(6.2, 1.8),
         constrained_layout=dict(w_pad=0, h_pad=0),
-        width_ratios=[0.75, 1, 1.5],
     )
 
     with plt.rc_context(
@@ -73,7 +73,7 @@ def plot():
         plot_tsne(axd["t"], pts, A, rng.integers(2**31 - 1))
         plot_cne(axd["c"], pts, A)
 
-    with plt.rc_context({"font.size": 12}):
+    with plt.rc_context({"font.size": 10}):
         plot_kl(axd["k"])
         plot_infonce(axd["i"])
 
@@ -86,7 +86,7 @@ def plot():
         arrowprops=dict(
             arrowstyle="-|>",
             color="xkcd:dark grey",
-            connectionstyle="arc3,rad=-0.3",
+            connectionstyle="arc3,rad=-0.225",
             shrinkB=5,
         ),
     )
@@ -94,13 +94,13 @@ def plot():
     annot = plt.Annotation(
         "",
         (0, 0.5),
-        (0.925, 0.53),
+        (0.95, 0.53),
         textcoords=axd["g"].transAxes,
         xycoords=axd["c"].transAxes,
         arrowprops=dict(
             arrowstyle="-|>",
             color="xkcd:dark grey",
-            connectionstyle="arc3,rad=0.3",
+            connectionstyle="arc3,rad=0.225",
             shrinkA=0,
             shrinkB=3,
         ),
@@ -111,7 +111,7 @@ def plot():
     t = mpl.transforms.blended_transform_factory(
         fig.transSubfigure, axd["t"].transAxes
     )
-    x_txt = 0.25
+    x_txt = 0.275
     fig.text(
         x_txt - 0.01,
         0.6,
@@ -126,7 +126,7 @@ def plot():
     )
     fig.text(
         x_txt - 0,
-        0.55,
+        0.575,
         "node\nembedding",
         ma="right",
         va="top",
@@ -145,7 +145,7 @@ def plot():
         va="top",
         usetex=usetex,
         transform=t,
-        fontsize=14,
+        fontsize=10,
     )
 
     return fig
@@ -156,7 +156,7 @@ def plot_graph(ax, pts, A):
         ax.figure.transSubfigure, ax.transAxes
     )
     ax.text(
-        0,
+        0.05,
         0.55,
         r"$G = (\mathcal V, \mathcal E)$",
         usetex=usetex,
@@ -212,15 +212,6 @@ def plot_tsne(ax, pts, A, random_state=5):
     ax.scatter(*data.T, c=graph_color)
     ax.set_aspect(1)
     ax.add_collection(get_edgelines(data, A))
-    # ax.text(
-    #     -0.05,
-    #     1,
-    #     translate_plotname("tsne"),
-    #     ha="right",
-    #     va="top",
-    #     transform=ax.transAxes,
-    #     fontsize=10,
-    # )
     ax.set_title(translate_plotname("tsne"))
     ax.text(
         1.025,
@@ -230,7 +221,7 @@ def plot_tsne(ax, pts, A, random_state=5):
         usetex=usetex,
         ha="left",
         va="top",
-        fontsize=14,
+        fontsize=10,
     )
 
 
@@ -242,15 +233,6 @@ def plot_cne(ax, pts, A):
         for axis in [ax.xaxis, ax.yaxis]
     ]
     [s.set_visible(False) for s in ax.spines.values()]
-    # ax.text(
-    #     0.1,
-    #     1,
-    #     translate_plotname("cne,temp=0.05"),
-    #     ha="right",
-    #     va="top",
-    #     transform=ax.transAxes,
-    #     fontsize=10,
-    # )
     ax.set_xlabel(
         translate_plotname("cne,temp=0.05"),
         fontsize=plt.rcParams["axes.titlesize"],
@@ -264,9 +246,6 @@ def plot_cne(ax, pts, A):
     )
     ax.update_datalim(circle.get_extents())
     ax.add_artist(circle)
-    # ax.plot_wireframe(
-    #     xs, ys, zs, color="xkcd:slate grey", alpha=0.3, zorder=1, lw=0.1
-    # )
     x1, x2 = project_sphere_points(
         *np.linspace([-np.pi / 2, 0], [np.pi / 2, 0], endpoint=False).T
     )
@@ -276,9 +255,7 @@ def plot_cne(ax, pts, A):
     data = pts * 0.5
     data[:, 0] += 0.4
     data[:, 1] *= -1
-    # data[:, 1] += 0.2
     lon, lat = data.T
-    x1, x2 = project_sphere_points(lon, lat)
     ax.scatter(x1, x2, c=graph_color, alpha=1, zorder=8)
 
     row, col = np.triu(A).nonzero()
@@ -335,7 +312,8 @@ def plot_kl(ax):
     ax.text(
         0.5,
         1,
-        "Kullback–Leibler div.",
+        # "Kullback–Leibler divergence",
+        "KL divergence",
         va="top",
         ha="center",
         # fontsize=plt.rcParams["axes.titlesize"],
