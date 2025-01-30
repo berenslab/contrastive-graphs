@@ -56,7 +56,6 @@ def plot():
     gci
     .ci
     """
-    # mosaic = [["graph", "tsne", "kl"], ["graph", "cne", "infonce"]]
     fig, axd = plt.subplot_mosaic(
         mosaic,
         figsize=(4.3, 1.8),
@@ -65,7 +64,6 @@ def plot():
         width_ratios=[0.75, 1, 1.6],
     )
 
-    # pts1 = rng.normal(pts, 0.1)
     with plt.rc_context(
         {"lines.markersize": 20**0.5, "scatter.edgecolors": "white"}
     ):
@@ -146,7 +144,6 @@ def plot():
         usetex=usetex,
         transform=t,
         fontsize=14,
-        # zdir="y",
     )
 
     ldict = letter_dict()
@@ -159,14 +156,6 @@ def plot():
 
 
 def plot_graph(ax, pts, A):
-    # ax.text(
-    #     0.25,
-    #     1,
-    #     "graph",
-    #     va="top",
-    #     transform=ax.transAxes,
-    #     fontsize=plt.rcParams["axes.titlesize"],
-    # )
     ax.set_axis_off()
     ax.set_aspect(1)
     ax.scatter(*pts.T, c="xkcd:dark grey", s=15)
@@ -185,15 +174,13 @@ def plot_tsne(ax, pts, A, random_state=5):
         theta=0,
         initialization="random",
         n_epochs=100,
-        # early_exaggeration_iter=0,
         random_state=random_state,
     )
     rot, _scale = linalg.orthogonal_procrustes(Y, pts)
     data = Y @ rot.round(10)
 
     ax.tick_params("both", length=0)
-    ax.set(xticks=[], yticks=[])  # , xlabel="$t$-SNE 1", ylabel="$t$-SNE 2")
-    # [ax.spines[m].set_visible(True) for m in ["right", "top"]]
+    ax.set(xticks=[], yticks=[])
     [ax.spines[m].set_visible(False) for m in ["left", "bottom"]]
     kwargs = dict(
         xycoords=ax.transAxes,
@@ -201,7 +188,6 @@ def plot_tsne(ax, pts, A, random_state=5):
         arrowprops=dict(
             arrowstyle="<|-",
             color="xkcd:dark grey",
-            # connectionstyle="arc3,rad=0.3",
             shrinkA=0,
             shrinkB=0,
             lw=plt.rcParams["axes.linewidth"],
@@ -249,16 +235,8 @@ def plot_cne(ax, pts, A):
     )
     # ax.plot_surface(xs, ys, zs, color="xkcd:light grey", alpha=0.5)
 
-    # theta = np.linspace(0, 2 * np.pi, 100)
-    # z = np.zeros(100)
-    # x = np.sin(theta)
-    # y = np.cos(theta)
-    # ax.plot(x, y, z, color="black", alpha=0.75)
-    # ax.plot(z, x, y, color="black", alpha=0.75)
-
     data = pts * 1.1
     lon, lat = data.T
-    # rho = 1
     x = np.cos(lat) * np.cos(lon)
     y = np.cos(lat) * np.sin(lon)
     z = np.sin(lat)
@@ -331,6 +309,5 @@ def get_edgelines(pts, A):
         color="xkcd:slate grey",
         antialiaseds=True,
         zorder=0.9,
-        # rasterized=True,
     )
     return lines
