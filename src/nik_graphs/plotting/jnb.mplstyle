@@ -31,6 +31,7 @@ ytick.labelsize : 6
 axes.titlepad : 3
 axes.linewidth : .3
 axes.labelpad: 2
+axes.edgecolor: "xkcd:dark grey"
 xtick.major.width: .4
 ytick.major.width: .4
 xtick.minor.width: .3
