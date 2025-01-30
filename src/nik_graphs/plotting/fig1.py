@@ -389,8 +389,8 @@ def plot_kl(ax):
 
     loss = (
         r"$\displaystyle\ell_{ij} = "
-        r"-\log\frac{(1 + ||\mathbf{y}_i - \mathbf{y}_j||^2)^{-1}}"
-        r"{\sum_{kl}(1 + ||\mathbf{y}_k - \mathbf{y}_l||^2)^{-1}}$"
+        r"-\log\frac{(1 + \|\mathbf{y}_i - \mathbf{y}_j\|^2)^{-1}}"
+        r"{\sum_{kl}(1 + \|\mathbf{y}_k - \mathbf{y}_l\|^2)^{-1}}$"
     )
     ax.text(
         0.0,
