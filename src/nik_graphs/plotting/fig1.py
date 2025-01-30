@@ -256,6 +256,7 @@ def plot_cne(ax, pts, A):
     data[:, 0] += 0.4
     data[:, 1] *= -1
     lon, lat = data.T
+    x1, x2 = project_sphere_points(lon, lat)
     ax.scatter(x1, x2, c=graph_color, alpha=1, zorder=8)
 
     row, col = np.triu(A).nonzero()
