@@ -58,7 +58,7 @@ def plot():
     """
     fig, axd = plt.subplot_mosaic(
         mosaic,
-        figsize=(4.3, 1.8),
+        figsize=(5, 1.8),
         constrained_layout=dict(w_pad=0, h_pad=0),
         width_ratios=[0.75, 1, 1.6],
     )
@@ -84,7 +84,7 @@ def plot():
             arrowstyle="-|>",
             color="xkcd:dark grey",
             connectionstyle="arc3,rad=-0.3",
-            shrinkB=7.5,
+            shrinkB=5,
         ),
     )
     fig.add_artist(annot)
@@ -99,7 +99,7 @@ def plot():
             color="xkcd:dark grey",
             connectionstyle="arc3,rad=0.3",
             shrinkA=0,
-            shrinkB=0,
+            shrinkB=3,
         ),
     )
     fig.add_artist(annot)
@@ -108,7 +108,7 @@ def plot():
     t = mpl.transforms.blended_transform_factory(
         fig.transSubfigure, axd["t"].transAxes
     )
-    x_txt = 0.24
+    x_txt = 0.23
     fig.text(
         x_txt - 0.01,
         0.45,
@@ -135,7 +135,7 @@ def plot():
         axd["t"].transAxes, axd["i"].transAxes
     )
     fig.text(
-        0.85,
+        1,
         1,
         r"$S^{127}$",
         ha="left",
@@ -149,18 +149,20 @@ def plot():
 
 
 def plot_graph(ax, pts, A):
+    t = mpl.transforms.blended_transform_factory(
+        ax.figure.transSubfigure, ax.transAxes
+    )
     ax.text(
         0,
-        0.6,
+        0.55,
         r"$G = (\mathcal V, \mathcal E)$",
         usetex=usetex,
-        va="top",
-        transform=ax.transAxes,
+        transform=t,
         fontsize=plt.rcParams["axes.titlesize"],
-    )
+    ).set_in_layout(False)
     ax.set_axis_off()
     ax.set_aspect(1)
-    ax.scatter(*pts.T, c="xkcd:dark grey", s=15)
+    ax.scatter(*pts.T, c="xkcd:dark grey")
 
     ax.add_collection(get_edgelines(pts, A))
 
