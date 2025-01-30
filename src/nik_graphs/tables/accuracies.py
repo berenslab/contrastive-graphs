@@ -21,6 +21,7 @@ def deplist(dispatch=None, format="txt"):
 
     return [
         "../../dataframes/all_benchmarks.parquet",
+        "../../dataframes/main_benchmarks.parquet",
     ] + d
 
 
@@ -28,6 +29,11 @@ def format_table(dispatch, outfile, format="tex"):
     import polars as pl
 
     df = pl.read_parquet(deplist(format=format)[0])
+    if format == "tex":
+        df_n2v = pl.read_parquet(deplist(format=format)[1]).filter(
+            pl.col("name") == "node2vec"
+        )
+        df = pl.concat([df.filter(pl.col("name") != "node2vec"), df_n2v])
 
     def mean_std_fmt(s: pl.Series) -> str:
         mean = s.mean()
