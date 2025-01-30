@@ -71,10 +71,6 @@ From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
             software-properties-common \
             sudo \
             swig \
-            texlive \
-            texlive-fonts-extra \
-            texlive-latex-base \
-            texlive-latex-extra \
             tmux \
             unzip \
             vim \
