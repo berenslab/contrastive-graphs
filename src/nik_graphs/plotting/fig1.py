@@ -4,7 +4,7 @@ import matplotlib as mpl
 import numpy as np
 from matplotlib import pyplot as plt
 
-from ..plot import add_letters, translate_plotname
+from ..plot import letter_dict, translate_plotname
 
 usetex = True
 
@@ -59,9 +59,10 @@ def plot():
     # mosaic = [["graph", "tsne", "kl"], ["graph", "cne", "infonce"]]
     fig, axd = plt.subplot_mosaic(
         mosaic,
-        figsize=(4, 1.8),
+        figsize=(4.5, 1.8),
         per_subplot_kw=dict(c=dict(projection="3d")),
         constrained_layout=dict(w_pad=0, h_pad=0),
+        width_ratios=[1, 1, 1.6],
     )
 
     # pts1 = rng.normal(pts, 0.1)
@@ -72,7 +73,7 @@ def plot():
         plot_tsne(axd["t"], pts, A, rng.integers(2**31 - 1))
         plot_cne(axd["c"], pts, A)
 
-    with plt.rc_context({"font.size": 14}):
+    with plt.rc_context({"font.size": 12}):
         plot_kl(axd["k"])
         plot_infonce(axd["i"])
 
@@ -110,7 +111,7 @@ def plot():
     t = mpl.transforms.blended_transform_factory(
         fig.transSubfigure, axd["t"].transAxes
     )
-    x_txt = 0.32
+    x_txt = 0.275
     fig.text(x_txt - 0.01, 0.5, "graph layout", transform=t, **kws)
     t = mpl.transforms.blended_transform_factory(
         fig.transSubfigure, axd["c"].transAxes
@@ -132,7 +133,10 @@ def plot():
         # zdir="y",
     )
 
-    add_letters(axd[ltr] for ltr in "gtcki")
+    ldict = letter_dict()
+    for k, ltr in zip("gtcki", "abcdef"):
+        ldict.update(ha="left" if k in "ki" else "right")
+        axd[k].set_title(ltr, **ldict)
     return fig
 
 
