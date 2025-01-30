@@ -59,7 +59,6 @@ def plot():
     fig, axd = plt.subplot_mosaic(
         mosaic,
         figsize=(4.3, 1.8),
-        per_subplot_kw=dict(c=dict(projection="3d")),
         constrained_layout=dict(w_pad=0, h_pad=0),
         width_ratios=[0.75, 1, 1.6],
     )
@@ -204,13 +203,10 @@ def plot_tsne(ax, pts, A, random_state=5):
 
 
 def plot_cne(ax, pts, A):
-    zdir = "z"
-
     ax.set_aspect("equal")
     ax.set_axis_off()
     ax.set_title(translate_plotname("cne,temp=0.05"))
-    ax.view_init(azim=45)
-    ax.set(zlim=(-1, 1), xlim=(-1, 1), ylim=(-1, 1))
+    ax.margins(0.02)
 
     nsamp = 20
     u = np.linspace(0, 2 * np.pi, nsamp)
@@ -219,19 +215,31 @@ def plot_cne(ax, pts, A):
     ys = np.outer(np.sin(u), np.sin(v))
     zs = np.outer(np.ones(np.size(u)), np.cos(v))
 
+    lcolor = "xkcd:dark grey"
+    largs = dict(color=lcolor, lw=plt.rcParams["axes.linewidth"])
     # Plot the surface
-    ax.plot_wireframe(
-        xs, ys, zs, color="xkcd:slate grey", alpha=0.3, zorder=1, lw=0.1
+    circle = mpl.patches.Circle(
+        (0, 0), 1, facecolor="none", edgecolor=lcolor, lw=largs["lw"]
     )
-    # ax.plot_surface(xs, ys, zs, color="xkcd:light grey", alpha=0.5)
+    ax.update_datalim(circle.get_extents())
+    ax.add_artist(circle)
+    # ax.plot_wireframe(
+    #     xs, ys, zs, color="xkcd:slate grey", alpha=0.3, zorder=1, lw=0.1
+    # )
+    x1, x2 = project_sphere_points(
+        *np.linspace([-np.pi / 2, 0], [np.pi / 2, 0], endpoint=False).T
+    )
+    ax.plot(x1, x2, ls="dashed", **largs)
+    ax.plot(x2, x1, ls="dashed", **largs)
+    ax.plot(-x1, x2, ls="solid", **largs)
+    ax.plot(x2, -x1, ls="solid", **largs)
 
-    data = pts * 1.1
+    data = pts * 0.5
+    data[:, 0] += 0.3
+    data[:, 1] *= -1
     lon, lat = data.T
-    x = np.cos(lat) * np.cos(lon)
-    y = np.cos(lat) * np.sin(lon)
-    z = np.sin(lat)
-
-    ax.scatter(x, y, z, c="xkcd:dark grey", alpha=1, zdir=zdir, zorder=8)
+    x1, x2 = project_sphere_points(lon, lat)
+    ax.scatter(x1, x2, c="xkcd:dark grey", alpha=1, zorder=8)
 
     row, col = np.triu(A).nonzero()
     edges = np.hstack((data[row], data[col])).reshape(len(row), 2, 2)
@@ -239,13 +247,46 @@ def plot_cne(ax, pts, A):
     for edge in edges:
         pta, ptb = edge
         elon, elat = np.linspace(*edge, num=10).T
-        ex = np.cos(elat) * np.cos(elon)
-        ey = np.cos(elat) * np.sin(elon)
-        ez = np.sin(elat)
+        x1, x2 = project_sphere_points(elon, elat)
 
-        ax.plot(
-            ex, ey, ez, color="xkcd:slate grey", zdir=zdir, zorder=5, alpha=1
-        )
+        ax.plot(x1, x2, color="xkcd:slate grey", zorder=5, alpha=1)
+
+
+def project_sphere_points(
+    lon_rad, lat_rad, radius=1.0, perspective_distance=15.0, view_angle=-80
+):
+    """
+    Project spherical coordinates to 3D and then to 2D with perspective.
+
+    Args:
+        lon, lat: Arrays of longitude and latitude in radians
+        radius: Sphere radius
+        perspective_distance: Distance of viewer from sphere center
+        view_angle: Rotation angle around vertical axis in degrees
+
+    Returns:
+        x, y: Arrays of 2D projected coordinates
+    """
+    # Convert to radians
+    # lon_rad = np.radians(lon)
+    # lat_rad = np.radians(lat)
+    theta = np.radians(view_angle)
+
+    # Convert to 3D cartesian coordinates
+    x = radius * np.cos(lat_rad) * np.cos(lon_rad)
+    y = radius * np.cos(lat_rad) * np.sin(lon_rad)
+    z = radius * np.sin(lat_rad)
+
+    # Rotate around y-axis
+    x_rot = x * np.cos(theta) + z * np.sin(theta)
+    z_rot = -x * np.sin(theta) + z * np.cos(theta)
+
+    # Apply perspective projection
+    scale = perspective_distance / (perspective_distance - z_rot)
+    x_proj = scale * x_rot
+    y_proj = scale * y
+
+    return x_proj, y_proj
 
 
 def plot_kl(ax):
