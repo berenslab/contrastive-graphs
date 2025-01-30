@@ -22,7 +22,9 @@ def plot(h5):
     mosaic = "ab\nzz\nde"
     letters = iter("abde")
     fig, axd = plt.subplot_mosaic(
-        mosaic, figsize=(3.25, 3), constrained_layout=dict(w_pad=0, h_pad=0.01)
+        mosaic,
+        figsize=(3.25, 2.75),
+        constrained_layout=dict(w_pad=0, h_pad=0.005),
     )
     plot_ax = axd["z"]
 
@@ -92,8 +94,9 @@ def plot(h5):
 
     plot_ax.set(
         ylabel=translate_plotname("recall"),
-        xlim=(0, steps.max()),
+        xlim=(0 - 0.125, steps.max()),
     )
+    plot_ax.spines.bottom.set_bounds(0, steps.max())
     plot_ax.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
     plot_ax.yaxis.set_major_locator(
         mpl.ticker.FixedLocator([0, 0.25, 0.5, 0.75])
