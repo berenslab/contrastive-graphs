@@ -18,7 +18,7 @@ plt.rcParams.update(
 
 
 def deplist(plotname=None):
-    return ["../bin/latex"]
+    return ["../bin/texlive"]
 
 
 def plot_path(plotname, outfile, format="pdf"):
