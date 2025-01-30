@@ -59,7 +59,6 @@ def plot():
     fig, axd = plt.subplot_mosaic(
         mosaic,
         figsize=(4.3, 1.8),
-        per_subplot_kw=dict(c=dict(projection="3d")),
         constrained_layout=dict(w_pad=0, h_pad=0),
         width_ratios=[0.75, 1, 1.6],
     )
@@ -204,13 +203,12 @@ def plot_tsne(ax, pts, A, random_state=5):
 
 
 def plot_cne(ax, pts, A):
-    zdir = "z"
 
     ax.set_aspect("equal")
     ax.set_axis_off()
     ax.set_title(translate_plotname("cne,temp=0.05"))
-    ax.view_init(azim=45)
-    ax.set(zlim=(-1, 1), xlim=(-1, 1), ylim=(-1, 1))
+    ax.set(xlim=(-1, 1), ylim=(-1, 1))
+    ax.margins(0.075)
 
     nsamp = 20
     u = np.linspace(0, 2 * np.pi, nsamp)
@@ -220,32 +218,44 @@ def plot_cne(ax, pts, A):
     zs = np.outer(np.ones(np.size(u)), np.cos(v))
 
     # Plot the surface
-    ax.plot_wireframe(
-        xs, ys, zs, color="xkcd:slate grey", alpha=0.3, zorder=1, lw=0.1
+    circle = mpl.patches.Circle(
+        (0, 0), 1, facecolor="none", edgecolor="xkcd:dark grey"
     )
+    ax.add_artist(circle)
+    # ax.plot_wireframe(
+    #     xs, ys, zs, color="xkcd:slate grey", alpha=0.3, zorder=1, lw=0.1
+    # )
     # ax.plot_surface(xs, ys, zs, color="xkcd:light grey", alpha=0.5)
 
-    data = pts * 1.1
-    lon, lat = data.T
-    x = np.cos(lat) * np.cos(lon)
-    y = np.cos(lat) * np.sin(lon)
-    z = np.sin(lat)
+    # data = (pts + 0) / np.pi * 1.3
+    data = pts
+    x, y = mercator(data.T).T
 
-    ax.scatter(x, y, z, c="xkcd:dark grey", alpha=1, zdir=zdir, zorder=8)
+    line = np.linspace([-np.pi / 2, 0], [np.pi / 2, 0])
+    ax.plot(*mercator(line.T).T)
+    line = np.linspace([0, -np.pi / 2], [0, np.pi / 2])
+    ax.plot(*mercator(line.T).T)
+
+    ax.scatter(x, y, c="xkcd:dark grey", alpha=1, zorder=8)
 
     row, col = np.triu(A).nonzero()
     edges = np.hstack((data[row], data[col])).reshape(len(row), 2, 2)
 
     for edge in edges:
         pta, ptb = edge
-        elon, elat = np.linspace(*edge, num=10).T
-        ex = np.cos(elat) * np.cos(elon)
-        ey = np.cos(elat) * np.sin(elon)
-        ez = np.sin(elat)
+        interp = np.linspace(*edge, num=10)
+        ex, ey = mercator(interp.T).T
 
-        ax.plot(
-            ex, ey, ez, color="xkcd:slate grey", zdir=zdir, zorder=5, alpha=1
-        )
+        ax.plot(ex, ey, color="xkcd:slate grey", zorder=5, alpha=1)
+
+
+def mercator(angles, meridian=-0.5):
+    lon, lat = angles
+    X = np.empty_like(angles)
+    X[0] = lon - meridian
+    X[1] = np.log(np.tan(np.pi / 4 + lat / 2))
+
+    return X.T
 
 
 def plot_kl(ax):
