@@ -8,6 +8,14 @@ from ..plot import add_letters, translate_plotname
 
 usetex = True
 
+plt.rcParams.update(
+    {
+        "text.latex.preamble": "\n".join(
+            [r"\usepackage{amsmath}", r"\usepackage{amssymb}"]
+        )
+    }
+)
+
 
 def deplist(plotname=None):
     return ["../bin/latex"]
