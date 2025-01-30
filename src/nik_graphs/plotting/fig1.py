@@ -257,7 +257,18 @@ def plot_cne(ax, pts, A):
     data[:, 1] *= -1
     lon, lat = data.T
     x1, x2 = project_sphere_points(lon, lat)
-    ax.scatter(x1, x2, c=graph_color, alpha=1, zorder=8)
+    for lo, la, c1, c2 in zip(lon, lat, x1, x2):
+        major, minor, angle = analyze_projected_circle(lo, la, 5)
+        ellipse = mpl.patches.Ellipse(
+            (c1, c2),
+            major,
+            minor,
+            angle=angle,
+            facecolor=graph_color,
+            edgecolor="white",
+            zorder=3,
+        )
+        ax.add_patch(ellipse)
 
     row, col = np.triu(A).nonzero()
     edges = np.hstack((data[row], data[col])).reshape(len(row), 2, 2)
@@ -267,7 +278,7 @@ def plot_cne(ax, pts, A):
         elon, elat = np.linspace(*edge, num=10).T
         x1, x2 = project_sphere_points(elon, elat)
 
-        ax.plot(x1, x2, color=graph_edge_color, zorder=5, alpha=1)
+        ax.plot(x1, x2, color=graph_edge_color, alpha=1)
 
 
 def project_sphere_points(
@@ -305,6 +316,61 @@ def project_sphere_points(
     y_proj = scale * y
 
     return x_proj, y_proj
+
+
+def analyze_projected_circle(
+    center_lon_rad,
+    center_lat_rad,
+    circle_radius,
+    num_points=100,
+    **projection_kwargs,
+):
+    """
+    Analyze how a circle on the sphere projects to an ellipse in 2D.
+
+    Args:
+        center_lon, center_lat: Circle center coordinates in degrees
+        circle_radius: Angular radius of the circle in degrees
+        num_points: Number of points to sample on the circle
+        **projection_kwargs: Arguments passed to project_sphere_points
+
+    Returns:
+        major_axis: Length of major axis
+        minor_axis: Length of minor axis
+        angle: Rotation angle of the ellipse in degrees
+    """
+    # Generate points around the circle
+    t = np.linspace(0, 2 * np.pi, num_points)
+
+    # Convert circle_radius to radians
+    r = np.radians(circle_radius)
+
+    # Generate circle points using spherical trigonometry
+    lat = np.arcsin(
+        np.sin(center_lat_rad) * np.cos(r)
+        + np.cos(center_lat_rad) * np.sin(r) * np.cos(t)
+    )
+
+    lon = center_lon_rad + np.arctan2(
+        np.sin(r) * np.sin(t),
+        np.cos(center_lat_rad) * np.cos(r)
+        - np.sin(center_lat_rad) * np.sin(r) * np.cos(t),
+    )
+
+    # Project points
+    x, y = project_sphere_points(lon, lat, **projection_kwargs)
+
+    # Fit ellipse using covariance matrix
+    points = np.column_stack([x - np.mean(x), y - np.mean(y)])
+    cov = points.T @ points / (len(points) - 1)
+    eigenvals, eigenvecs = np.linalg.eigh(cov)
+
+    # Calculate ellipse parameters
+    major_axis = 2 * np.sqrt(eigenvals[1])
+    minor_axis = 2 * np.sqrt(eigenvals[0])
+    angle = np.degrees(np.arctan2(eigenvecs[1, 1], eigenvecs[0, 1]))
+
+    return major_axis, minor_axis, angle
 
 
 def plot_kl(ax):
