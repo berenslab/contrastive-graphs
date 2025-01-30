@@ -285,18 +285,18 @@ def plot_kl(ax):
 
     ax.set_title("Kullback–Leibler div.")
 
-    dij = r"||\mathbf{y}_i - \mathbf{y}_j||^2"
     loss = (
         r"$\ell_{ij} = "
-        r"-\log\frac{(1 + ||\mathbf{y}_i - \mathbf{y}_j||^2)^{-1}}{\sum_{kl}(1 + ||\mathbf{y}_k - \mathbf{y}_l||^2)^{-1}}$"
+        r"-\log\frac{(1 + ||\mathbf{y}_i - \mathbf{y}_j||^2)^{-1}}"
+        r"{\sum_{kl}(1 + ||\mathbf{y}_k - \mathbf{y}_l||^2)^{-1}}$"
     )
     ax.text(
-        0.5,
+        0.0,
         0.5,
         loss,
         usetex=usetex,
         transform=ax.transAxes,
-        ha="center",
+        ha="left",
         va="center",
     )
 
@@ -307,16 +307,17 @@ def plot_infonce(ax):
 
     loss = (
         r"$\ell_{ij} = "
-        r"-\log\frac{\exp(\mathbf y_i^\top \mathbf y_j / \tau)}{\sum_k\exp(\mathbf y_i^\top \mathbf y_j / \tau)}$"
+        r"-\log\frac{\exp(\mathbf y_i^\top \mathbf y_j / \tau)}"
+        r"{\sum_k\exp(\mathbf y_i^\top \mathbf y_j / \tau)}$"
     )
 
     ax.text(
-        0.5,
+        0,
         0.5,
         loss,
         usetex=usetex,
         transform=ax.transAxes,
-        ha="center",
+        ha="left",
         va="center",
     )
 
