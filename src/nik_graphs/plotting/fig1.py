@@ -7,6 +7,9 @@ from matplotlib import pyplot as plt
 from ..plot import letter_dict, translate_plotname
 
 usetex = True
+graph_color = "black"
+graph_edge_color = graph_color
+axes_edge_color = "xkcd:medium grey"
 
 plt.rcParams.update(
     {
@@ -58,9 +61,9 @@ def plot():
     """
     fig, axd = plt.subplot_mosaic(
         mosaic,
-        figsize=(5, 1.8),
-        constrained_layout=dict(w_pad=0, h_pad=0.005),
-        width_ratios=[0.75, 1, 1.6],
+        figsize=(5.2, 1.8),
+        constrained_layout=dict(w_pad=0, h_pad=0),
+        width_ratios=[0.75, 1, 1.5],
     )
 
     with plt.rc_context(
@@ -76,7 +79,7 @@ def plot():
 
     annot = plt.Annotation(
         "",
-        (0, 0.5),
+        (0, 0.6),
         (1, 0.85),
         textcoords=axd["g"].transAxes,
         xycoords=axd["t"].transAxes,
@@ -91,7 +94,7 @@ def plot():
     annot = plt.Annotation(
         "",
         (0, 0.5),
-        (0.95, 0.5),
+        (0.925, 0.53),
         textcoords=axd["g"].transAxes,
         xycoords=axd["c"].transAxes,
         arrowprops=dict(
@@ -104,14 +107,14 @@ def plot():
     )
     fig.add_artist(annot)
 
-    kws = dict(ha="right", fontsize=10)
+    kws = dict(ha="right", fontsize=8)
     t = mpl.transforms.blended_transform_factory(
         fig.transSubfigure, axd["t"].transAxes
     )
     x_txt = 0.25
     fig.text(
         x_txt - 0.01,
-        0.49,
+        0.6,
         "graph\nlayout",
         ma="right",
         va="bottom",
@@ -122,8 +125,8 @@ def plot():
         fig.transSubfigure, axd["c"].transAxes
     )
     fig.text(
-        x_txt - 0.02,
-        0.6,
+        x_txt - 0,
+        0.55,
         "node\nembedding",
         ma="right",
         va="top",
@@ -177,7 +180,7 @@ def plot_graph(ax, pts, A):
 
     ax.set_axis_off()
     ax.set_aspect(1)
-    ax.scatter(*pts.T, c="xkcd:dark grey")
+    ax.scatter(*pts.T, c=graph_color)
 
     ax.add_collection(get_edgelines(pts, A))
 
@@ -200,12 +203,24 @@ def plot_tsne(ax, pts, A, random_state=5):
 
     ax.tick_params("both", length=0)
     ax.set(xticks=[], yticks=[])
-    [s.set_visible(True) for s in ax.spines.values()]
+    [
+        (s.set_visible(True), s.set_color(axes_edge_color))
+        for s in ax.spines.values()
+    ]
 
     ax.margins(0.1)
-    ax.scatter(*data.T, c="xkcd:dark grey")
+    ax.scatter(*data.T, c=graph_color)
     ax.set_aspect(1)
     ax.add_collection(get_edgelines(data, A))
+    # ax.text(
+    #     -0.05,
+    #     1,
+    #     translate_plotname("tsne"),
+    #     ha="right",
+    #     va="top",
+    #     transform=ax.transAxes,
+    #     fontsize=10,
+    # )
     ax.set_title(translate_plotname("tsne"))
     ax.text(
         1.025,
@@ -221,15 +236,31 @@ def plot_tsne(ax, pts, A, random_state=5):
 
 def plot_cne(ax, pts, A):
     ax.set_aspect("equal")
-    ax.set_axis_off()
-    ax.set_title(translate_plotname("cne,temp=0.05"))
+    ax.tick_params("both", length=0)
+    [
+        axis.set_major_formatter(mpl.ticker.NullFormatter())
+        for axis in [ax.xaxis, ax.yaxis]
+    ]
+    [s.set_visible(False) for s in ax.spines.values()]
+    # ax.text(
+    #     0.1,
+    #     1,
+    #     translate_plotname("cne,temp=0.05"),
+    #     ha="right",
+    #     va="top",
+    #     transform=ax.transAxes,
+    #     fontsize=10,
+    # )
+    ax.set_xlabel(
+        translate_plotname("cne,temp=0.05"),
+        fontsize=plt.rcParams["axes.titlesize"],
+    )
     ax.margins(0.01)
 
-    lcolor = "xkcd:dark grey"
-    largs = dict(color=lcolor, lw=plt.rcParams["axes.linewidth"])
+    largs = dict(color=axes_edge_color, lw=plt.rcParams["axes.linewidth"])
     # Plot the surface
     circle = mpl.patches.Circle(
-        (0, 0), 1, facecolor="none", edgecolor=lcolor, lw=largs["lw"]
+        (0, 0), 1, facecolor="none", edgecolor=largs["color"], lw=largs["lw"]
     )
     ax.update_datalim(circle.get_extents())
     ax.add_artist(circle)
@@ -243,11 +274,12 @@ def plot_cne(ax, pts, A):
     ax.plot(x2, -x1, ls="solid", **largs)
 
     data = pts * 0.5
-    data[:, 0] += 0.3
+    data[:, 0] += 0.4
     data[:, 1] *= -1
+    # data[:, 1] += 0.2
     lon, lat = data.T
     x1, x2 = project_sphere_points(lon, lat)
-    ax.scatter(x1, x2, c="xkcd:dark grey", alpha=1, zorder=8)
+    ax.scatter(x1, x2, c=graph_color, alpha=1, zorder=8)
 
     row, col = np.triu(A).nonzero()
     edges = np.hstack((data[row], data[col])).reshape(len(row), 2, 2)
@@ -257,7 +289,7 @@ def plot_cne(ax, pts, A):
         elon, elat = np.linspace(*edge, num=10).T
         x1, x2 = project_sphere_points(elon, elat)
 
-        ax.plot(x1, x2, color="xkcd:slate grey", zorder=5, alpha=1)
+        ax.plot(x1, x2, color=graph_edge_color, zorder=5, alpha=1)
 
 
 def project_sphere_points(
@@ -300,7 +332,15 @@ def project_sphere_points(
 def plot_kl(ax):
     ax.set_axis_off()
 
-    ax.set_title("Kullback–Leibler div.")
+    ax.text(
+        0.5,
+        1,
+        "Kullback–Leibler div.",
+        va="top",
+        ha="center",
+        # fontsize=plt.rcParams["axes.titlesize"],
+        fontsize=10,
+    )
 
     loss = (
         r"$\displaystyle\ell_{ij} = "
@@ -320,12 +360,19 @@ def plot_kl(ax):
 
 def plot_infonce(ax):
     ax.set_axis_off()
-    ax.set_title("InfoNCE")
+    ax.text(
+        0.5,
+        1,
+        "InfoNCE",
+        va="top",
+        ha="center",
+        fontsize=10,  # fontsize=plt.rcParams["axes.titlesize"]
+    )
 
     loss = (
         r"$\displaystyle\ell_{ij} = "
         r"-\log\frac{\exp(\mathbf y_i^\top \mathbf y_j / \tau)}"
-        r"{\sum_k\exp(\mathbf y_i^\top \mathbf y_j / \tau)}$"
+        r"{\sum_k\exp(\mathbf y_i^\top \mathbf y_k / \tau)}$"
     )
 
     ax.text(
@@ -344,8 +391,7 @@ def get_edgelines(pts, A):
     pts_e = np.hstack((pts[row], pts[col])).reshape(len(row), 2, 2)
     lines = mpl.collections.LineCollection(
         pts_e,
-        alpha=0.8,
-        color="xkcd:slate grey",
+        color=graph_edge_color,
         antialiaseds=True,
         zorder=0.9,
     )
