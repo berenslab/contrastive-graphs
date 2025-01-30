@@ -59,10 +59,10 @@ def plot():
     # mosaic = [["graph", "tsne", "kl"], ["graph", "cne", "infonce"]]
     fig, axd = plt.subplot_mosaic(
         mosaic,
-        figsize=(4.5, 1.8),
+        figsize=(4.3, 1.8),
         per_subplot_kw=dict(c=dict(projection="3d")),
         constrained_layout=dict(w_pad=0, h_pad=0),
-        width_ratios=[1, 1, 1.6],
+        width_ratios=[0.75, 1, 1.6],
     )
 
     # pts1 = rng.normal(pts, 0.1)
@@ -111,12 +111,28 @@ def plot():
     t = mpl.transforms.blended_transform_factory(
         fig.transSubfigure, axd["t"].transAxes
     )
-    x_txt = 0.275
-    fig.text(x_txt - 0.01, 0.5, "graph layout", transform=t, **kws)
+    x_txt = 0.24
+    fig.text(
+        x_txt - 0.01,
+        0.45,
+        "graph\nlayout",
+        ma="right",
+        va="bottom",
+        transform=t,
+        **kws,
+    )
     t = mpl.transforms.blended_transform_factory(
         fig.transSubfigure, axd["c"].transAxes
     )
-    fig.text(x_txt + 0.0, 0.5, "node embedding", transform=t, **kws)
+    fig.text(
+        x_txt + 0.0,
+        0.6,
+        "node\nembedding",
+        ma="right",
+        va="top",
+        transform=t,
+        **kws,
+    )
 
     t = mpl.transforms.blended_transform_factory(
         axd["t"].transAxes, axd["i"].transAxes
@@ -135,8 +151,10 @@ def plot():
 
     ldict = letter_dict()
     for k, ltr in zip("gtcki", "abcdef"):
-        ldict.update(ha="left" if k in "ki" else "right")
+        ldict.update(ha="left" if k in "gki" else "right")
         axd[k].set_title(ltr, **ldict)
+    fig.draw(fig.canvas.get_renderer())
+
     return fig
 
 
@@ -267,9 +285,10 @@ def plot_kl(ax):
 
     ax.set_title("Kullback–Leibler div.")
 
+    dij = r"||\mathbf{y}_i - \mathbf{y}_j||^2"
     loss = (
         r"$\ell_{ij} = "
-        r"-\log\frac{(1 + d_{ij}^2)^{-1}}{\sum_{kl}(1 + d_{kl}^2)^{-1}}$"
+        r"-\log\frac{(1 + ||\mathbf{y}_i - \mathbf{y}_j||^2)^{-1}}{\sum_{kl}(1 + ||\mathbf{y}_k - \mathbf{y}_l||^2)^{-1}}$"
     )
     ax.text(
         0.5,
@@ -288,7 +307,7 @@ def plot_infonce(ax):
 
     loss = (
         r"$\ell_{ij} = "
-        r"-\log\frac{\exp(y_i y_j / \tau)}{\sum_k\exp(y_i y_j / \tau)}$"
+        r"-\log\frac{\exp(\mathbf y_i^\top \mathbf y_j / \tau)}{\sum_k\exp(\mathbf y_i^\top \mathbf y_j / \tau)}$"
     )
 
     ax.text(
