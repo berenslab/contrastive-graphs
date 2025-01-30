@@ -138,7 +138,7 @@ def plot():
     fig.text(
         0.85,
         1,
-        r"$\mathbb{S}^{127}$",
+        r"$S^{127}$",
         ha="left",
         va="top",
         usetex=usetex,
@@ -158,8 +158,8 @@ def plot():
 def plot_graph(ax, pts, A):
     ax.text(
         0,
-        0.5,
-        r"$(\mathcal V, \mathcal E)$",
+        0.6,
+        r"$G = (\mathcal V, \mathcal E)$",
         usetex=usetex,
         va="top",
         transform=ax.transAxes,
@@ -273,7 +273,7 @@ def plot_kl(ax):
     ax.set_title("Kullback–Leibler div.")
 
     loss = (
-        r"$\ell_{ij} = "
+        r"$\displaystyle\ell_{ij} = "
         r"-\log\frac{(1 + ||\mathbf{y}_i - \mathbf{y}_j||^2)^{-1}}"
         r"{\sum_{kl}(1 + ||\mathbf{y}_k - \mathbf{y}_l||^2)^{-1}}$"
     )
@@ -293,7 +293,7 @@ def plot_infonce(ax):
     ax.set_title("InfoNCE")
 
     loss = (
-        r"$\ell_{ij} = "
+        r"$\displaystyle\ell_{ij} = "
         r"-\log\frac{\exp(\mathbf y_i^\top \mathbf y_j / \tau)}"
         r"{\sum_k\exp(\mathbf y_i^\top \mathbf y_j / \tau)}$"
     )
