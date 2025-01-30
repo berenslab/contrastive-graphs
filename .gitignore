@@ -558,3 +558,4 @@ media/fonts/ttf/*/all-fonts
 /bin/julia/packages/
 /bin/julia/registries/
 /bin/julia/scratchspaces/
+/bin/tex/
