@@ -127,9 +127,13 @@ def tex_table(df, outfile, metric_keys=["knn", "lin", "recall"]):
     for metric in metric_keys:
         df = df.pipe(mean_std_fmt_tex, metric=metric)
 
+    n_dims = len(df.unique("dim"))
     datasets = df["dataset"].unique()
     begintable = r"\begin{table*}[t]"
-    begintabular = rf"\begin{{tabular}}{{l{'r' * len(datasets)}}}"
+    begintabular = (
+        r"\begin{tabular}"
+        f"{{{'' if n_dims < 2 else 'c'}l{'r' * len(datasets)}}}"
+    )
     endtabular = r"\end{tabular}"
     endtable = r"\end{table*}"
 
@@ -154,6 +158,7 @@ def tex_table(df, outfile, metric_keys=["knn", "lin", "recall"]):
         fw = IndentedWriter(f)
         fw.writeln(r"\documentclass{article}")
         fw.writeln(r"\usepackage{booktabs}")
+        fw.writeln(r"\usepackage{multirow}")
         fw.writeln(r"\usepackage{icml2025}")
         fw.writeln(r"\usepackage[T1]{fontenc}")
 
@@ -174,7 +179,8 @@ def tex_table(df, outfile, metric_keys=["knn", "lin", "recall"]):
 
                     fw.writeln(
                         " &\n    ".join(
-                            [
+                            ([] if n_dims < 2 else ["$d$"])
+                            + [
                                 tex_table_center("Method"),
                             ]
                             + df.unique("dataset", maintain_order=True)
@@ -192,7 +198,7 @@ def tex_table(df, outfile, metric_keys=["knn", "lin", "recall"]):
                                 ),
                                 return_dtype=str,
                             )
-                            .to_list()
+                            .to_list(),
                         )
                         + r" \\"
                     )
@@ -202,7 +208,13 @@ def tex_table(df, outfile, metric_keys=["knn", "lin", "recall"]):
 
                         df1 = df_.pivot("dataset", index="name", values=key)
 
+                        if n_dims >= 2:
+                            fw.writeln(
+                                r"\multirow" f"{{{len(df1)}}}{{*}}{{{dim}}}"
+                            )
+
                         for row in df1.rows():
+                            fw.write("& ")
                             fw.writeln(" & ".join(tr(r) for r in row) + r" \\")
 
                     fw.writeln(r"\bottomrule")
