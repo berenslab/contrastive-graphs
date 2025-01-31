@@ -95,6 +95,7 @@ def tex_table(df, outfile, metric_keys=["knn", "lin", "recall"]):
 
     df = (
         df.sort("n_edges")
+        .filter(pl.col("name") != "cne,temp=0.05,initialization=random")
         .group_by(["dataset", "name", "dim"], maintain_order=True)
         .agg(
             pl.col("knn", "lin", "recall").mean().name.prefix("mean_"),
