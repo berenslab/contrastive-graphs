@@ -87,7 +87,7 @@ def format_table(dispatch, outfile, format="tex"):
             )
 
 
-def tex_table(df, outfile, metric_keys=["knn", "lin", "recall"]):
+def tex_table(df, outfile, metric_keys=["recall", "knn", "lin"]):
     import re
 
     import matplotlib as mpl
