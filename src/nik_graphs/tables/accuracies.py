@@ -33,7 +33,13 @@ def format_table(dispatch, outfile, format="tex"):
         df_n2v = pl.read_parquet(deplist(format=format)[1]).filter(
             pl.col("name") == "node2vec"
         )
-        df = pl.concat([df.filter(pl.col("name") != "node2vec"), df_n2v])
+        idx = df.with_row_index().select("index", "name")
+        df = (
+            pl.concat([df.filter(pl.col("name") != "node2vec"), df_n2v])
+            .join(idx, on="name")
+            .sort("index")
+            .drop("index")
+        )
 
     def mean_std_fmt(s: pl.Series) -> str:
         mean = s.mean()
