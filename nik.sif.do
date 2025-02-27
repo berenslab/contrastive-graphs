@@ -105,7 +105,6 @@ From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
             "matplotlib>=3.9.3" \
             "opentsne>=1.0.2" \
             "tsimcne>=0.4.20" \
-            "contrastive-ne>=0.3.5" \
             "lightning>=2.4.0" \
             "scipy>=1.14.1" \
             "numba>=0.60.0" \
@@ -126,7 +125,7 @@ From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
             "contrastive-ne>=0.3.8" \
             git+https://github.com/jnboehm/t-fdp \
             git+https://github.com/jnboehm/forceatlas2 \
-
+            git+https://github.com/berenslab/contrastive-ne \
 
     pip install --break-system-packages \
         pyg-lib torch_scatter torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-2.4.0+cu124.html \
