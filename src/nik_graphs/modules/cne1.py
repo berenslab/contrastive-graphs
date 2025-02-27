@@ -117,5 +117,5 @@ def cne(
             **kwargs,
         )
 
-        cne.fit(X=A[:, :2].dense(), graph=A)
+        cne.fit(X=A[:, :2].todense(), graph=A)
     return cne.model.embedding_.detach().cpu()
