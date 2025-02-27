@@ -22,7 +22,7 @@ plt.rcParams.update(
 
 
 def deplist(plotname=None):
-    return ["../bin/texlive"]
+    return ["../bin/texlive"] if usetex else []
 
 
 def plot_path(plotname, outfile, format="pdf"):
