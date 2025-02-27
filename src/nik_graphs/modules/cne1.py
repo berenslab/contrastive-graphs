@@ -117,5 +117,5 @@ def cne(
             **kwargs,
         )
 
-        cne.fit(X=backbone, graph=A)
+        cne.fit(X=A[:, :2], graph=A)
     return cne.model.embedding_.detach().cpu()
