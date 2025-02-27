@@ -1,13 +1,7 @@
 import contextlib
-import inspect
-import logging
-import subprocess
 import sys
-import warnings
 import zipfile
-from pathlib import Path
 
-import lightning
 import numpy as np
 import torch
 from openTSNE.initialization import rescale, spectral
@@ -29,19 +23,10 @@ def run_path(path, outfile):
     npz = np.load(zipf)
     labels = npz["labels"]
 
-    [
-        logging.getLogger(name).setLevel(logging.ERROR)
-        for name in logging.root.manager.loggerDict
-        if "lightning" in name
-    ]
-    logger = lightning.pytorch.loggers.CSVLogger(
-        save_dir=path, name=None, version=0
-    )
-
     name, kwargs = path_to_kwargs(path)
     assert name == "cne1"
 
-    Y = cne(A, labels, logger=logger, **kwargs)
+    Y = cne(A, labels, **kwargs)
     # with zipfile.ZipFile(parent / "1.zip") as zf:
 
     with zipfile.ZipFile(outfile, "a") as zf:
