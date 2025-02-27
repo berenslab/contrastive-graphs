@@ -68,7 +68,7 @@ def cne(
 
     dm = GraphDM(
         A,
-        labels=y,
+        labels=y.cuda(),
         batch_size=batch_size,
         drop_last=drop_last,
         data_on_gpu=True,
