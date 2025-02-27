@@ -7,7 +7,7 @@ import torch
 from openTSNE.initialization import rescale, spectral
 from scipy import sparse
 
-from cne.cne import ContrastiveEmbedding
+from cne._cne import CNE
 
 from ..path_utils import path_to_kwargs
 from .cne import GraphDM
@@ -102,8 +102,8 @@ def cne(
         raise ValueError(f"Wrong {initialization=!r} passed")
     with contextlib.redirect_stdout(sys.stderr):
 
-        cne = ContrastiveEmbedding(
-            backbone.cuda(),
+        cne = CNE(
+            model=backbone.cuda(),
             seed=random_state,
             loss_mode=loss,
             metric=metric,
@@ -117,5 +117,5 @@ def cne(
             **kwargs,
         )
 
-        cne.fit(dm.train_dataloader(), A.shape[0])
-    return cne.embedding_.detach().cpu()
+        cne.fit(X=backbone, graph=A)
+    return cne.model.embedding_.detach().cpu()
