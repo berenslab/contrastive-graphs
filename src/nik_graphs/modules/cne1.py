@@ -55,16 +55,13 @@ def cne(
     loss="infonce",
     metric="cosine",
     batch_size="auto",
-    trainer_kwargs=None,
-    logger=None,
+    negative_samples="full_batch",
     n_epochs=100,
     temp=0.5,
-    dim_annealing="piecewise-cos",
-    eval_ann=False,
+    learn_temp=False,
     opt="adam",
     lr=1,
     dim=128,
-    initial_dim=128,
     weight_decay=0,
     warmup_epochs=0,
     anneal_lr=True,
@@ -73,7 +70,6 @@ def cne(
     random_state=4101661632,
     **kwargs,
 ):
-    assert initial_dim >= dim
 
     torch.manual_seed(random_state)
 
@@ -104,7 +100,7 @@ def cne(
     elif initialization == "spectral":
         X = spectral(
             sparse.csr_matrix(A).astype("float32"),
-            n_components=initial_dim,
+            n_components=dim,
             random_state=random_state,
         )
         init = rescale(
@@ -116,15 +112,25 @@ def cne(
             torch.from_numpy(init), freeze=False
         )
     elif initialization == "random":
-        backbone = torch.nn.Embedding(A.shape[0], initial_dim)
+        backbone = torch.nn.Embedding(A.shape[0], dim)
     else:
         raise ValueError(f"Wrong {initialization=!r} passed")
     with contextlib.redirect_stdout(sys.stderr):
 
         cne = ContrastiveEmbedding(
-            backbone, seed=random_state, anneal_lr=anneal_lr, **kwargs
+            backbone,
+            seed=random_state,
+            loss_mode=loss,
+            metric=metric,
+            learning_rate=lr,
+            learn_temp=learn_temp,
+            negative_samples=negative_samples,
+            weight_decay=weight_decay,
+            temperature=temp,
+            optimizer=opt,
+            anneal_lr=anneal_lr,
+            **kwargs,
         )
 
         cne.fit(dm.train_dataloader(), A.shape[0])
-        out_batches = trainer.predict(mod, datamodule=dm)
-    return torch.vstack([x[0] for x in out_batches]).cpu().float().numpy()
+    return cne.embedding_
