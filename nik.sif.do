@@ -105,6 +105,7 @@ From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
             "matplotlib>=3.9.3" \
             "opentsne>=1.0.2" \
             "tsimcne>=0.4.20" \
+            "contrastive-ne>=0.3.5" \
             "lightning>=2.4.0" \
             "scipy>=1.14.1" \
             "numba>=0.60.0" \
