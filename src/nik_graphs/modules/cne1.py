@@ -103,7 +103,7 @@ def cne(
     with contextlib.redirect_stdout(sys.stderr):
 
         cne = ContrastiveEmbedding(
-            backbone,
+            backbone.cuda(),
             seed=random_state,
             loss_mode=loss,
             metric=metric,
@@ -118,4 +118,4 @@ def cne(
         )
 
         cne.fit(dm.train_dataloader(), A.shape[0])
-    return cne.embedding_
+    return cne.embedding_.detach().cpu()
