@@ -40,7 +40,7 @@ def cne(
     loss="infonce",
     metric="cosine",
     batch_size="auto",
-    negative_samples="full_batch",
+    negative_samples="full-batch",
     n_epochs=100,
     temp=0.5,
     learn_temp=False,
