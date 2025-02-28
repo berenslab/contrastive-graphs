@@ -119,4 +119,4 @@ def cne(
         )
 
         cne.fit(X=A[:, :2].todense(), graph=A)
-    return cne.model.embedding_.detach().cpu()
+    return cne.cne.embedding_.detach().cpu()
