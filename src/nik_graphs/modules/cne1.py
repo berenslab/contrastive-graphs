@@ -106,6 +106,7 @@ def cne(
             model=backbone.cuda(),
             seed=random_state,
             loss_mode=loss,
+            n_epochs=n_epochs,
             metric=metric,
             learning_rate=lr,
             learn_temp=learn_temp,
