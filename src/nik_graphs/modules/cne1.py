@@ -119,4 +119,4 @@ def cne(
             **kwargs,
         )
 
-        return cne.fit_transform(graph=A)
+        return cne.fit_transform(X=A[:, :2].todense(), graph=A)
