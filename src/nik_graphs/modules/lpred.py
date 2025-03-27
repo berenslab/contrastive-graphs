@@ -89,9 +89,7 @@ def link_pred(
     cols = np.concat((Au.col[test_ind], Aneg.row))
     y = [1 for _ in range(test_size)] + [0 for _ in range(test_size)]
 
-    dists = metrics.pairwise_distances(
-        Z[rows], Z[cols], metric=metric, n_jobs=n_jobs
-    )
+    dists = score_edges(rows, cols, Z, metric=metric)
     if mode == "auc":
         score = metrics.roc_auc_score(y, dists)
     elif mode == "ap":
@@ -100,6 +98,18 @@ def link_pred(
         raise ValueError(f"Unkown {mode=!r}, only 'auc', 'ap' allowed")
 
     return score
+
+
+def score_edges(rows, cols, embd, metric="cosine"):
+    if metric == "cosine":
+        norms = np.linalg.norm(embd, axis=1)
+        embd = embd / norms[:, None]
+        scores = (embd[rows] * embd[cols]).sum(-1)
+    elif metric == "euclidean":
+        scores = -np.linalg.norm(embd[rows] - embd[cols], axis=1)
+    else:
+        raise ValueError(f"Unknown {metric=!r}")
+    return scores
 
 
 def lpred_other_embeddings(embeddings_dir, A, **kwargs):
