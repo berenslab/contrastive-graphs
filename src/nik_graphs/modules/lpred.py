@@ -60,36 +60,10 @@ def link_pred(
     n_jobs=-1,
     random_state=110099,
 ):
-    Au = sparse.triu(A, k=1).tocoo().astype("int8")
-    test_size = min(Au.nnz, test_size)
 
-    rng = np.random.default_rng(random_state)
-    test_ind = rng.choice(
-        Au.nnz,
-        size=test_size,
-        replace=False,
-    )
+    _, edges, y = graph_train_test(A, test_size=test_size, seed=random_state)
 
-    Aneg = sparse.csr_array(Au.shape, dtype=Au.dtype)
-    n = len(Z)
-    while Aneg.nnz < test_size:
-        r, c = rng.integers(n, size=(2, test_size))
-        # input to sparse matrix
-        data = np.ones(len(r), dtype=Au.dtype), (r, c)
-        A1 = sparse.csr_matrix(data, shape=Au.shape)
-        Aneg += A1
-        Aneg = sparse.triu(((Aneg - Au) > 0).astype("int8"), k=1)
-    _A = Aneg.tocoo()
-    Aneg = sparse.coo_array(
-        (_A.data[:test_size], (_A.row[:test_size], _A.col[:test_size])),
-        shape=Aneg.shape,
-    )
-
-    rows = np.concat((Au.row[test_ind], Aneg.row))
-    cols = np.concat((Au.col[test_ind], Aneg.row))
-    y = [1 for _ in range(test_size)] + [0 for _ in range(test_size)]
-
-    dists = score_edges(rows, cols, Z, metric=metric)
+    dists = score_edges(edges[0], edges[1], Z, metric=metric)
     if mode == "auc":
         score = metrics.roc_auc_score(y, dists)
     elif mode == "ap":
@@ -129,3 +103,98 @@ def lpred_other_embeddings(embeddings_dir, A, **kwargs):
             )
 
     return df_scores.join(df_epochs, left_on="step", right_on="global_step")
+
+
+def graph_train_test(graph, test_size=10_000, seed=0):
+    # assumes and unweighted graph
+    np.random.seed(seed)
+    graph = graph.tocoo()
+
+    assert np.all(graph.data == np.ones(graph.data.shape[0]))
+    n_nodes = graph.shape[0]
+
+    # only sample from directed edges to avoid duplicates
+    mask = graph.row < graph.col
+    directed_rows = graph.row[mask]
+    directed_cols = graph.col[mask]
+
+    n_edges = len(directed_rows)
+    n_pos_edges = test_size
+
+    pos_test_idx = np.random.choice(
+        np.arange(n_edges, dtype=int), n_pos_edges, replace=False
+    )
+    pos_test_rows, pos_test_cols = (
+        directed_rows[pos_test_idx],
+        directed_cols[pos_test_idx],
+    )
+    pos_test_edges = np.stack([pos_test_rows, pos_test_cols])
+
+    # sample negative test edges
+    neg_test_rows = []
+    neg_test_cols = []
+    while len(neg_test_rows) < n_pos_edges:
+        neg_rows = np.random.choice(
+            np.arange(n_nodes, dtype=int), n_pos_edges, replace=True
+        )
+        neg_cols = np.random.choice(
+            np.arange(n_nodes, dtype=int), n_pos_edges, replace=True
+        )
+
+        # ensure uniqueness and avoid self-loops, by only allowing
+        # neg_col to be larger than neg_rows
+        mask = neg_rows < neg_cols
+        neg_rows = neg_rows[mask]
+        neg_cols = neg_cols[mask]
+
+        # ensure that neg_rows and neg_cols are not part of the graph
+        graph_edges = set(
+            zip(graph.row, graph.col)
+        )  # graph needs to be symmetric, st both ij and ji are in the
+        # graph edges
+
+        prev_neg_edges = set(
+            zip(neg_test_rows, neg_test_cols)
+        )  # one direction suffices, since we only sample from directed edges
+
+        neg_edges = zip(neg_rows, neg_cols)
+
+        # substract the graph edges and the previous negative edges
+        # from the current candidate negative edges
+        neg_edges = set(neg_edges).difference(
+            graph_edges.union(prev_neg_edges)
+        )
+
+        neg_edges = np.stack(list(neg_edges))
+
+        neg_test_rows.extend(neg_edges[:, 0])
+        neg_test_cols.extend(neg_edges[:, 1])
+
+    neg_test_edges = np.stack(
+        [np.array(neg_test_rows), np.array(neg_test_cols)]
+    )
+    neg_test_edges = neg_test_edges[
+        :, :n_pos_edges
+    ]  # remove any extra negative edges
+
+    # remove the pos test edges from the graph
+    graph = graph.tocsr()
+    graph[pos_test_rows, pos_test_cols] = 0
+    graph[pos_test_cols, pos_test_rows] = 0
+    graph.eliminate_zeros()
+    graph = graph.tocoo()
+
+    assert (
+        sparse.csgraph.connected_components(graph, directed=False)[0] == 1
+    ), "Graph without positive test edges is not connected anymore."
+
+    # get labels
+    y = np.concatenate([np.ones(n_pos_edges), np.zeros(n_pos_edges)]).astype(
+        int
+    )
+
+    return (
+        graph,
+        np.concatenate([pos_test_edges, neg_test_edges], axis=-1).astype(int),
+        y,
+    )
