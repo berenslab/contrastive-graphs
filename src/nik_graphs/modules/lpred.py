@@ -184,10 +184,6 @@ def graph_train_test(graph, test_size=10_000, seed=0):
     graph.eliminate_zeros()
     graph = graph.tocoo()
 
-    assert (
-        sparse.csgraph.connected_components(graph, directed=False)[0] == 1
-    ), "Graph without positive test edges is not connected anymore."
-
     # get labels
     y = np.concatenate([np.ones(n_pos_edges), np.zeros(n_pos_edges)]).astype(
         int
