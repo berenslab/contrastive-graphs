@@ -66,6 +66,6 @@ def graphmae(
 def make_dataset(adj, feat):
     A = adj.tocoo()
     graph = dgl.graph((A.row, A.col))
-    graph.ndata["feat"] = torch.from_numpy(scale_feats(feat))
+    graph.ndata["feat"] = scale_feats(feat)
 
     return graph

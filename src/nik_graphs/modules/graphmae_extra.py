@@ -59,8 +59,7 @@ def preprocess(graph):
 
 def scale_feats(x):
     scaler = StandardScaler()
-    feats = x.numpy()
-    feats = torch.from_numpy(scaler.fit_transform(feats)).float()
+    feats = torch.from_numpy(scaler.fit_transform(x)).float()
     return feats
 
 
