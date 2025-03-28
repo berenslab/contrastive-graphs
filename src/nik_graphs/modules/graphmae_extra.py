@@ -429,9 +429,7 @@ class PreModel(nn.Module):
                 dec_in_dim * num_layers, dec_in_dim, bias=False
             )
         else:
-            self.encoder_to_decoder = nn.Linear(
-                out_dim, out_dim, bias=False
-            )
+            self.encoder_to_decoder = nn.Linear(out_dim, out_dim, bias=False)
 
         # * setup loss function
         self.criterion = self.setup_loss_fn(loss_fn, alpha_l)
