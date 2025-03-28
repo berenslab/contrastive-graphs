@@ -245,7 +245,7 @@ def build_args():
         help="use node degree as input feature",
     )
     parser.add_argument("--batch_size", type=int, default=32)
-    args = parser.parse_args()
+    args = parser.parse_args("")
     return args
 
 
