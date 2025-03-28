@@ -122,6 +122,7 @@ From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
             humanize \
             "ogb>=1.3.6" \
             "torch_geometric>=2.6.1" \
+            "PyGCL>=0.1.2" \
             "contrastive-ne>=0.3.8" \
             git+https://github.com/jnboehm/t-fdp \
             git+https://github.com/jnboehm/forceatlas2 \
