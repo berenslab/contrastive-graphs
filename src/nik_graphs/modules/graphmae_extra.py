@@ -430,7 +430,7 @@ class PreModel(nn.Module):
             )
         else:
             self.encoder_to_decoder = nn.Linear(
-                dec_in_dim, dec_in_dim, bias=False
+                out_dim, dec_in_dim, bias=False
             )
 
         # * setup loss function
