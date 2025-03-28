@@ -1,5 +1,5 @@
+import warnings
 import zipfile
-from pathlib import Path
 
 import GCL.augmentors as A
 import GCL.losses as L
@@ -30,7 +30,13 @@ def run_path(path, outfile):
     npz = np.load(zipf)
     features = npz["features"]
 
-    Y = graphcl(adj, features, **kwargs)
+    with warnings.catch_warnings():
+        msg = "'dropout_adj' is deprecated, use 'dropout_edge' instead"
+        warnings.filterwarnings(
+            action="ignore", category=UserWarning, message=msg
+        )
+
+        Y = graphcl(adj, features, **kwargs)
 
     with zipfile.ZipFile(outfile, "a") as zf:
         with zf.open("embedding.npy", "w") as f:
@@ -40,9 +46,11 @@ def run_path(path, outfile):
 def graphcl(adj, feat, batch_size=128, device="cuda:0", **kwargs):
 
     graph = torch_geometric.data.Data(
-        x=feat, edge_index=torch.tensor(np.asarray([adj.row, adj.col]))
+        x=torch.from_numpy(feat),
+        edge_index=torch.tensor(np.asarray([adj.row, adj.col])),
     )
-    dataloader = DataLoader([graph], batch_size=batch_size)
+    dataloader = DataLoader(ListDataset([graph]), batch_size=batch_size)
+    # dataloader = DataLoader(np.array([graph]), batch_size=batch_size)
 
     return graphcl_dataloader(
         dataloader,
@@ -92,6 +100,20 @@ def graphcl_dataloader(
         _ = train(encoder_model, contrast_model, dataloader, optimizer)
 
     return transform(encoder_model, dataloader, device=device)
+
+
+class ListDataset(torch_geometric.data.InMemoryDataset):
+    def __init__(self, datalist):
+        super().__init__(
+            root=None, transform=None, pre_transform=None, pre_filter=None
+        )
+        self.datalist = datalist
+
+    def __len__(self):
+        return len(self.datalist)
+
+    def get(self, idx):
+        return self.datalist[idx]
 
 
 def make_gin_conv(input_dim, out_dim):
@@ -188,5 +210,5 @@ def transform(encoder_model, dataloader, device="cuda"):
             )
         _, g, _, _, _, _ = encoder_model(data.x, data.edge_index, data.batch)
         x.append(encoder_model.encoder.project(g))
-    x = torch.cat(x, dim=0)
+    x = torch.cat(x, dim=0).cpu().float().detach().numpy()
     return x
