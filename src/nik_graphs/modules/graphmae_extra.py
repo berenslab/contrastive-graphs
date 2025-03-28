@@ -190,7 +190,7 @@ def build_args():
     parser.add_argument(
         "--num_heads",
         type=int,
-        default=4,
+        default=1,
         help="number of hidden attention heads",
     )
     parser.add_argument(
@@ -235,8 +235,8 @@ def build_args():
     parser.add_argument("--drop_edge_rate", type=float, default=0.0)
     parser.add_argument("--replace_rate", type=float, default=0.0)
 
-    parser.add_argument("--encoder", type=str, default="gat")
-    parser.add_argument("--decoder", type=str, default="gat")
+    parser.add_argument("--encoder", type=str, default="mlp")
+    parser.add_argument("--decoder", type=str, default="mlp")
     parser.add_argument("--loss_fn", type=str, default="sce")
     parser.add_argument(
         "--alpha_l",
