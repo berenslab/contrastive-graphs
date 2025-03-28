@@ -3,7 +3,6 @@ import zipfile
 
 import dgl
 import numpy as np
-import torch
 from scipy import sparse
 
 from ..path_utils import path_to_kwargs
