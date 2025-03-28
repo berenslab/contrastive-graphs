@@ -408,7 +408,7 @@ class PreModel(nn.Module):
         self.decoder = setup_module(
             m_type=decoder_type,
             enc_dec="decoding",
-            in_dim=dec_in_dim,
+            in_dim=out_dim,
             num_hidden=dec_num_hidden,
             out_dim=in_dim,
             num_layers=1,
