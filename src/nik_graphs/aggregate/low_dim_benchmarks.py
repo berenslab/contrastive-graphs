@@ -11,7 +11,15 @@ DATASETS = [
     "pubmed",
     "mag",
 ]
-LAYOUTS = ["tsne", "spectral", "sgtsnepi", "drgraph", "fa2", "tfdp"]
+LAYOUTS = [
+    "tsne",
+    "spectral",
+    "sgtsnepi",
+    "drgraph",
+    "fa2",
+    "tfdp",
+    "graphmae",
+]
 
 RANDOM_STATES = [None, 1111, 2222]
 
