@@ -50,11 +50,11 @@ def graphcl(
     mode="G2G",
 ):
 
-    dataset = torch_geometric.data.Data(
+    graph = torch_geometric.data.Data(
         x=feat, edge_index=torch.tensor(np.asarray([adj.row, adj.col]))
     )
     device = torch.device("cuda:0")
-    dataloader = DataLoader(dataset, batch_size=batch_size)
+    dataloader = DataLoader([graph], batch_size=batch_size)
     input_dim = feat.shape[1]
 
     aug1 = A.Identity()
