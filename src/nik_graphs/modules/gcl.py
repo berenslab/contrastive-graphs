@@ -1,4 +1,3 @@
-import os.path as osp
 import zipfile
 from pathlib import Path
 
@@ -8,13 +7,11 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 import torch_geometric
-from GCL.eval import SVMEvaluator, get_split
 from GCL.models import DualBranchContrast
 from scipy import sparse
 from torch import nn
 from torch.optim import Adam
-from torch_geometric.data import DataLoader
-from torch_geometric.datasets import TUDataset
+from torch_geometric.loader import DataLoader
 from torch_geometric.nn import GINConv, global_add_pool
 
 from ..path_utils import path_to_kwargs
@@ -52,8 +49,9 @@ def graphcl(
     temp=0.2,
     mode="G2G",
 ):
+
     dataset = torch_geometric.data.Data(
-        x=feat, edge_index=torch.tensor([adj.row, adj.col])
+        x=feat, edge_index=torch.tensor(np.asarray([adj.row, adj.col]))
     )
     device = torch.device("cuda:0")
     dataloader = DataLoader(dataset, batch_size=batch_size)
