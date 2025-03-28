@@ -11,17 +11,147 @@ import torch
 import torch.nn as nn
 from dgl.ops import edge_softmax
 from dgl.utils import expand_as_pair
+from sklearn.preprocessing import StandardScaler
 from torch import optim
 from torch.nn import functional as F
+
+
+def pretrain(
+    model,
+    graph,
+    feat,
+    optimizer,
+    max_epoch,
+    device,
+    scheduler=None,
+    logger=None,
+):
+    logging.info("start training..")
+    graph = graph.to(device)
+    x = feat.to(device)
+
+    epoch_iter = range(max_epoch)
+
+    for epoch in epoch_iter:
+        model.train()
+
+        loss, loss_dict = model(graph, x)
+
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+        if scheduler is not None:
+            scheduler.step()
+
+    # return best_model
+    return model
+
+
+def preprocess(graph):
+    feat = graph.ndata["feat"]
+    graph = dgl.to_bidirected(graph)
+    graph.ndata["feat"] = feat
+
+    graph = graph.remove_self_loop().add_self_loop()
+    graph.create_formats_()
+    return graph
+
+
+def scale_feats(x):
+    scaler = StandardScaler()
+    feats = x.numpy()
+    feats = torch.from_numpy(scaler.fit_transform(feats)).float()
+    return feats
+
+
+def set_random_seed(seed):
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.determinstic = True
+
+
+def create_optimizer(
+    opt, model, lr, weight_decay, get_num_layer=None, get_layer_scale=None
+):
+    opt_lower = opt.lower()
+
+    parameters = model.parameters()
+    opt_args = dict(lr=lr, weight_decay=weight_decay)
+
+    opt_split = opt_lower.split("_")
+    opt_lower = opt_split[-1]
+    if opt_lower == "adam":
+        optimizer = optim.Adam(parameters, **opt_args)
+    elif opt_lower == "adamw":
+        optimizer = optim.AdamW(parameters, **opt_args)
+    elif opt_lower == "adadelta":
+        optimizer = optim.Adadelta(parameters, **opt_args)
+    elif opt_lower == "radam":
+        optimizer = optim.RAdam(parameters, **opt_args)
+    elif opt_lower == "sgd":
+        opt_args["momentum"] = 0.9
+        return optim.SGD(parameters, **opt_args)
+    else:
+        assert False and "Invalid optimizer"
+
+    return optimizer
+
+
+def build_model(args):
+    num_heads = args.num_heads
+    num_out_heads = args.num_out_heads
+    num_hidden = args.num_hidden
+    num_layers = args.num_layers
+    residual = args.residual
+    attn_drop = args.attn_drop
+    in_drop = args.in_drop
+    norm = args.norm
+    negative_slope = args.negative_slope
+    encoder_type = args.encoder
+    decoder_type = args.decoder
+    mask_rate = args.mask_rate
+    drop_edge_rate = args.drop_edge_rate
+    replace_rate = args.replace_rate
+
+    activation = args.activation
+    loss_fn = args.loss_fn
+    alpha_l = args.alpha_l
+    concat_hidden = args.concat_hidden
+    num_features = args.num_features
+
+    model = PreModel(
+        in_dim=num_features,
+        num_hidden=num_hidden,
+        num_layers=num_layers,
+        nhead=num_heads,
+        nhead_out=num_out_heads,
+        activation=activation,
+        feat_drop=in_drop,
+        attn_drop=attn_drop,
+        negative_slope=negative_slope,
+        residual=residual,
+        encoder_type=encoder_type,
+        decoder_type=decoder_type,
+        mask_rate=mask_rate,
+        norm=norm,
+        loss_fn=loss_fn,
+        drop_edge_rate=drop_edge_rate,
+        replace_rate=replace_rate,
+        alpha_l=alpha_l,
+        concat_hidden=concat_hidden,
+    )
+    return model
 
 
 def build_args():
     parser = argparse.ArgumentParser(description="GAT")
     parser.add_argument("--seeds", type=int, nargs="+", default=[0])
     parser.add_argument("--dataset", type=str, default="cora")
-    parser.add_argument("--device", type=int, default=0)
+    parser.add_argument("--device", type=int, default=-1)
     parser.add_argument(
-        "--max_epoch", type=int, default=500, help="number of training epochs"
+        "--max_epoch", type=int, default=200, help="number of training epochs"
     )
     parser.add_argument("--warmup_steps", type=int, default=-1)
 
@@ -40,10 +170,8 @@ def build_args():
     parser.add_argument(
         "--num_layers", type=int, default=2, help="number of hidden layers"
     )
-    parser.add_argument("--num_dec_layers", type=int, default=1)
-    parser.add_argument("--num_remasking", type=int, default=3)
     parser.add_argument(
-        "--num_hidden", type=int, default=512, help="number of hidden units"
+        "--num_hidden", type=int, default=256, help="number of hidden units"
     )
     parser.add_argument(
         "--residual",
@@ -59,67 +187,64 @@ def build_args():
     )
     parser.add_argument("--norm", type=str, default=None)
     parser.add_argument(
-        "--lr", type=float, default=0.001, help="learning rate"
+        "--lr", type=float, default=0.005, help="learning rate"
     )
     parser.add_argument(
-        "--weight_decay", type=float, default=0, help="weight decay"
+        "--weight_decay", type=float, default=5e-4, help="weight decay"
     )
     parser.add_argument(
         "--negative_slope",
         type=float,
         default=0.2,
-        help="the negative slope of leaky relu",
+        help="the negative slope of leaky relu for GAT",
     )
     parser.add_argument("--activation", type=str, default="prelu")
     parser.add_argument("--mask_rate", type=float, default=0.5)
-    parser.add_argument("--remask_rate", type=float, default=0.5)
-    parser.add_argument("--remask_method", type=str, default="random")
-    parser.add_argument(
-        "--mask_type", type=str, default="mask", help="`mask` or `drop`"
-    )
-    parser.add_argument("--mask_method", type=str, default="random")
     parser.add_argument("--drop_edge_rate", type=float, default=0.0)
-    parser.add_argument("--drop_edge_rate_f", type=float, default=0.0)
+    parser.add_argument("--replace_rate", type=float, default=0.0)
 
     parser.add_argument("--encoder", type=str, default="gat")
     parser.add_argument("--decoder", type=str, default="gat")
     parser.add_argument("--loss_fn", type=str, default="sce")
-    parser.add_argument("--alpha_l", type=float, default=2)
+    parser.add_argument(
+        "--alpha_l",
+        type=float,
+        default=2,
+        help="`pow`coefficient for `sce` loss",
+    )
     parser.add_argument("--optimizer", type=str, default="adam")
 
-    parser.add_argument("--max_epoch_f", type=int, default=300)
-    parser.add_argument("--lr_f", type=float, default=0.01)
-    parser.add_argument("--weight_decay_f", type=float, default=0.0)
+    parser.add_argument("--max_epoch_f", type=int, default=30)
+    parser.add_argument(
+        "--lr_f",
+        type=float,
+        default=0.001,
+        help="learning rate for evaluation",
+    )
+    parser.add_argument(
+        "--weight_decay_f",
+        type=float,
+        default=0.0,
+        help="weight decay for evaluation",
+    )
     parser.add_argument("--linear_prob", action="store_true", default=False)
 
-    parser.add_argument("--no_pretrain", action="store_true")
     parser.add_argument("--load_model", action="store_true")
-    parser.add_argument("--checkpoint_path", type=str, default=None)
+    parser.add_argument("--save_model", action="store_true")
     parser.add_argument("--use_cfg", action="store_true")
     parser.add_argument("--logging", action="store_true")
     parser.add_argument("--scheduler", action="store_true", default=False)
+    parser.add_argument("--concat_hidden", action="store_true", default=False)
 
-    parser.add_argument("--batch_size", type=int, default=256)
-    parser.add_argument("--batch_size_f", type=int, default=128)
+    # for graph classification
+    parser.add_argument("--pooling", type=str, default="mean")
     parser.add_argument(
-        "--sampling_method",
-        type=str,
-        default="saint",
-        help="sampling method, `lc` or `saint`",
+        "--deg4feat",
+        action="store_true",
+        default=False,
+        help="use node degree as input feature",
     )
-
-    parser.add_argument("--label_rate", type=float, default=1.0)
-    parser.add_argument("--ego_graph_file_path", type=str, default=None)
-    parser.add_argument("--data_dir", type=str, default="data")
-
-    parser.add_argument("--lam", type=float, default=1.0)
-    parser.add_argument(
-        "--full_graph_forward", action="store_true", default=False
-    )
-    parser.add_argument("--delayed_ema_epoch", type=int, default=0)
-    parser.add_argument("--replace_rate", type=float, default=0.0)
-    parser.add_argument("--momentum", type=float, default=0.996)
-
+    parser.add_argument("--batch_size", type=int, default=32)
     args = parser.parse_args()
     return args
 
@@ -932,261 +1057,3 @@ def create_norm(name):
     else:
         # print("Identity norm")
         return None
-
-
-def build_model(args):
-    num_heads = args.num_heads
-    num_out_heads = args.num_out_heads
-    num_hidden = args.num_hidden
-    num_layers = args.num_layers
-    residual = args.residual
-    attn_drop = args.attn_drop
-    in_drop = args.in_drop
-    norm = args.norm
-    negative_slope = args.negative_slope
-    encoder_type = args.encoder
-    decoder_type = args.decoder
-    mask_rate = args.mask_rate
-    remask_rate = args.remask_rate
-    mask_method = args.mask_method
-    drop_edge_rate = args.drop_edge_rate
-
-    activation = args.activation
-    loss_fn = args.loss_fn
-    alpha_l = args.alpha_l
-
-    num_features = args.num_features
-    num_dec_layers = args.num_dec_layers
-    num_remasking = args.num_remasking
-    lam = args.lam
-    delayed_ema_epoch = args.delayed_ema_epoch
-    replace_rate = args.replace_rate
-    remask_method = args.remask_method
-    momentum = args.momentum
-    zero_init = args.dataset in ("cora", "pubmed", "citeseer")
-
-    model = PreModel(
-        in_dim=num_features,
-        num_hidden=num_hidden,
-        num_layers=num_layers,
-        num_dec_layers=num_dec_layers,
-        num_remasking=num_remasking,
-        nhead=num_heads,
-        nhead_out=num_out_heads,
-        activation=activation,
-        feat_drop=in_drop,
-        attn_drop=attn_drop,
-        negative_slope=negative_slope,
-        residual=residual,
-        encoder_type=encoder_type,
-        decoder_type=decoder_type,
-        mask_rate=mask_rate,
-        remask_rate=remask_rate,
-        mask_method=mask_method,
-        norm=norm,
-        loss_fn=loss_fn,
-        drop_edge_rate=drop_edge_rate,
-        alpha_l=alpha_l,
-        lam=lam,
-        delayed_ema_epoch=delayed_ema_epoch,
-        replace_rate=replace_rate,
-        remask_method=remask_method,
-        momentum=momentum,
-        zero_init=zero_init,
-    )
-    return model
-
-
-def create_optimizer(
-    opt, model, lr, weight_decay, get_num_layer=None, get_layer_scale=None
-):
-    opt_lower = opt.lower()
-    parameters = model.parameters()
-    opt_args = dict(lr=lr, weight_decay=weight_decay)
-
-    opt_split = opt_lower.split("_")
-    opt_lower = opt_split[-1]
-
-    if opt_lower == "adam":
-        optimizer = optim.Adam(parameters, **opt_args)
-    elif opt_lower == "adamw":
-        optimizer = optim.AdamW(parameters, **opt_args)
-    elif opt_lower == "adadelta":
-        optimizer = optim.Adadelta(parameters, **opt_args)
-    elif opt_lower == "sgd":
-        opt_args["momentum"] = 0.9
-        return optim.SGD(parameters, **opt_args)
-    else:
-        raise NotImplementedError("Invalid optimizer")
-
-    return optimizer
-
-
-def pretrain(
-    model,
-    feats,
-    graph,
-    ego_graph_nodes,
-    max_epoch,
-    device,
-    use_scheduler,
-    lr,
-    weight_decay,
-    batch_size=512,
-    sampling_method="lc",
-    optimizer="adam",
-    drop_edge_rate=0,
-):
-    logging.info("start training..")
-
-    model = model.to(device)
-    optimizer = create_optimizer(optimizer, model, lr, weight_decay)
-
-    dataloader = setup_training_dataloder(
-        sampling_method,
-        ego_graph_nodes,
-        graph,
-        feats,
-        batch_size=batch_size,
-        drop_edge_rate=drop_edge_rate,
-    )
-
-    if use_scheduler and max_epoch > 0:
-        logging.info("Use scheduler")
-        scheduler = (
-            lambda epoch: (1 + np.cos((epoch) * np.pi / max_epoch)) * 0.5
-        )
-        scheduler = torch.optim.lr_scheduler.LambdaLR(
-            optimizer, lr_lambda=scheduler
-        )
-    else:
-        scheduler = None
-
-    for epoch in range(max_epoch):
-        epoch_iter = iter(dataloader)
-        losses = []
-        # assert (graph.in_degrees() > 0).all(), "after loading"
-
-        for batch_g in epoch_iter:
-            model.train()
-            if drop_edge_rate > 0:
-                batch_g, targets, _, node_idx, drop_g1, drop_g2 = batch_g
-                batch_g = batch_g.to(device)
-                drop_g1 = drop_g1.to(device)
-                drop_g2 = drop_g2.to(device)
-                x = batch_g.ndata.pop("feat")
-                loss = model(batch_g, x, targets, epoch, drop_g1, drop_g2)
-            else:
-                batch_g, targets, _, node_idx = batch_g
-                batch_g = batch_g.to(device)
-                x = batch_g.ndata.pop("feat")
-                loss = model(batch_g, x, targets, epoch)
-
-            optimizer.zero_grad()
-            loss.backward()
-            torch.nn.utils.clip_grad_norm_(model.parameters(), 3)
-            optimizer.step()
-            losses.append(loss.item())
-
-        if scheduler is not None:
-            scheduler.step()
-
-        # torch.save(model.state_dict(), os.path.join(model_dir, model_name))
-
-    return model
-
-
-# -------------------
-def mask_edge(graph, mask_prob):
-    E = graph.num_edges()
-
-    mask_rates = torch.ones(E) * mask_prob
-    masks = torch.bernoulli(1 - mask_rates)
-    mask_idx = masks.nonzero().squeeze(1)
-    return mask_idx
-
-
-class OnlineLCLoader(torch.utils.data.DataLoader):
-    def __init__(
-        self, root_nodes, graph, feats, labels=None, drop_edge_rate=0, **kwargs
-    ):
-        self.graph = graph
-        self.labels = labels
-        self._drop_edge_rate = drop_edge_rate
-        self.ego_graph_nodes = root_nodes
-        self.feats = feats
-
-        dataset = np.arange(len(root_nodes))
-        kwargs["collate_fn"] = self.__collate_fn__
-        super().__init__(dataset, **kwargs)
-
-    def drop_edge(self, g):
-        if self._drop_edge_rate <= 0:
-            return g, g
-
-        g = g.remove_self_loop()
-        mask_index1 = mask_edge(g, self._drop_edge_rate)
-        mask_index2 = mask_edge(g, self._drop_edge_rate)
-        g1 = dgl.remove_edges(g, mask_index1).add_self_loop()
-        g2 = dgl.remove_edges(g, mask_index2).add_self_loop()
-        return g1, g2
-
-    def __collate_fn__(self, batch_idx):
-        ego_nodes = [self.ego_graph_nodes[i] for i in batch_idx]
-        subgs = [
-            self.graph.subgraph(ego_nodes[i]) for i in range(len(ego_nodes))
-        ]
-        sg = dgl.batch(subgs)
-
-        nodes = torch.from_numpy(np.concatenate(ego_nodes)).long()
-        num_nodes = [x.shape[0] for x in ego_nodes]
-        cum_num_nodes = np.cumsum([0] + num_nodes)[:-1]
-
-        if self._drop_edge_rate > 0:
-            drop_g1, drop_g2 = self.drop_edge(sg)
-
-        sg = sg.remove_self_loop().add_self_loop()
-        sg.ndata["feat"] = self.feats[nodes]
-        targets = torch.from_numpy(cum_num_nodes)
-
-        if self.labels is not None:
-            label = self.labels[batch_idx]
-        else:
-            label = None
-
-        if self._drop_edge_rate > 0:
-            return sg, targets, label, nodes, drop_g1, drop_g2
-        else:
-            return sg, targets, label, nodes
-
-
-def setup_training_dataloder(
-    loader_type,
-    training_nodes,
-    graph,
-    feats,
-    batch_size,
-    drop_edge_rate=0,
-    pretrain_clustergcn=False,
-    cluster_iter_data=None,
-):
-    num_workers = 8
-
-    if loader_type == "lc":
-        assert training_nodes is not None
-    else:
-        raise NotImplementedError(f"{loader_type} is not implemented yet")
-
-    # print(" -------- drop edge rate: {} --------".format(drop_edge_rate))
-    dataloader = OnlineLCLoader(
-        training_nodes,
-        graph,
-        feats=feats,
-        drop_edge_rate=drop_edge_rate,
-        batch_size=batch_size,
-        shuffle=True,
-        drop_last=False,
-        persistent_workers=True,
-        num_workers=num_workers,
-    )
-    return dataloader
