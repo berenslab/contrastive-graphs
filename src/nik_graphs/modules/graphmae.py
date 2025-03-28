@@ -42,11 +42,6 @@ def graphmae(
     adj, feat, n_epochs=100, opt="adam", random_state=50123, device="cuda:0"
 ):
 
-    A = adj.tocoo()
-
-    graph = dgl.DglGraph((A.row, A.col))
-    graph = dgl.add_self_loop(graph)
-
     args = build_args()
 
     set_random_seed(random_state)
@@ -69,7 +64,8 @@ def graphmae(
 
 
 def make_dataset(adj, feat):
-    graph = dgl.graph((adj.row, adj.col))
+    A = adj.tocoo()
+    graph = dgl.graph((A.row, A.col))
     graph.ndata["feat"] = torch.from_numpy(scale_feats(feat))
 
     return graph
