@@ -58,7 +58,7 @@ def graphmae(
         model, graph, graph.ndata["feat"], optimizer, n_epochs, device=device
     )
 
-    Y = model.embed(graph.to(device), feat.to(device))
+    Y = model.embed(graph.to(device), graph.ndata["feat"].to(device))
     return Y.cpu().detach().numpy()
 
 
