@@ -38,7 +38,13 @@ def run_path(path, outfile):
 
 
 def graphmae(
-    adj, feat, n_epochs=100, opt="adam", random_state=50123, device="cuda:0"
+    adj,
+    feat,
+    n_epochs=100,
+    out_dim=2,
+    opt="adam",
+    random_state=50123,
+    device="cuda:0",
 ):
 
     args = build_args()
@@ -50,6 +56,7 @@ def graphmae(
 
     graph = make_dataset(adj, feat)
     args.num_features = feat.shape[1]
+    args.out_dim = 2
 
     model = build_model(args)
     model.to(device)

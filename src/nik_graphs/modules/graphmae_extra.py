@@ -150,9 +150,11 @@ def build_model(args):
     alpha_l = args.alpha_l
     concat_hidden = args.concat_hidden
     num_features = args.num_features
+    out_dim = args.out_dim
 
     model = PreModel(
         in_dim=num_features,
+        out_dim=out_dim,
         num_hidden=num_hidden,
         num_layers=num_layers,
         nhead=num_heads,
@@ -335,6 +337,7 @@ class PreModel(nn.Module):
     def __init__(
         self,
         in_dim: int,
+        out_dim: int,
         num_hidden: int,
         num_layers: int,
         nhead: int,
@@ -388,7 +391,7 @@ class PreModel(nn.Module):
             enc_dec="encoding",
             in_dim=in_dim,
             num_hidden=enc_num_hidden,
-            out_dim=enc_num_hidden,
+            out_dim=out_dim,
             num_layers=num_layers,
             nhead=enc_nhead,
             nhead_out=enc_nhead,
