@@ -37,11 +37,27 @@ def run_path(path, outfile):
             np.save(f, Y)
 
 
-def graphcl(
-    adj,
-    feat,
+def graphcl(adj, feat, batch_size=128, device="cuda:0", **kwargs):
+
+    graph = torch_geometric.data.Data(
+        x=feat, edge_index=torch.tensor(np.asarray([adj.row, adj.col]))
+    )
+    dataloader = DataLoader([graph], batch_size=batch_size)
+
+    return graphcl_dataloader(
+        dataloader,
+        input_dim=feat.shape[1],
+        device=device,
+        # batch_size=batch_size,
+        **kwargs,
+    )
+
+
+def graphcl_dataloader(
+    dataloader,
+    input_dim,
+    device,
     n_epochs=100,
-    batch_size=128,
     lr=0.01,
     hidden_dim=32,
     num_layers=2,
@@ -49,14 +65,6 @@ def graphcl(
     temp=0.2,
     mode="G2G",
 ):
-
-    graph = torch_geometric.data.Data(
-        x=feat, edge_index=torch.tensor(np.asarray([adj.row, adj.col]))
-    )
-    device = torch.device("cuda:0")
-    dataloader = DataLoader([graph], batch_size=batch_size)
-    input_dim = feat.shape[1]
-
     aug1 = A.Identity()
     aug2 = A.RandomChoice(
         [
