@@ -129,7 +129,7 @@ From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
             git+https://github.com/berenslab/contrastive-ne \
 
     pip install --break-system-packages \
-        pyg-lib torch_scatter torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-2.4.0+cu124.html \
+        pyg-lib torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-2.4.0+cu124.html \
         && \
         pip install --break-system-packages dgl -f https://data.dgl.ai/wheels/torch-2.4/cu124/repo.html
 
