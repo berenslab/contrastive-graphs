@@ -78,7 +78,7 @@ def aggregate_path(path, outfile=None):
                 shortkey = key.replace(",metric=cosine", "")
                 results[shortkey].append(float(acctxt))
 
-    df = pl.DataFrame(results)
+    df = pl.DataFrame(results).cast(dict(random_state=int))
     if outfile is not None:
         with open(outfile, "xb") as f:
             df.write_parquet(f)
