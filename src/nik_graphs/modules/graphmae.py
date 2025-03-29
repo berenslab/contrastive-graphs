@@ -56,7 +56,7 @@ def graphmae(
 
     graph = make_dataset(adj, feat)
     args.num_features = feat.shape[1]
-    args.out_dim = 2
+    args.out_dim = out_dim
 
     model = build_model(args)
     model.to(device)
