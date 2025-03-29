@@ -5,6 +5,8 @@ DATASETS = [
     "citeseer",
     "cora",
     "photo",
+    "computer",
+    "pubmed",
 ]
 
 
