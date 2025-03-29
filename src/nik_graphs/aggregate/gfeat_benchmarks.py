@@ -7,6 +7,7 @@ DATASETS = [
     "photo",
     "computer",
     "pubmed",
+    "mnist",
 ]
 
 
