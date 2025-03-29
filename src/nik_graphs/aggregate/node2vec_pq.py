@@ -43,7 +43,7 @@ def deps(dispatch):
             "lin",
             "knn,metric=cosine",
             "recall,metric=cosine",
-            "lpred",
+            "lpred,metric=cosine",
         ]
     }
     return depdict
