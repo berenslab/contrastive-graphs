@@ -17,5 +17,5 @@ def run_path(path, outfile):
     Y = A.todense()
 
     with zipfile.ZipFile(outfile, "a") as zf:
-        with zf.open("embedding.npy", "w") as f:
+        with zf.open("embedding.npy", "w", force_zip64=True) as f:
             np.save(f, Y)
