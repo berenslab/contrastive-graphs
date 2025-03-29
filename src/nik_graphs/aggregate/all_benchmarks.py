@@ -1,17 +1,15 @@
 def deplist(dispatch=None):
     return [f"{d}_dim_benchmarks.parquet" for d in ["low", "high"]] + [
-        "node2vec_pq.parquet"
+        "node2vec_pq.parquet",
+        "gfeat_benchmarks.parquet",
     ]
 
 
 def aggregate_path(path, outfile=None):
     import polars as pl
 
-    df_low, df_high, df_n2v = [pl.scan_parquet(f) for f in deplist()]
+    df_low, df_high, df_n2v, df_gfeat = [pl.scan_parquet(f) for f in deplist()]
     colnames = df_high.collect_schema().names() + ["dim", "p", "q", "index"]
-
-    def sorted_df(df: pl.DataFrame):
-        return df
 
     plnone = pl.lit(None, dtype=float)
 
@@ -45,7 +43,19 @@ def aggregate_path(path, outfile=None):
         index=pl.lit(n2v_ix, dtype=pl.UInt32),
     ).select(colnames)
 
-    df = pl.concat((df_low1, df_high1, df_n2v1)).sort("index").drop("index")
+    df_gfeat1 = df_gfeat.with_columns(
+        dim=plnone.cast(pl.Int32),
+        learned_temp=plnone,
+        index=pl.lit(100, dtype=pl.UInt32),
+        p=plnone,
+        q=plnone,
+    ).select(colnames)
+
+    df = (
+        pl.concat((df_low1, df_high1, df_n2v1, df_gfeat1))
+        .sort("index")
+        .drop("index")
+    )
 
     if outfile is not None:
         df.collect().write_parquet(outfile)
