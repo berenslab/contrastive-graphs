@@ -159,7 +159,7 @@ def tex_table(df, outfile, metric_keys=["recall", "knn", "lin", "lpred"]):
 
     with open(outfile, "x") as f:
         fw = IndentedWriter(f)
-        fw.writeln(r"\documentclass[10pt]{article}")
+        fw.writeln(r"\documentclass{article}")
         fw.writeln(r"\usepackage{booktabs}")
         fw.writeln(r"\usepackage{multirow}")
         fw.writeln(r"\usepackage{icml2025}")
