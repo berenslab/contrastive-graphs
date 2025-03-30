@@ -540,6 +540,7 @@ pyrightconfig.json
 /media/*.pdf
 /media/fonts/ttf/*/*.ttf
 /media/fonts/*.zip
+/media/table/*.md
 media/fonts/ttf/*/fontlist.txt
 media/fonts/ttf/*/all-fonts
 /bin/ImageMagick-*/**
