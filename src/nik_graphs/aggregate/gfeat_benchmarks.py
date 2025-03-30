@@ -8,8 +8,6 @@ DATASETS = [
     "computer",
     "pubmed",
     "mnist",
-    "arxiv",
-    "mag",
 ]
 
 
