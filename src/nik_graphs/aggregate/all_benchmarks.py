@@ -46,7 +46,7 @@ def aggregate_path(path, outfile=None):
     df_gfeat1 = df_gfeat.with_columns(
         dim=plnone.cast(pl.Int32),
         learned_temp=plnone,
-        index=pl.lit(100, dtype=pl.UInt32),
+        index=pl.lit(2**32 - 1, dtype=pl.UInt32),
         p=plnone,
         q=plnone,
     ).select(colnames)
