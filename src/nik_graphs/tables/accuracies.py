@@ -29,7 +29,7 @@ def format_table(dispatch, outfile, format="tex"):
     import polars as pl
 
     df = pl.read_parquet(deplist(format=format)[0])
-    if format == "tex":
+    if format in ["tex", "md"]:
         df_n2v = pl.read_parquet(deplist(format=format)[1]).filter(
             pl.col("name") == "node2vec"
         )
@@ -76,6 +76,8 @@ def format_table(dispatch, outfile, format="tex"):
     match format:
         case "tex":
             return tex_table(df, outfile=outfile)
+        case "md":
+            return md_table(df, outfile=outfile)
         case "txt":
             return txt_table(df_fmt, outfile=outfile)
         case "parquet":
@@ -144,6 +146,9 @@ def tex_table(df, outfile, metric_keys=["recall", "knn", "lin", "lpred"]):
 
         # need to double-escape in re.sub because it interprets
         # e.g. \(, so we need to add the second backslash.
+        m = re.match(r"(.*)±(\d\d)\.\d", x)
+        if m:
+            x = rf"{m[1]}±{m[2]}\phantom{{.}}"
         x = x.replace("±", r"${}\pm{}$")
         colorf = (
             r"{{\bf\color{{gne}}{x}}}"
@@ -175,7 +180,7 @@ def tex_table(df, outfile, metric_keys=["recall", "knn", "lin", "lpred"]):
                 fw.writeln("%" * 20 + f"\n%%%{key:^14s}%%%\n" + "%" * 20)
                 fw.writeln(rf"\caption{{{key} accuracy table.}}")
                 fw.writeln(r"\vskip0.075in")
-                fw.writeln(r"\small\centering")
+                fw.writeln(r"\tiny\centering")
                 fw.writeln(begintabular)
                 with fw.indent():
                     fw.writeln(r"\toprule")
@@ -212,8 +217,10 @@ def tex_table(df, outfile, metric_keys=["recall", "knn", "lin", "lpred"]):
                         df1 = df_.pivot("dataset", index="name", values=key)
 
                         if n_dims >= 2:
+                            dim_str = dim if dim is not None else "$n$"
                             fw.writeln(
-                                r"\multirow" f"{{{len(df1)}}}{{*}}{{{dim}}}"
+                                r"\multirow"
+                                f"{{{len(df1)}}}{{*}}{{{dim_str}}}"
                             )
 
                         for row in df1.rows():
@@ -224,6 +231,102 @@ def tex_table(df, outfile, metric_keys=["recall", "knn", "lin", "lpred"]):
                 fw.writeln(endtabular)
         fw.writeln(endtable)
         fw.writeln(r"\end{document}")
+
+
+def md_table(df, outfile, metric_keys=["recall", "knn", "lin", "lpred"]):
+    import re
+
+    import polars as pl
+
+    def filter(s):
+        a = s in ["tsne", "gfeat"]
+        b = s.startswith("cne")
+        c = s.startswith("graphmae")
+        return a or b or c
+
+    nm = pl.col("name")
+    df = (
+        df.sort("n_edges")
+        .filter(
+            nm.is_in(["tsne", "gfeat"])
+            | nm.str.starts_with("cne")
+            | nm.str.starts_with("graphmae")
+        )
+        .filter(pl.col("name") != "cne,temp=0.05,initialization=random")
+        .group_by(["dataset", "name", "dim"], maintain_order=True)
+        .agg(
+            pl.col("knn", "lin", "recall", "lpred")
+            .mean()
+            .name.prefix("mean_"),
+            pl.col("knn", "lin", "recall", "lpred").std().name.prefix("std_"),
+        )
+    )
+
+    def mean_fmt(df, metric):
+        return df.with_columns(
+            pl.format(
+                "{}",
+                (pl.col(f"mean_{metric}") * 100).round(1),
+            ).alias(metric)
+        ).drop(f"mean_{metric}", f"std_{metric}")
+
+    for metric in metric_keys:
+        df = df.pipe(mean_fmt, metric=metric)
+
+    n_dims = len(df.unique("dim"))
+
+    def tr(x):
+        x = translate_plotname(x, _return="identity")
+        return x
+
+    with open(outfile, "x") as f:
+
+        def writeln(s):
+            f.write(s)
+            f.write("\n")
+
+        sep = "|"
+        for key in metric_keys:
+            # write out a header comment showing the knn/lin/...
+            writeln(f"## {key}")
+            header = (
+                sep
+                + sep.join(
+                    ([] if n_dims < 2 else ["$d$"])
+                    + ["Method"]
+                    + df.unique("dataset", maintain_order=True)
+                    .select(
+                        pl.col("dataset").map_elements(
+                            translate_plotname, return_dtype=str
+                        )
+                    )
+                    .to_series()
+                    .map_elements(
+                        lambda row: row.replace(
+                            # rename "MNIST $k$NN" to just "MNIST"
+                            " $k$NN",
+                            "",
+                        ),
+                        return_dtype=str,
+                    )
+                    .to_list(),
+                )
+                + sep
+            )
+            writeln(header)
+            sepline = re.sub("[|][^|]+", "|-", header)
+            writeln(sepline)
+
+            for (dim,), df_ in df.group_by("dim", maintain_order=True):
+
+                df1 = df_.pivot("dataset", index="name", values=key)
+
+                dim_str = f"{dim}" if dim else "n"
+                for row in df1.rows():
+                    f.write(sep)
+                    f.write(sep.join(tr(r) for r in [f"{dim_str}", *row]))
+                    f.write(sep)
+                    writeln("")
 
 
 def txt_table(df, outfile=None):
