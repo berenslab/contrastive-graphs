@@ -126,6 +126,8 @@ def translate_plotname(x, _return="error"):
             s = "DeepWalk"
         case "node2vec":
             s = x
+        case "gfeat":
+            s = "adj. feat."
         case str(x) if x in dataset_capitalize:
             s = x.title()
         case str(x) if x in dataset_allcaps:
