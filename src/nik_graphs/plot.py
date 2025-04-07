@@ -113,6 +113,8 @@ def translate_plotname(x, _return="error"):
         case "drgraph":
             s = "DRGraph"
         case str(x) if x.startswith("spectral"):
+            s = "NMF"
+        case str(x) if x.startswith("spectral"):
             s = "Laplacian E."
         case str(x) if x.startswith("graphmae"):
             s = "GraphMAE"

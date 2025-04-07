@@ -20,6 +20,7 @@ MODELS = [
     "node2vec",
     "spectral,dim=128",
     "graphmae,out_dim=128",
+    "nmf,dim=128",
 ]
 RANDOM_STATES = [None, 1111, 2222]
 

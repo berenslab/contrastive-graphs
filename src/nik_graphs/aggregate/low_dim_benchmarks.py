@@ -19,6 +19,7 @@ LAYOUTS = [
     "fa2",
     "tfdp",
     "graphmae",
+    "nmf",
 ]
 
 RANDOM_STATES = [None, 1111, 2222]
