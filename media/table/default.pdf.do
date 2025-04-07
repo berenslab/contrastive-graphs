@@ -4,9 +4,9 @@ set -e
 
 
 # adapted from https://redo.readthedocs.io/en/latest/cookbook/latex/
-redo-ifchange $2.tex
+redo-ifchange $2.tex ../../bin/texlive
 TMPDIR=$(mktemp --directory)
-LATEX=pdflatex
+LATEX=../../bin/tex/texlive/2025/bin/x86_64-linux/lualatex
 
 touch "$TMPDIR/$2.aux.old"
 OK=1
