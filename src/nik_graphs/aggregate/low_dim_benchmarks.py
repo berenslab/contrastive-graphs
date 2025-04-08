@@ -91,7 +91,7 @@ def aggregate_path(path, outfile=None):
                 acctxt = (zpath / "score.txt").read_text()
                 results[key].append(float(acctxt))
 
-    order = "tsne sgtsnepi drgraph fa2 tfdp spectral graphmae".split()
+    order = "tsne sgtsnepi drgraph fa2 tfdp spectral graphmae nmf".split()
     assert all(x in order for x in LAYOUTS)
     df = (
         pl.DataFrame(results)
