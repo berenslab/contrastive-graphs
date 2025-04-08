@@ -238,20 +238,8 @@ def md_table(df, outfile, metric_keys=["recall", "knn", "lin", "lpred"]):
 
     import polars as pl
 
-    def filter(s):
-        a = s in ["tsne", "gfeat"]
-        b = s.startswith("cne")
-        c = s.startswith("graphmae")
-        return a or b or c
-
-    nm = pl.col("name")
     df = (
         df.sort("n_edges")
-        .filter(
-            nm.is_in(["tsne", "gfeat"])
-            | nm.str.starts_with("cne")
-            | nm.str.starts_with("graphmae")
-        )
         .filter(pl.col("name") != "cne,temp=0.05,initialization=random")
         .group_by(["dataset", "name", "dim"], maintain_order=True)
         .agg(
