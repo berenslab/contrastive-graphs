@@ -10,7 +10,6 @@ from scipy import sparse
 from cne._cne import CNE
 
 from ..path_utils import path_to_kwargs
-from .cne import GraphDM
 
 __partition__ = "2080-galvani"
 
@@ -36,7 +35,6 @@ def run_path(path, outfile):
 
 def cne(
     A,
-    labels=None,
     loss="infonce",
     metric="cosine",
     batch_size="auto",
@@ -60,19 +58,6 @@ def cne(
 
     if batch_size == "auto":
         batch_size = min(A.nnz // 10, 2**13)
-
-    if labels is None:
-        y = torch.zeros(A.shape[0], dtype=int)
-    else:
-        y = labels
-
-    dm = GraphDM(
-        A,
-        labels=y,
-        batch_size=batch_size,
-        drop_last=drop_last,
-        data_on_gpu=True,
-    )
 
     if (
         isinstance(initialization, np.ndarray)
