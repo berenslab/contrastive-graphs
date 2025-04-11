@@ -19,13 +19,11 @@ def run_path(path, outfile):
     zipf = path.parent / "1.zip"
 
     A = sparse.load_npz(zipf)
-    npz = np.load(zipf)
-    labels = npz["labels"]
 
     name, kwargs = path_to_kwargs(path)
     assert name == "cne1"
 
-    Y = cne(A, labels, **kwargs)
+    Y = cne(A, **kwargs)
     # with zipfile.ZipFile(parent / "1.zip") as zf:
 
     with zipfile.ZipFile(outfile, "a") as zf:
