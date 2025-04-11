@@ -11,7 +11,7 @@ from cne._cne import CNE
 
 from ..path_utils import path_to_kwargs
 
-__partition__ = "a100-galvani"
+__partition__ = "2080-galvani"
 
 
 def run_path(path, outfile):
