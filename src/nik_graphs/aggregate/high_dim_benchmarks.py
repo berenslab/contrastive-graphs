@@ -16,6 +16,8 @@ MODELS = [
     "cne,loss=infonce-temp",
     "cne,temp=0.05,initialization=random",
     "cne",
+    "cne1,temp=0.05",
+    "cne1",
     "deepwalk",
     "node2vec",
     "spectral,dim=128",
