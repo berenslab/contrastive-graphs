@@ -13,6 +13,8 @@ DATASETS = [
 ]
 LAYOUTS = [
     "tsne",
+    "cne,dim=2,metric=euclidean",
+    "cne,temp=0.05,dim=2,metric=euclidean",
     "spectral",
     "sgtsnepi",
     "drgraph",
@@ -91,7 +93,10 @@ def aggregate_path(path, outfile=None):
                 acctxt = (zpath / "score.txt").read_text()
                 results[key].append(float(acctxt))
 
-    order = "tsne sgtsnepi drgraph fa2 tfdp spectral graphmae nmf".split()
+    order = (
+        "tsne cne,temp=0.05,dim=2,metric=euclidean cne,dim=2,metric=euclidean "
+        "sgtsnepi drgraph fa2 tfdp spectral graphmae nmf"
+    ).split()
     assert all(x in order for x in LAYOUTS)
     df = (
         pl.DataFrame(results)
