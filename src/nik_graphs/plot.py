@@ -118,11 +118,11 @@ def translate_plotname(x, _return="error"):
             s = "Laplacian E."
         case str(x) if x.startswith("graphmae"):
             s = "GraphMAE"
-        case "cne,temp=0.05":
+        case x.startswith("cne,temp=0.05"):
             s = "graph CNE"
         case "cne":
             s = "CNE, τ=0.5"
-        case "cne,loss=infonce-temp":
+        case x.startswith("cne,loss=infonce-temp"):
             s = "graph CNEτ"
         case "deepwalk":
             s = "DeepWalk"
