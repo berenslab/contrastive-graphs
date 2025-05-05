@@ -95,6 +95,7 @@ def aggregate_path(path, outfile=None):
 
     order = (
         "tsne cne,temp=0.05,dim=2,metric=euclidean cne,dim=2,metric=euclidean "
+        "cne,loss=infonce-temp,dim=2,metric=euclidean "
         "sgtsnepi drgraph fa2 tfdp spectral graphmae nmf"
     ).split()
     assert all(x in order for x in LAYOUTS)
