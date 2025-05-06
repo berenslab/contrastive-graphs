@@ -15,6 +15,7 @@ LAYOUTS = [
     "tsne",
     "cne,dim=2,metric=euclidean",
     "cne,temp=0.05,dim=2,metric=euclidean",
+    "cne,loss=infonce-temp,dim=2,metric=euclidean",
     "spectral",
     "sgtsnepi",
     "drgraph",
