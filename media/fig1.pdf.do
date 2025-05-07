@@ -28,6 +28,6 @@ $COLORDEFS
 \end{document}
 EOF
 
-$OLDPWD/../bin/tex/texlive/2025/bin/x86_64-linux/pdflatex fig1.tex
+$OLDPWD/../bin/tex/texlive/2025/bin/x86_64-linux/pdflatex fig1.tex > /dev/null 2>/dev/null
 cd $OLDPWD
 mv $TMPDIR/fig1.pdf $3
