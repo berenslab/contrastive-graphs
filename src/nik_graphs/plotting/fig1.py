@@ -64,7 +64,7 @@ def plot():
     """
     fig, axd = plt.subplot_mosaic(
         mosaic,
-        figsize=(6.2, 1.8),
+        figsize=(5.5, 1.8),
         constrained_layout=dict(w_pad=0, h_pad=0),
     )
 
@@ -158,7 +158,7 @@ def plot_graph(ax, pts, A):
         ax.figure.transSubfigure, ax.transAxes
     )
     ax.text(
-        0.05,
+        0.0125,
         0.55,
         r"$G = (\mathcal V, \mathcal E)$",
         usetex=usetex,
@@ -254,7 +254,7 @@ def plot_cne(ax, pts, A):
     ax.plot(x2, x1, ls="dashed", **largs)
     ax.plot(x2, -x1, ls="solid", **largs)
 
-    data = pts * 0.5
+    data = pts * 0.6
     data[:, 1] += np.pi / 32
     lon, lat = data.T
     x1, x2 = project_sphere_points(lat, lon)
