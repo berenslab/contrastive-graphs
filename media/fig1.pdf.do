@@ -6,6 +6,7 @@ redo-ifchange fig1.tex ../bin/texlive
 
 TMPDIR=$(mktemp --directory)
 OLDPWD=$PWD
+COLORDEFS=$(grep "^%%.*definecolor" fig1.tex | tr -d '% ')
 cd $TMPDIR
 
 cat > fig1.tex <<EOF
@@ -20,7 +21,7 @@ cat > fig1.tex <<EOF
 \usepackage{xcolor}
 \usepackage{amsmath}
 \usepackage{amssymb}
-\definecolor{myred1}{RGB}{255, 0, 0}
+$COLORDEFS
 
 \begin{document}
 \input{$OLDPWD/fig1.tex}
