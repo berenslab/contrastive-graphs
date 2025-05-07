@@ -12,8 +12,10 @@ graph_edge_color = graph_color
 axes_edge_color = "xkcd:medium grey"
 
 ij_dict = dict(i=5, j=4)
-attraction_color = "xkcd:fire engine red"
-_aclr = mpl.colors.to_hex(attraction_color)[1:]
+attraction_color = "crimson"
+repulsion_color = "xkcd:ocean blue"
+_attr = mpl.colors.to_hex(attraction_color)[1:]
+_repl = mpl.colors.to_hex(repulsion_color)[1:]
 plt.rcParams.update(
     {
         f"{x}.preamble": "\n".join(
@@ -21,7 +23,8 @@ plt.rcParams.update(
                 r"\usepackage{xcolor}",
                 r"\usepackage{amsmath}",
                 r"\usepackage{amssymb}",
-                rf"\definecolor{{attr}}{{HTML}}{{{_aclr}}}",
+                rf"\definecolor{{attr}}{{HTML}}{{{_attr}}}",
+                rf"\definecolor{{repl}}{{HTML}}{{{_repl}}}",
             ]
         )
         for x in ["text.latex", "pgf"]
@@ -402,8 +405,8 @@ def plot_kl(ax):
 
     loss = (
         r"$\displaystyle\ell_{ij} = "
-        r"-\log\frac{(1 + \|\mathbf{y}_i - \mathbf{y}_j\|^2)^{-1}}"
-        r"{\sum_{kl}(1 + \|\mathbf{y}_k - \mathbf{y}_l\|^2)^{-1}}$"
+        r"-\log\frac{\color{attr}(1 + \|\mathbf{y}_i - \mathbf{y}_j\|^2)^{-1}}"
+        r"{\color{repl}\sum_{kl}(1 + \|\mathbf{y}_k - \mathbf{y}_l\|^2)^{-1}}$"
     )
     ax.text(
         0.0,
@@ -429,8 +432,8 @@ def plot_infonce(ax):
 
     loss = (
         r"$\displaystyle\ell_{ij} = "
-        r"-\log\frac{\exp(\mathbf y_i^\top \mathbf y_j / \tau)}"
-        r"{\sum_k\exp(\mathbf y_i^\top \mathbf y_k / \tau)}$"
+        r"-\log\frac{\color{attr}\exp(\mathbf y_i^\top \mathbf y_j / \tau)}"
+        r"{\color{repl}\sum_k\exp(\mathbf y_i^\top \mathbf y_k / \tau)}$"
     )
 
     ax.text(
