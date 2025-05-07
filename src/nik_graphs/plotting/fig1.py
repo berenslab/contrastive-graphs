@@ -255,10 +255,10 @@ def plot_cne(ax, pts, A):
     ax.plot(x2, -x1, ls="solid", **largs)
 
     data = pts * 0.5
-    data[:, 0] += np.pi / 8
+    data[:, 1] += np.pi / 32
     lon, lat = data.T
-    x1, x2 = project_sphere_points(lon, lat)
-    for lo, la, c1, c2 in zip(lon, lat, x1, x2):
+    x1, x2 = project_sphere_points(lat, lon)
+    for lo, la, c1, c2 in zip(lat, lon, x1, x2):
         major, minor, angle = analyze_projected_circle(lo, la, 5)
         ellipse = mpl.patches.Ellipse(
             (c1, c2),
@@ -277,7 +277,7 @@ def plot_cne(ax, pts, A):
     for edge, i, j in zip(edges, row, col):
         pta, ptb = edge
         elon, elat = np.linspace(*edge, num=10).T
-        x1, x2 = project_sphere_points(elon, elat)
+        x1, x2 = project_sphere_points(elat, elon)
 
         c = (
             graph_edge_color
