@@ -13,12 +13,18 @@ axes_edge_color = "xkcd:medium grey"
 
 ij_dict = dict(i=5, j=4)
 attraction_color = "xkcd:fire engine red"
-
+_aclr = mpl.colors.to_hex(attraction_color)[1:]
 plt.rcParams.update(
     {
-        "text.latex.preamble": "\n".join(
-            [r"\usepackage{amsmath}", r"\usepackage{amssymb}"]
+        f"{x}.preamble": "\n".join(
+            [
+                r"\usepackage{xcolor}",
+                r"\usepackage{amsmath}",
+                r"\usepackage{amssymb}",
+                rf"\definecolor{{attr}}{{HTML}}{{{_aclr}}}",
+            ]
         )
+        for x in ["text.latex", "pgf"]
     }
 )
 
@@ -30,7 +36,8 @@ def deplist(plotname=None):
 def plot_path(plotname, outfile, format="pdf"):
 
     fig = plot()
-    fig.savefig(outfile, format="pdf", metadata=dict(CreationDate=None))
+    kws = dict(metadata=dict(CreationDate=None)) if format == "pdf" else dict()
+    fig.savefig(outfile, format=format, **kws)
 
 
 def plot():

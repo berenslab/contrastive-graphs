@@ -538,6 +538,7 @@ pyrightconfig.json
 /runs/**/files.dep
 /media/*.png
 /media/*.pdf
+/media/fig1.tex
 /media/fonts/ttf/*/*.ttf
 /media/fonts/*.zip
 /media/table/*.md
