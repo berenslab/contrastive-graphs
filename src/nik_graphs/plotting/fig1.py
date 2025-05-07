@@ -11,6 +11,8 @@ graph_color = "black"
 graph_edge_color = graph_color
 axes_edge_color = "xkcd:medium grey"
 
+ij_dict = dict(i=5, j=4)
+attraction_color = "xkcd:fire engine red"
 
 plt.rcParams.update(
     {
@@ -164,7 +166,7 @@ def plot_graph(ax, pts, A):
         fontsize=plt.rcParams["axes.titlesize"],
     ).set_in_layout(False)
 
-    for name, idx in dict(i=5, j=4).items():
+    for name, idx in ij_dict.items():
         t = ax.figure.dpi_scale_trans + mpl.transforms.ScaledTranslation(
             *pts[idx], ax.transData
         )
@@ -272,12 +274,17 @@ def plot_cne(ax, pts, A):
     row, col = np.triu(A).nonzero()
     edges = np.hstack((data[row], data[col])).reshape(len(row), 2, 2)
 
-    for edge in edges:
+    for edge, i, j in zip(edges, row, col):
         pta, ptb = edge
         elon, elat = np.linspace(*edge, num=10).T
         x1, x2 = project_sphere_points(elon, elat)
 
-        ax.plot(x1, x2, color=graph_edge_color, alpha=1)
+        c = (
+            graph_edge_color
+            if not (j == ij_dict["i"] and i == ij_dict["j"])
+            else attraction_color
+        )
+        ax.plot(x1, x2, color=c, alpha=1)
 
 
 def project_sphere_points(
@@ -433,9 +440,18 @@ def plot_infonce(ax):
 def get_edgelines(pts, A):
     row, col = np.triu(A).nonzero()
     pts_e = np.hstack((pts[row], pts[col])).reshape(len(row), 2, 2)
+
+    colors = [
+        (
+            graph_edge_color
+            if not (j == ij_dict["i"] and i == ij_dict["j"])
+            else attraction_color
+        )
+        for i, j in zip(row, col)
+    ]
     lines = mpl.collections.LineCollection(
         pts_e,
-        color=graph_edge_color,
+        color=colors,
         antialiaseds=True,
         zorder=0.9,
     )
