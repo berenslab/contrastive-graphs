@@ -311,6 +311,24 @@ def plot_cne(ax, pts, A):
         )
         ax.add_patch(ellipse)
 
+    data_ = np.stack([x1, x2]).T
+    cauchy = 1 / (1 + ((data_[:, None] - data_) ** 2).sum(2))
+    repulsive = cauchy.sum(1)[:, None] * (data_[:, None] - data_).sum(1)
+    diff = data_ + 0.015 * repulsive
+
+    for i in range(len(data_)):
+        if np.abs(repulsive[i]).sum() > 1:
+            ax.annotate(
+                "",
+                (x1[i], x2[i]),
+                diff[i],
+                arrowprops=dict(
+                    arrowstyle="<|-,head_length=0.25,head_width=0.125",
+                    color=repulsion_color,
+                ),
+                zorder=2.5,
+            )
+
     row, col = np.triu(A).nonzero()
     edges = np.hstack((data[row], data[col])).reshape(len(row), 2, 2)
 
@@ -325,6 +343,21 @@ def plot_cne(ax, pts, A):
         ax.plot(x1, x2, color=c, alpha=1)
         if attr_edge:
             [ax.add_patch(a) for a in arrows_between(x1, x2)]
+
+
+def to3d(lon_rad, lat_rad, radius=1):
+    # Convert to 3D cartesian coordinates
+    x = radius * np.cos(lat_rad) * np.cos(lon_rad)
+    y = radius * np.cos(lat_rad) * np.sin(lon_rad)
+    z = radius * np.sin(lat_rad)
+    return x, y, z
+
+
+def tolatlon(X):
+    data = X / (X**2).sum(1)[:, None]
+    lat = np.arcsin(data[:, 2])
+    lon = np.arctan2(data[:, 1], data[:, 0])
+    return lon, lat
 
 
 def project_sphere_points(
@@ -347,10 +380,7 @@ def project_sphere_points(
     # lat_rad = np.radians(lat)
     theta = np.radians(view_angle)
 
-    # Convert to 3D cartesian coordinates
-    x = radius * np.cos(lat_rad) * np.cos(lon_rad)
-    y = radius * np.cos(lat_rad) * np.sin(lon_rad)
-    z = radius * np.sin(lat_rad)
+    x, y, z = to3d(lon_rad, lat_rad, radius=radius)
 
     # Rotate around y-axis
     x_rot = x * np.cos(theta) + z * np.sin(theta)
