@@ -19,14 +19,14 @@ def plot(h5):
     from ..plot import letter_dict, translate_plotname
 
     rng = np.random.default_rng(23890147)
-    mosaic = "abcde"
-    letters = iter("bcde")
+    mosaic = "abzde"
+    letters = iter("abde")
     fig, axd = plt.subplot_mosaic(
         mosaic,
         figsize=(5.5, 1.25),
         constrained_layout=dict(h_pad=0),
     )
-    plot_ax = axd["a"]
+    plot_ax = axd["z"]
 
     labels = np.asanyarray(h5["labels"])
     for i, (temp_str, h5_temp) in enumerate(h5.items()):
@@ -80,8 +80,8 @@ def plot(h5):
             )
 
             txtkwargs = dict(
-                va="baseline" if letter in ["b", "e"] else "top",
-                ha=("left" if letter in "bd" else "right"),
+                va="baseline" if letter in "ae" else "top",
+                ha=("left" if letter in "ad" else "right"),
             )
             dy = -1 if txtkwargs["va"] == "top" else 1
             t = mpl.transforms.offset_copy(
