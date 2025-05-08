@@ -74,7 +74,7 @@ def plot():
     """
     fig, axd = plt.subplot_mosaic(
         mosaic,
-        figsize=(5.5, 1.8),
+        figsize=(5.5, 1.6),
         constrained_layout=dict(w_pad=0, h_pad=0),
     )
 
