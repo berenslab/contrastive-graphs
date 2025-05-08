@@ -277,7 +277,7 @@ def plot_cne(ax, pts, A):
     ax.plot(x2, -x1, ls="solid", **largs)
 
     data = pts * 0.6
-    data[:, 1] += np.pi / 32
+    data[:, 1] += np.pi / 64
     lon, lat = data.T
     x1, x2 = project_sphere_points(lat, lon)
     for i, (lo, la, c1, c2) in enumerate(zip(lat, lon, x1, x2)):
@@ -299,7 +299,7 @@ def plot_cne(ax, pts, A):
 
     for edge, i, j in zip(edges, row, col):
         pta, ptb = edge
-        elon, elat = np.linspace(*edge, num=10).T
+        elon, elat = np.linspace(*edge, num=13).T
         x1, x2 = project_sphere_points(elat, elon)
 
         attr_edge = j == ij_dict["j"] and i == ij_dict["i"]
