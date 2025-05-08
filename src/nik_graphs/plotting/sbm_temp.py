@@ -65,7 +65,7 @@ def plot(h5):
                 rasterized=True,
                 clip_on=False,
             )
-            ax.set_aspect(1)
+            ax.set_aspect(1, adjustable="datalim")
             ax.set_axis_off()
             ax.margins(0)
 
