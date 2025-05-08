@@ -150,7 +150,7 @@ def plot():
         axd["t"].transAxes, axd["i"].transAxes
     )
     fig.text(
-        1,
+        0.95,
         1,
         r"$S^{127}$",
         ha="left",
@@ -220,7 +220,8 @@ def plot_tsne(root_ax, pts, A, random_state=5):
 
     root_ax.set_aspect(1)
     root_ax.set_axis_off()
-    ax = root_ax.inset_axes([0, 0.05, 0.9, 0.9])
+    w = 0.85
+    ax = root_ax.inset_axes([(1 - w) / 2, 0.075, w, 0.875])
     ax.tick_params("both", length=0)
     ax.set(xticks=[], yticks=[])
     [
