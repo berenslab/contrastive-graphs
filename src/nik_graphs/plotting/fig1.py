@@ -11,7 +11,7 @@ graph_color = "black"
 graph_edge_color = graph_color
 axes_edge_color = "xkcd:medium grey"
 
-ij_dict = dict(i=5, j=4)
+ij_dict = dict(i=1, j=2)
 attraction_color = "crimson"
 repulsion_color = "xkcd:ocean blue"
 _attr = mpl.colors.to_hex(attraction_color)[1:]
@@ -234,9 +234,12 @@ def plot_tsne(root_ax, pts, A, random_state=5):
         attraction_color if x in ij_dict.values() else graph_color
         for x in range(len(pts))
     ]
-    ax.scatter(*data.T, c=colors)
+    ax.scatter(*data.T, c=colors, zorder=3)
     ax.set_aspect(1)
     ax.add_collection(get_edgelines(data, A))
+    x1, x2 = np.linspace(*[data[ij_dict[x]] for x in "ij"], num=13).T
+    [ax.add_patch(a) for a in arrows_between(x1, x2)]
+
     ax.text(
         1.025,
         1,
@@ -299,12 +302,12 @@ def plot_cne(ax, pts, A):
         elon, elat = np.linspace(*edge, num=10).T
         x1, x2 = project_sphere_points(elat, elon)
 
-        c = (
-            graph_edge_color
-            if not (j == ij_dict["i"] and i == ij_dict["j"])
-            else attraction_color
-        )
+        attr_edge = j == ij_dict["j"] and i == ij_dict["i"]
+        c = graph_edge_color if not attr_edge else attraction_color
+
         ax.plot(x1, x2, color=c, alpha=1)
+        if attr_edge:
+            [ax.add_patch(a) for a in arrows_between(x1, x2)]
 
 
 def project_sphere_points(
@@ -464,7 +467,7 @@ def get_edgelines(pts, A):
     colors = [
         (
             graph_edge_color
-            if not (j == ij_dict["i"] and i == ij_dict["j"])
+            if not (j == ij_dict["j"] and i == ij_dict["i"])
             else attraction_color
         )
         for i, j in zip(row, col)
@@ -476,3 +479,26 @@ def get_edgelines(pts, A):
         zorder=0.9,
     )
     return lines
+
+
+def arrows_between(x1, x2, frac=0.45):
+    n_samples = int(frac * len(x1))
+    arrows = []
+    for xx1, xx2 in zip([x1, list(reversed(x1))], [x2, list(reversed(x2))]):
+        coords = list(zip(xx1[:n_samples], xx2[:n_samples]))
+        path = mpl.path.Path(
+            coords,
+            [mpl.path.Path.MOVETO]
+            + [mpl.path.Path.LINETO] * (len(coords) - 1),
+        )
+        a = mpl.patches.FancyArrowPatch(
+            path=path,
+            arrowstyle="-|>",
+            color=attraction_color,
+            shrinkA=0,
+            shrinkB=0,
+            mutation_scale=5,
+            zorder=2.5,
+        )
+        arrows.append(a)
+    return arrows
