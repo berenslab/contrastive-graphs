@@ -229,7 +229,6 @@ def plot_tsne(root_ax, pts, A, random_state=5):
         for s in ax.spines.values()
     ]
 
-    ax.margins(0.1)
     colors = [
         attraction_color if x in ij_dict.values() else graph_color
         for x in range(len(pts))
@@ -239,6 +238,21 @@ def plot_tsne(root_ax, pts, A, random_state=5):
     ax.add_collection(get_edgelines(data, A))
     x1, x2 = np.linspace(*[data[ij_dict[x]] for x in "ij"], num=13).T
     [ax.add_patch(a) for a in arrows_between(x1, x2)]
+
+    cauchy = 1 / (1 + ((data[:, None] - data) ** 2).sum(2))
+    repulsive = cauchy.sum(1)[:, None] * (data[:, None] - data).sum(1)
+    diff = data + 0.075 * repulsive
+    for i in range(len(data)):
+        if np.abs(repulsive[i]).sum() > 1:
+            ax.annotate(
+                "",
+                data[i],
+                diff[i],
+                arrowprops=dict(arrowstyle="<|-", color=repulsion_color),
+                zorder=2.5,
+            )
+    ax.update_datalim(diff)
+    ax.margins(0.0)
 
     ax.text(
         1.025,
