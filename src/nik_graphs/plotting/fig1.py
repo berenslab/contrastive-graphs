@@ -67,10 +67,10 @@ def plot():
     row, col = A.nonzero()
 
     mosaic = """
-    .tk
-    gtk
-    gci
     .ci
+    gci
+    gtk
+    .tk
     """
     fig, axd = plt.subplot_mosaic(
         mosaic,
@@ -94,7 +94,7 @@ def plot():
         (0, 0.6),
         (1, 0.85),
         textcoords=axd["g"].transAxes,
-        xycoords=axd["t"].transAxes,
+        xycoords=axd["c"].transAxes,
         arrowprops=dict(
             arrowstyle="-|>",
             color="xkcd:dark grey",
@@ -108,7 +108,7 @@ def plot():
         (0, 0.5),
         (0.95, 0.53),
         textcoords=axd["g"].transAxes,
-        xycoords=axd["c"].transAxes,
+        xycoords=axd["t"].transAxes,
         arrowprops=dict(
             arrowstyle="-|>",
             color="xkcd:dark grey",
@@ -121,25 +121,25 @@ def plot():
 
     kws = dict(ha="right", fontsize=8)
     t = mpl.transforms.blended_transform_factory(
-        fig.transSubfigure, axd["t"].transAxes
+        fig.transSubfigure, axd["c"].transAxes
     )
     x_txt = 0.275
     fig.text(
         x_txt - 0.01,
         0.6,
-        "graph\nlayout",
+        "node\nembedding",
         ma="right",
         va="bottom",
         transform=t,
         **kws,
     )
     t = mpl.transforms.blended_transform_factory(
-        fig.transSubfigure, axd["c"].transAxes
+        fig.transSubfigure, axd["t"].transAxes
     )
     fig.text(
         x_txt - 0,
         0.575,
-        "node\nembedding",
+        "graph\nlayout",
         ma="right",
         va="top",
         transform=t,
@@ -236,7 +236,7 @@ def plot_tsne(ax, pts, A, random_state=5):
     ax.set_title(translate_plotname("tsne"))
     ax.text(
         1.025,
-        0.95,
+        1,
         r"$\mathbb{R}^2$",
         transform=ax.transAxes,
         usetex=usetex,
