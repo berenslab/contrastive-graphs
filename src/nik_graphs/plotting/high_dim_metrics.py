@@ -32,12 +32,10 @@ def plot_bars(df_full, keys, x_sort_col="n_edges"):
     bar_width = 1 / (n_bars + 1.62)
 
     fig, axd = plt.subplot_mosaic(
-        [keys + ["legend"]],
-        figsize=(6.75, 1.5),
-        width_ratios=[1] * len(keys) + [0.1],
-        constrained_layout=dict(h_pad=0, w_pad=0),
+        [keys],
+        figsize=(5.5, 1.4),
+        constrained_layout=dict(h_pad=0, w_pad=0.05),
     )
-    ax_legend = axd.pop("legend")
     for key, ax in axd.items():
         df_metric = df_full.group_by(
             ["dataset", "name"], maintain_order=True
@@ -54,7 +52,9 @@ def plot_bars(df_full, keys, x_sort_col="n_edges"):
             ax.yaxis.set_major_formatter(
                 mpl.ticker.PercentFormatter(1, decimals=0)
             )
-            label = translate_plotname(df["name"][0], _return="identity")
+            label = translate_plotname(
+                df["name"][0], _return="identity", brief=True
+            )
             color = name2color(df["name"][0])
             ax.bar(
                 x + i * bar_width, m, label=label, width=bar_width, color=color
@@ -76,15 +76,15 @@ def plot_bars(df_full, keys, x_sort_col="n_edges"):
         )
         ax.set_xticks(
             _dftix["index"] + (bar_width * (n_bars - 1)) / 2,
-            [translate_plotname(d) for d in _dftix["dataset"]],
+            [translate_plotname(d, brief=True) for d in _dftix["dataset"]],
             rotation=45,
             ha="right",
             rotation_mode="anchor",
         )
-        ax.set_title(translate_plotname(key), family="Roboto")
+        ax.set_title(translate_plotname(key))
         [ax.axhline(y, color="white") for y in [0.25, 0.5, 0.75]]
         ax.spines.left.set_visible(False)
-        ax.tick_params("both", length=0, labelsize=8)
+        ax.tick_params("both", length=0, labelsize=7)
         ax.set_yticks([0, 0.25, 0.5, 0.75, 1.0])
         ax.update_datalim([(0, 1)])
         ax.hlines(
@@ -99,19 +99,20 @@ def plot_bars(df_full, keys, x_sort_col="n_edges"):
         ax.margins(x=0)
 
     handles, labels = ax.get_legend_handles_labels()
-    ax_legend.set_axis_off()
-    ax_legend.legend(
+    fig.legend(
         handles=handles,
         labels=labels,
         ncols=1,
-        loc="center",
+        loc="upper right",
+        bbox_to_anchor=(1, 1),
         borderaxespad=0,
         borderpad=0,
         labelspacing=0,
         columnspacing=0.5,
         handletextpad=0.25,
         handlelength=1.25,
-        fontsize=7,
+        fontsize=5,
+        markerfirst=False,
     )
     add_letters(axd.values())
     return fig
