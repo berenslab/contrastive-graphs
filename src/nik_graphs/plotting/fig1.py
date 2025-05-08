@@ -243,7 +243,7 @@ def plot_tsne(root_ax, pts, A, random_state=5):
     repulsive = cauchy.sum(1)[:, None] * (data[:, None] - data).sum(1)
     diff = data + 0.075 * repulsive
     for i in range(len(data)):
-        if np.abs(repulsive[i]).sum() > 1:
+        if False:
             ax.annotate(
                 "",
                 data[i],
@@ -254,8 +254,7 @@ def plot_tsne(root_ax, pts, A, random_state=5):
                 ),
                 zorder=2.5,
             )
-    ax.update_datalim(diff)
-    ax.margins(0.0)
+    ax.margins(0.1)
 
     ax.text(
         1.025,
@@ -317,7 +316,7 @@ def plot_cne(ax, pts, A):
     diff = data_ + 0.015 * repulsive
 
     for i in range(len(data_)):
-        if np.abs(repulsive[i]).sum() > 1:
+        if False:
             ax.annotate(
                 "",
                 (x1[i], x2[i]),
