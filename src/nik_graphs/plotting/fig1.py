@@ -233,7 +233,6 @@ def plot_tsne(ax, pts, A, random_state=5):
     ax.scatter(*data.T, c=colors)
     ax.set_aspect(1)
     ax.add_collection(get_edgelines(data, A))
-    ax.set_title(translate_plotname("tsne"))
     ax.text(
         1.025,
         1,
@@ -254,10 +253,7 @@ def plot_cne(ax, pts, A):
         for axis in [ax.xaxis, ax.yaxis]
     ]
     [s.set_visible(False) for s in ax.spines.values()]
-    ax.set_xlabel(
-        translate_plotname("cne,temp=0.05"),
-        fontsize=plt.rcParams["axes.titlesize"],
-    )
+    ax.set_title("graph NE")
     ax.margins(0.01)
 
     largs = dict(color=axes_edge_color, lw=plt.rcParams["axes.linewidth"])
