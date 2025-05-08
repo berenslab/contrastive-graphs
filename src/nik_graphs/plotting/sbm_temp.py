@@ -19,14 +19,14 @@ def plot(h5):
     from ..plot import letter_dict, translate_plotname
 
     rng = np.random.default_rng(23890147)
-    mosaic = "ab\nzz\nde"
-    letters = iter("abde")
+    mosaic = "abcde"
+    letters = iter("bcde")
     fig, axd = plt.subplot_mosaic(
         mosaic,
-        figsize=(3.25, 2.75),
-        constrained_layout=dict(w_pad=0, h_pad=0.005),
+        figsize=(5.5, 1.25),
+        constrained_layout=dict(h_pad=0),
     )
-    plot_ax = axd["z"]
+    plot_ax = axd["a"]
 
     labels = np.asanyarray(h5["labels"])
     for i, (temp_str, h5_temp) in enumerate(h5.items()):
@@ -78,13 +78,10 @@ def plot(h5):
                 s=4,
                 clip_on=False,
             )
+
             txtkwargs = dict(
-                va="baseline" if letter in ["a", "e"] else "top",
-                ha=(
-                    "right"
-                    if letter == "a" or step == steps.max()
-                    else "center"
-                ),
+                va="baseline" if letter in ["b", "e"] else "top",
+                ha=("left" if letter in "bd" else "right"),
             )
             dy = -1 if txtkwargs["va"] == "top" else 1
             t = mpl.transforms.offset_copy(
@@ -108,10 +105,5 @@ def plot(h5):
     ld = letter_dict()
     ld.pop("loc")
     for ltr, ax in zip("abcdefg", axd.values()):
-        if ltr != "c":
-            ax.text(
-                0, 1, ltr, transform=ax.transAxes, ha="left", va="top", **ld
-            )
-        else:
-            ax.set_title(ltr, **ld, loc="left", pad=0)
+        ax.set_title(ltr, **ld, loc="left", pad=0)
     return fig
