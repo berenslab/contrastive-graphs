@@ -248,7 +248,10 @@ def plot_tsne(root_ax, pts, A, random_state=5):
                 "",
                 data[i],
                 diff[i],
-                arrowprops=dict(arrowstyle="<|-", color=repulsion_color),
+                arrowprops=dict(
+                    arrowstyle="<|-,head_length=0.25,head_width=0.125",
+                    color=repulsion_color,
+                ),
                 zorder=2.5,
             )
     ax.update_datalim(diff)
