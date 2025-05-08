@@ -107,7 +107,7 @@ def translate_plotname(x, _return="error", brief=False):
         case "recall":
             s = "neighbor recall"
         case "tsne":
-            s = "graph $t$-SNE"
+            s = "graph NE"
         case "tfdp":
             s = "$t$-FDP"
         case "fa2":
@@ -123,11 +123,11 @@ def translate_plotname(x, _return="error", brief=False):
         case str(x) if x.startswith("graphmae"):
             s = "GraphMAE"
         case str(x) if x.startswith("cne,temp=0.05"):
-            s = "graph CNE"
+            s = "graph NE"
         case "cne":
             s = "CNE, τ=0.5"
         case str(x) if x.startswith("cne,loss=infonce-temp"):
-            s = "graph CNEτ"
+            s = "graph NEτ"
         case "deepwalk":
             s = "DeepWalk"
         case "node2vec":
