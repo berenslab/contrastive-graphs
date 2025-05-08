@@ -202,7 +202,7 @@ def plot_graph(ax, pts, A):
     ax.add_collection(get_edgelines(pts, A))
 
 
-def plot_tsne(ax, pts, A, random_state=5):
+def plot_tsne(root_ax, pts, A, random_state=5):
     from scipy import linalg
 
     from ..modules.tsne import tsne
@@ -218,6 +218,9 @@ def plot_tsne(ax, pts, A, random_state=5):
     rot, _scale = linalg.orthogonal_procrustes(Y, pts)
     data = Y @ rot.round(10)
 
+    root_ax.set_aspect(1)
+    root_ax.set_axis_off()
+    ax = root_ax.inset_axes([0, 0.05, 0.9, 0.9])
     ax.tick_params("both", length=0)
     ax.set(xticks=[], yticks=[])
     [
