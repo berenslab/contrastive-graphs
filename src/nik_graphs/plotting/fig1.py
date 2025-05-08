@@ -188,11 +188,16 @@ def plot_graph(ax, pts, A):
             transform=t,
             ha="right",
             va="bottom",
+            color=attraction_color,
         )
 
     ax.set_axis_off()
     ax.set_aspect(1)
-    ax.scatter(*pts.T, c=graph_color)
+    colors = [
+        attraction_color if x in ij_dict.values() else graph_color
+        for x in range(len(pts))
+    ]
+    ax.scatter(*pts.T, c=colors)
 
     ax.add_collection(get_edgelines(pts, A))
 
@@ -221,7 +226,11 @@ def plot_tsne(ax, pts, A, random_state=5):
     ]
 
     ax.margins(0.1)
-    ax.scatter(*data.T, c=graph_color)
+    colors = [
+        attraction_color if x in ij_dict.values() else graph_color
+        for x in range(len(pts))
+    ]
+    ax.scatter(*data.T, c=colors)
     ax.set_aspect(1)
     ax.add_collection(get_edgelines(data, A))
     ax.set_title(translate_plotname("tsne"))
@@ -268,14 +277,15 @@ def plot_cne(ax, pts, A):
     data[:, 1] += np.pi / 32
     lon, lat = data.T
     x1, x2 = project_sphere_points(lat, lon)
-    for lo, la, c1, c2 in zip(lat, lon, x1, x2):
+    for i, (lo, la, c1, c2) in enumerate(zip(lat, lon, x1, x2)):
         major, minor, angle = analyze_projected_circle(lo, la, 5)
+        color = attraction_color if i in ij_dict.values() else graph_color
         ellipse = mpl.patches.Ellipse(
             (c1, c2),
             major,
             minor,
             angle=angle,
-            facecolor=graph_color,
+            facecolor=color,
             edgecolor="white",
             zorder=3,
         )
