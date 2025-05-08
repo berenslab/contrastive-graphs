@@ -184,6 +184,8 @@ def name2color(x, _return="raise_error"):
             c = "xkcd:kelly green"
         case str(x) if x.startswith("spectral"):
             c = "xkcd:brown"
+        case str(x) if x.startswith("graphmae"):
+            c = "thistle"
         case "deepwalk":
             c = "xkcd:salmon"
         case "node2vec":
