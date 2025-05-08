@@ -91,10 +91,14 @@ def main():
             mod.plot_path(plotname, outfile, format=args.format)
 
 
-def translate_plotname(x, _return="error"):
-    dataset_capitalize = ["cora", "citeseer", "computer", "photo"]
+def translate_plotname(x, _return="error", brief=False):
+    dataset_capitalize = ["cora", "citeseer", "photo"]
     dataset_allcaps = ["mag", "sbm"]
-    dataset_mapping = dict(arxiv="arXiv", mnist="MNIST $k$NN", pubmed="PubMed")
+    dataset_mapping = dict(
+        arxiv="arXiv",
+        mnist="MNIST" if brief else "MNIST $k$NN",
+        pubmed="PubMed",
+    )
     match x:
         case "lin":
             s = "linear"
@@ -107,7 +111,7 @@ def translate_plotname(x, _return="error"):
         case "tfdp":
             s = "$t$-FDP"
         case "fa2":
-            s = "ForceAtlas2"
+            s = "FA2" if brief else "ForceAtlas2"
         case "sgtsnepi":
             s = "SGtSNEpi"
         case "drgraph":
@@ -115,7 +119,7 @@ def translate_plotname(x, _return="error"):
         case str(x) if x.startswith("nmf"):
             s = "NMF"
         case str(x) if x.startswith("spectral"):
-            s = "Laplacian E."
+            s = "LE" if brief else "Laplacian E."
         case str(x) if x.startswith("graphmae"):
             s = "GraphMAE"
         case str(x) if x.startswith("cne,temp=0.05"):
@@ -130,6 +134,8 @@ def translate_plotname(x, _return="error"):
             s = x
         case "gfeat":
             s = "adj. feat."
+        case "computer":
+            s = "Comp." if brief else "Computer"
         case str(x) if x in dataset_capitalize:
             s = x.title()
         case str(x) if x in dataset_allcaps:
