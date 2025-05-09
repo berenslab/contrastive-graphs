@@ -40,7 +40,7 @@ def plot(h5, outfile, datasets=["computer", "photo"], format="pdf"):
     fig, axs = plt.subplots(
         len(datasets),
         len(keys),
-        figsize=(6, 3),
+        figsize=(5.5, 2.2),
         constrained_layout=dict(w_pad=0, h_pad=0),
     )
 
