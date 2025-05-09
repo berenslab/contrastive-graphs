@@ -1,4 +1,6 @@
 # -*- mode: sh -*-
+set -e
+
 exec >&2
 
 
@@ -22,12 +24,17 @@ cat > fig1.tex <<EOF
 \usepackage{amsmath}
 \usepackage{amssymb}
 $COLORDEFS
+\ifdefined\pdftexversion\else  % non-pdftex case.
+  \usepackage{fontspec}
+  \setsansfont{RobotoCondensed-Regular.ttf}[Path=\detokenize{/home/jnb/dev/berenslab/graphs/media/fonts/ttf/roboto/}]
+  \setmonofont{Iosevka-Regular.ttf}[Path=\detokenize{/home/jnb/dev/berenslab/graphs/media/fonts/ttf/iosevka/}]
+\fi
 
 \begin{document}
 \input{$OLDPWD/fig1.tex}
 \end{document}
 EOF
 
-$OLDPWD/../bin/tex/texlive/2025/bin/x86_64-linux/pdflatex fig1.tex > /dev/null 2>/dev/null
+$OLDPWD/../bin/tex/texlive/2025/bin/x86_64-linux/xelatex fig1.tex > /dev/null 2>/dev/null
 cd $OLDPWD
 mv $TMPDIR/fig1.pdf $3
