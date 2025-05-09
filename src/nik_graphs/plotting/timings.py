@@ -28,11 +28,11 @@ def plot_bars(df_full, x_sort_col="n_edges"):
 
     df1 = df_full.filter(~pl.col("name").str.starts_with("spectral"))
 
-    panels = ["2", "128"]
+    panels = ["128", "2"]
     mosaic = np.array([[d, f"legend{d}"] for d in panels]).reshape(1, -1)
     fig, axd = plt.subplot_mosaic(
         mosaic,
-        figsize=(6.75, 1.5),
+        figsize=(5.5, 1.3),
         width_ratios=[1, 0.1] * len(panels),
         sharey=True,
         constrained_layout=dict(w_pad=0, h_pad=0),
