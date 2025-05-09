@@ -25,7 +25,8 @@ def aggregate_path(path, outfile=None):
         .drop("variable", "value")
         .filter(
             (pl.col("name") == "cne,temp=0.05")
-            | ~pl.col("name").str.starts_with("cne"),
+            | ~pl.col("name").str.starts_with("cne")
+            & ~pl.col("name").str.starts_with("graphmae"),
         )
     )
 
