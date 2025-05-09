@@ -4,7 +4,6 @@ def deplist(plotname=None):
 
 def plot_path(plotname, outfile, format="pdf"):
     import polars as pl
-    from matplotlib import pyplot as plt
 
     df = pl.read_parquet(deplist(plotname)[0])
 
@@ -29,7 +28,7 @@ def plot(df_full):
     colors = [cmap(x) for x in np.linspace(0.3, 1, num=n_bars)]
 
     fig, axxs = plt.subplots(
-        3, 9, figsize=(6.75, 3), gridspec_kw=dict(wspace=0)
+        3, 9, figsize=(5.5, 2.65), gridspec_kw=dict(wspace=0)
     )
 
     ax_iter = iter(axxs.flat)
@@ -83,10 +82,12 @@ def plot(df_full):
 
     [ax.set_axis_off() for ax in ax_iter]
     handles, labels = ax.get_legend_handles_labels()
-    axxs[-1, -1].legend(
+    fig.legend(
         title="$q$",
         handles=reversed(handles),
         labels=reversed(labels),
+        loc="lower right",
+        bbox_to_anchor=(1, 0),
         ncols=1,
         fontsize=7,
         labelspacing=0.1,
