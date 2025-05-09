@@ -34,7 +34,7 @@ def plot_bars(df_full, keys, x_sort_col="n_edges"):
     fig, axd = plt.subplot_mosaic(
         [keys],
         figsize=(5.5, 1.4),
-        constrained_layout=dict(h_pad=0, w_pad=0.05),
+        constrained_layout=dict(h_pad=0, w_pad=0),
     )
     for key, ax in axd.items():
         df_metric = df_full.group_by(

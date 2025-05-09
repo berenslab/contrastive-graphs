@@ -119,32 +119,18 @@ def plot():
     )
     fig.add_artist(annot)
 
-    kws = dict(ha="right", fontsize=8)
+    kws = dict(ha="right", ma="right", fontsize=8)
     t = mpl.transforms.blended_transform_factory(
         fig.transSubfigure, axd["c"].transAxes
     )
     x_txt = 0.275
     fig.text(
-        x_txt - 0.01,
-        0.6,
-        "node\nembedding",
-        ma="right",
-        va="bottom",
-        transform=t,
-        **kws,
+        x_txt - 0.01, 0.62, "node\nembedding", va="bottom", transform=t, **kws
     )
     t = mpl.transforms.blended_transform_factory(
         fig.transSubfigure, axd["t"].transAxes
     )
-    fig.text(
-        x_txt - 0,
-        0.575,
-        "graph\nlayout",
-        ma="right",
-        va="top",
-        transform=t,
-        **kws,
-    )
+    fig.text(x_txt - 0, 0.575, "graph\nlayout", va="top", transform=t, **kws)
 
     t = mpl.transforms.blended_transform_factory(
         axd["t"].transAxes, axd["i"].transAxes

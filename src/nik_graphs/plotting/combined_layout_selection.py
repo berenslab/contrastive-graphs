@@ -64,7 +64,20 @@ def plot(h5, outfile, datasets=["computer", "photo"], format="pdf"):
         rot, _scale = linalg.orthogonal_procrustes(data, anchor)
         data = data @ rot.round(10)
         ax.scatter(*data.T, c=labels, rasterized=True)
-        ax.set_title(next(letters), **ldict, ha="left")
+        if dataset == "computer":  # top-row dataset
+            ax.set_title(next(letters), **ldict, ha="left")
+        else:
+            _ldict = ldict.copy()
+            _ldict.pop("loc")
+            ax.text(
+                0,
+                1,
+                next(letters),
+                **_ldict,
+                ha="left",
+                va="top",
+                transform=ax.transAxes,
+            )
         ax.axis("equal")
         add_scalebars(ax, hidex=False, hidey=False)
         [ax.spines[x].set_visible(False) for x in ["left", "bottom"]]
@@ -84,16 +97,8 @@ def plot(h5, outfile, datasets=["computer", "photo"], format="pdf"):
         txt = "\n".join(sorted(lines, key=len, reverse=True))
         p_eff = [mpl.patheffects.withStroke(linewidth=1.1, foreground="white")]
 
-        ax.text(
-            1,
-            1,
-            txt,
-            transform=ax.transAxes,
-            ha="right",
-            va="top",
-            fontsize=6,
-            path_effects=p_eff,
-        )
+        kws = dict(transform=ax.transAxes, ha="right", va="top", fontsize=6)
+        ax.text(1, 1, txt, path_effects=p_eff, **kws)
 
         pts = np.hstack((data[row], data[col])).reshape(len(row), 2, 2)
         lines = mpl.collections.LineCollection(
