@@ -25,7 +25,7 @@ def plot(h5, df, outfile, format="pdf"):
     from matplotlib import pyplot as plt
     from scipy import linalg
 
-    from ..plot import translate_plotname
+    from ..plot import translate_acc_short, translate_plotname
 
     dataset_keys = df.sort("n_edges")["dataset_key"]
     keys = "tsne sgtsnepi drgraph fa2 tfdp spectral".split()
@@ -58,8 +58,17 @@ def plot(h5, df, outfile, format="pdf"):
             ax.axis("equal")
             ax.set_axis_off()
 
+            def m_prefix(k):
+                return (
+                    f"{translate_acc_short(k)}$ = $"
+                    if dataset == dataset_keys[-1] and key == keys[-1]
+                    else ""
+                )
+
             lines = (
-                f"{v:5.1%}" for k, v in h5_ds[key].attrs.items() if k != "lin"
+                f"{m_prefix(k)}{v:5.1%}"
+                for k, v in h5_ds[key].attrs.items()
+                if k != "lin"
             )
             txt = "\n".join(sorted(lines, key=len, reverse=True))
             p_eff = [
