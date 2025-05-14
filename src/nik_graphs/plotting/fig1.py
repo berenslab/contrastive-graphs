@@ -4,16 +4,14 @@ import matplotlib as mpl
 import numpy as np
 from matplotlib import pyplot as plt
 
-from ..plot import translate_plotname
-
 usetex = True
 graph_color = "black"
 graph_edge_color = graph_color
 axes_edge_color = "xkcd:medium grey"
 
 ij_dict = dict(i=1, j=2)
-attraction_color = "crimson"
-repulsion_color = "xkcd:ocean blue"
+attraction_color = "tab:blue"
+repulsion_color = "tab:orange"
 _attr = mpl.colors.to_hex(attraction_color)[1:]
 _repl = mpl.colors.to_hex(repulsion_color)[1:]
 plt.rcParams.update(
@@ -222,7 +220,7 @@ def plot_tsne(root_ax, pts, A, random_state=5):
     ax.scatter(*data.T, c=colors, zorder=3)
     ax.set_aspect(1)
     ax.add_collection(get_edgelines(data, A))
-    x1, x2 = np.linspace(*[data[ij_dict[x]] for x in "ij"], num=13).T
+    x1, x2 = np.linspace(*[data[ij_dict[x]] for x in "ij"], num=20).T
     [ax.add_patch(a) for a in arrows_between(x1, x2)]
 
     cauchy = 1 / (1 + ((data[:, None] - data) ** 2).sum(2))
