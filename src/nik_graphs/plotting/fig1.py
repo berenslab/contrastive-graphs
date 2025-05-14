@@ -227,7 +227,7 @@ def plot_tsne(root_ax, pts, A, random_state=5):
     repulsive = cauchy.sum(1)[:, None] * (data[:, None] - data).sum(1)
     diff = data + 0.075 * repulsive
     for i in range(len(data)):
-        if False:
+        if np.abs(repulsive[i]).sum() > 1:
             ax.annotate(
                 "",
                 data[i],
@@ -238,7 +238,8 @@ def plot_tsne(root_ax, pts, A, random_state=5):
                 ),
                 zorder=2.5,
             )
-    ax.margins(0.1)
+    ax.update_datalim(diff)
+    ax.margins(0.0)
 
     ax.text(
         1.025,
@@ -300,7 +301,7 @@ def plot_cne(ax, pts, A):
     diffx, diffy = project_sphere_points(*(data_ + 0.04 * repulsive).T[::-1])
 
     for i in range(len(data_)):
-        if False:
+        if np.abs(repulsive[i]).sum() > 1:
             ax.annotate(
                 "",
                 (x1[i], x2[i]),
