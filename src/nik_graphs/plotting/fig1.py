@@ -296,17 +296,17 @@ def plot_cne(ax, pts, A):
         )
         ax.add_patch(ellipse)
 
-    data_ = np.stack([x1, x2]).T
+    data_ = data
     cauchy = 1 / (1 + ((data_[:, None] - data_) ** 2).sum(2))
     repulsive = cauchy.sum(1)[:, None] * (data_[:, None] - data_).sum(1)
-    diff = data_ + 0.015 * repulsive
+    diffx, diffy = project_sphere_points(*(data_ + 0.04 * repulsive).T[::-1])
 
     for i in range(len(data_)):
         if False:
             ax.annotate(
                 "",
                 (x1[i], x2[i]),
-                diff[i],
+                (diffx[i], diffy[i]),
                 arrowprops=dict(
                     arrowstyle="<|-,head_length=0.25,head_width=0.125",
                     color=repulsion_color,
