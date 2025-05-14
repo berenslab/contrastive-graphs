@@ -76,7 +76,9 @@ def format_table(dispatch, outfile, format="tex"):
     match format:
         case "tex":
             return tex_table(
-                df, outfile=outfile, metric_keys=["recall", "knn", "lin"]
+                df,
+                outfile=outfile,
+                metric_keys=["recall", "knn", "lin", "lpred"],
             )
         case "md":
             return md_table(df, outfile=outfile)
