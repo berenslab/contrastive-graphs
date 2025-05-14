@@ -301,7 +301,7 @@ def plot_cne(ax, pts, A):
     diffx, diffy = project_sphere_points(*(data_ + 0.04 * repulsive).T[::-1])
 
     for i in range(len(data_)):
-        if np.abs(repulsive[i]).sum() > 1:
+        if np.abs(repulsive[i]).sum() > 10:
             ax.annotate(
                 "",
                 (x1[i], x2[i]),
