@@ -1,7 +1,6 @@
 def deplist(dispatch=None):
     return [f"{d}_dim_benchmarks.parquet" for d in ["low", "high"]] + [
         "node2vec_pq.parquet",
-        "gfeat_benchmarks.parquet",
     ]
 
 
