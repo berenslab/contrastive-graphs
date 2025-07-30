@@ -42,19 +42,7 @@ def aggregate_path(path, outfile=None):
         index=pl.lit(n2v_ix, dtype=pl.UInt32),
     ).select(colnames)
 
-    df_gfeat1 = df_gfeat.with_columns(
-        dim=plnone.cast(pl.Int32),
-        learned_temp=plnone,
-        index=pl.lit(2**32 - 1, dtype=pl.UInt32),
-        p=plnone,
-        q=plnone,
-    ).select(colnames)
-
-    df = (
-        pl.concat((df_low1, df_high1, df_n2v1, df_gfeat1))
-        .sort("index")
-        .drop("index")
-    )
+    df = pl.concat((df_low1, df_high1, df_n2v1)).sort("index").drop("index")
 
     if outfile is not None:
         df.collect().write_parquet(outfile)
