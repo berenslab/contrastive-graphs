@@ -7,7 +7,7 @@ def deplist(dispatch=None):
 def aggregate_path(path, outfile=None):
     import polars as pl
 
-    df_low, df_high, df_n2v, df_gfeat = [pl.scan_parquet(f) for f in deplist()]
+    df_low, df_high, df_n2v = [pl.scan_parquet(f) for f in deplist()]
     colnames = df_high.collect_schema().names() + ["dim", "p", "q", "index"]
 
     plnone = pl.lit(None, dtype=float)
