@@ -18,11 +18,6 @@ N_EPOCHS = 100
 
 
 def deplist(dispatch):
-    depvals = deps(dispatch).values()
-    return [f for lis in depvals for f in lis]
-
-
-def deps(dispatch):
     assert str(dispatch) == "learned_temp"
 
     from ..modules.cne import tsimcne_nonparam
