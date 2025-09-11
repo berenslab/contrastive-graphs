@@ -52,6 +52,8 @@ def aggregate_path(path, outfile=None):
 
     import polars as pl
 
+    to_drop = "dof ta ru val_logtemp val_ru val_ta val_loss".split()
+
     df_dict = defaultdict(list)
     for (dataset, r), zipf in zip(iterator(), deplist(path)):
         zpath = zipfile.Path(zipf)
@@ -60,7 +62,8 @@ def aggregate_path(path, outfile=None):
             train_df = pl.read_csv(f)
 
         temp = (
-            train_df.drop_nulls()
+            train_df.drop(to_drop)
+            .drop_nulls()
             .select(pl.col("logtemp").exp())
             .tail(1)
             .item()
