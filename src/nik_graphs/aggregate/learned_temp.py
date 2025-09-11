@@ -3,6 +3,12 @@ import itertools
 from collections import defaultdict
 from pathlib import Path
 
+# df.group_by("dataset").agg(
+#     mean=pl.col("temp").mean(), std=pl.col("temp").std()
+# ).with_columns(
+#     pl.format("{}±{}", pl.col("mean").round(3), pl.col("std").round(3))
+# )
+
 DATASETS = [
     "cora",
     "pubmed",
