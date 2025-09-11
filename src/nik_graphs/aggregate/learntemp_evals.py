@@ -4,7 +4,7 @@ from pathlib import Path
 
 DATASETS = ["cora", "computer", "photo", "citeseer", "mnist"]
 RANDOM_STATES = [None]
-N_EPOCHS = 30
+N_EPOCHS = 100
 
 
 def deplist(dispatch):
