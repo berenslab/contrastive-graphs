@@ -59,7 +59,12 @@ def aggregate_path(path, outfile=None):
         with (zpath / "lightning_logs/metrics.csv").open() as f:
             train_df = pl.read_csv(f)
 
-        temp = train_df.select(pl.col("logtemp").exp()).tail(1).item()
+        temp = (
+            train_df.drop_nulls()
+            .select(pl.col("logtemp").exp())
+            .tail(1)
+            .item()
+        )
 
         df_dict["temp"].append(temp)
         df_dict["dataset"].append(dataset)
