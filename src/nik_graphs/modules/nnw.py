@@ -66,7 +66,7 @@ def graph_knn_recall(
 
     fraction = 0
     for i in range(test_size):
-        neighbor_edges = A_array[A_array[i]].sum(1)
+        neighbor_edges = A_array[A_array[i]].sum(1).astype(float)
         neighbor_edges[i] = 0
         neighbor_edges /= neighbor_edges.sum()
         fraction += (A_array[i] * neighbor_edges)[
