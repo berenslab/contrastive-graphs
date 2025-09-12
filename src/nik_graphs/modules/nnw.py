@@ -71,7 +71,7 @@ def graph_knn_recall(
         neighbor_edges /= neighbor_edges.sum()
         fraction += (A_array[i] * neighbor_edges)[
             Z_neighb[i, : A_array[i].sum()]
-        ]
+        ].mean()
     fraction /= test_size
 
     return fraction
