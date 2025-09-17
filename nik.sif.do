@@ -109,7 +109,6 @@ From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
             "scipy>=1.14.1" \
             "numba>=0.60.0" \
             cupy-cuda12x \
-            "opentsne>=1.0.2" \
             "h5py>3.12.0" \
             ipython \
             black \
@@ -127,6 +126,7 @@ From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
             git+https://github.com/jnboehm/t-fdp \
             git+https://github.com/jnboehm/forceatlas2 \
             git+https://github.com/berenslab/contrastive-ne \
+            git+https://github.com/pavlin-policar/openTSNE \
 
     pip install --break-system-packages \
         pyg-lib torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-2.4.0+cu124.html \
