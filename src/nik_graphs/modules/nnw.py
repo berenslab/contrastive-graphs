@@ -44,7 +44,14 @@ def run_path(path, outfile):
 
 
 def graph_knn_recall(
-    Z, A, test_size=1000, metric="euclidean", n_jobs=-1, random_state=110099
+    Z,
+    A,
+    *,
+    k=10,
+    test_size=1000,
+    metric="euclidean",
+    n_jobs=-1,
+    random_state=110099,
 ):
     test_size = min(Z.shape[0], test_size)
     test_ind = np.random.default_rng(random_state).choice(
@@ -57,7 +64,7 @@ def graph_knn_recall(
     max_edges = A_array.sum(axis=1).max().astype(int)
 
     neigh = neighbors.NearestNeighbors(
-        n_neighbors=max_edges + 1, metric=metric, n_jobs=n_jobs
+        n_neighbors=k + 1, metric=metric, n_jobs=n_jobs
     )
     neigh.fit(Z)
 
@@ -68,10 +75,8 @@ def graph_knn_recall(
     for i in range(test_size):
         neighbor_edges = A_array[A_array[i]].sum(1).astype(float)
         neighbor_edges[i] = 0
-        neighbor_edges /= neighbor_edges.sum()
-        fraction += (A_array[i] * neighbor_edges)[
-            Z_neighb[i, : A_array[i].sum()]
-        ].mean()
-    fraction /= test_size
+        idxs = np.argsort(neighbor_edges)[:k]
+        fraction += Z_neighb[idxs].sum()
+    fraction /= test_size * k
 
     return fraction
