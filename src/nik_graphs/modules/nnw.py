@@ -61,7 +61,6 @@ def graph_knn_recall(
     )
 
     A_array = A[test_ind].toarray().astype(int)
-    max_edges = A_array.sum(axis=1).max().astype(int)
 
     neigh = neighbors.NearestNeighbors(
         n_neighbors=k + 1, metric=metric, n_jobs=n_jobs
