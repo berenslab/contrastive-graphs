@@ -2,7 +2,6 @@ import inspect
 import zipfile
 
 import numpy as np
-import polars as pl
 from scipy import sparse
 from sklearn import neighbors
 
