@@ -71,7 +71,7 @@ def feature_tsne(
     else:
         X = features
 
-    if initialization == "pca":
+    if isinstance(initialization, str) and initialization == "pca":
         from sklearn import decomposition
 
         pca = decomposition.PCA(2, random_state=rng.integers(2**31 - 1))
