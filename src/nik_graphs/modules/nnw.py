@@ -72,8 +72,8 @@ def graph_knn_recall(
 
     fraction = 0
     for i in range(test_size):
-        neighbor_edges = A_array[A_array[i]].sum(1).astype(float)
-        neighbor_edges[i] = 0
+        neighbor_edges = A[A_array[i]].sum(1).astype(float)
+        neighbor_edges[test_ind[i]] = 0
         idxs = np.argsort(neighbor_edges)[::-1][:k]
         fraction += sum(idx in Z_neighb[i] for idx in idxs)
     fraction /= test_size * k
