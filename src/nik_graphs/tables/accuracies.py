@@ -78,7 +78,7 @@ def format_table(dispatch, outfile, format="tex"):
             return tex_table(
                 df,
                 outfile=outfile,
-                metric_keys=["recall", "knn", "lin", "lpred", "spcorr"],
+                metric_keys=["recall", "knn", "nnw", "lin", "lpred", "spcorr"],
             )
         case "md":
             return md_table(df, outfile=outfile)
@@ -235,7 +235,9 @@ def tex_table(df, outfile, metric_keys=["recall", "knn", "lin", "lpred"]):
         fw.writeln(r"\end{document}")
 
 
-def md_table(df, outfile, metric_keys=["recall", "knn", "lin", "lpred"]):
+def md_table(
+    df, outfile, metric_keys=["recall", "knn", "lin", "lpred", "nnw"]
+):
     import re
 
     import polars as pl
@@ -245,10 +247,8 @@ def md_table(df, outfile, metric_keys=["recall", "knn", "lin", "lpred"]):
         .filter(pl.col("name") != "cne,temp=0.05,initialization=random")
         .group_by(["dataset", "name", "dim"], maintain_order=True)
         .agg(
-            pl.col("knn", "lin", "recall", "lpred")
-            .mean()
-            .name.prefix("mean_"),
-            pl.col("knn", "lin", "recall", "lpred").std().name.prefix("std_"),
+            pl.col(*metric_keys).mean().name.prefix("mean_"),
+            pl.col(*metric_keys).std().name.prefix("std_"),
         )
     )
 
