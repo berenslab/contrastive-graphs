@@ -48,7 +48,7 @@ def deps(dispatch):
 
     depdict = {
         k: [p / k / "1.zip" for p in paths]
-        for k in [".", "..", "lin", "knn", "recall", "lpred", "spcorr"]
+        for k in [".", "..", "lin", "knn", "recall", "lpred", "spcorr", "nnw"]
     }
     return depdict
 
