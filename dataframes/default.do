@@ -7,7 +7,7 @@ NOEXT="${2%.*}"
 PROJROOT=$(dirname $PWD)
 
 _PATH=$(dirname $(realpath $2))
-if [ x$(command -v srun) != x  -a "x$PARTITION" != x ]; then
+if [ x$(command -v srun) != x ]; then
     SRUN="srun --quiet --partition cpu-galvani --job-name $(basename $_PATH)"
 else
     SRUN=
