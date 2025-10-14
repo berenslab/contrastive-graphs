@@ -33,7 +33,7 @@ def run_path(path, outfile):
         embedding_key = "embedding"
 
     X = np.load(embeddings_dir / "1.zip")[embedding_key]
-    A = sparse.load_npz(data_dir / "1.zip")
+    A = sparse.csr_array(sparse.load_npz(data_dir / "1.zip"))
 
     score = graph_knn_recall(X, A, **kwargs)
 
