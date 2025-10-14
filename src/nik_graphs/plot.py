@@ -106,6 +106,8 @@ def translate_plotname(x, _return="error", brief=False):
             s = "$k$NN"
         case "recall":
             s = "neighbor recall"
+        case "nnw":
+            s = "weighted neighbors"
         case "tsne":
             s = "graph NE"
         case "tfdp":
