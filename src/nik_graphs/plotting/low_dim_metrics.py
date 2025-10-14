@@ -27,7 +27,7 @@ def plot(df, outfile, format="pdf"):
 
     from .high_dim_metrics import plot_bars
 
-    keys = ["recall", "knn", "lin"]
+    keys = ["recall", "knn", "lin", "nnw"]
     order = "tsne sgtsnepi drgraph fa2 tfdp spectral".split()
     df_order = pl.DataFrame(dict(name=order)).with_row_index()
 
