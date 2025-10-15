@@ -17,6 +17,7 @@ LAYOUTS = [
     "cne,temp=0.05,dim=2,metric=euclidean",
     "cne,loss=infonce-temp,dim=2,metric=euclidean",
     "spectral",
+    "spectral_recompute",
     "sgtsnepi",
     "drgraph",
     "fa2",

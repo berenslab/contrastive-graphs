@@ -21,6 +21,7 @@ MODELS = [
     "deepwalk",
     "node2vec",
     "spectral,dim=128",
+    "spectral_recompute,dim=128",
     "graphmae,out_dim=128",
     "nmf,dim=128",
 ]
