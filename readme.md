@@ -30,6 +30,8 @@ The code is contained in `src/nik_graphs`.  The experiment results are
 all stored in a hierarchy within `runs`.  Aggregates of those
 experiments are then collected in `dataframes` (which consists mostly
 of `.parquet` and `.h5` files).  In `media` all of the output files
-are stored.  The repository does not hold any of these files (except
-for the source code).  You can either reproduce them by running the
-experiments or reach out to the authors to request data files.
+are stored.  The folder `bin` holds code to create some binaries that
+are used for the experiments or for plotting.  The repository does not
+hold any of these files (except for the source code).  You can either
+reproduce them by running the experiments or reach out to the authors
+to request data files.
