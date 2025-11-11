@@ -5,7 +5,7 @@ from ..plot import add_letters, translate_plotname
 
 def deplist(plotname=None):
     return [
-        "../dataframes/main_benchmarks.parquet",
+        "../dataframes/all_benchmarks.parquet",
         inspect.getfile(translate_plotname),
     ]
 
@@ -14,6 +14,20 @@ def plot_path(plotname, outfile, format="pdf"):
     import polars as pl
 
     df = pl.read_parquet(deplist()[0])
+
+    df = df.filter(
+        pl.col("name") != "cne,temp=0.05,initialization=random",
+        pl.col("name") != "cne,temp=0.05,dim=2,metric=euclidean",
+        pl.col("name") != "cne,loss=infonce-temp,dim=2,metric=euclidean",
+        pl.col("name") != "cne,loss=infonce-temp",
+        pl.col("name") != "cne",
+        pl.col("name") != "cne,dim=2,metric=euclidean",
+        pl.col("name") != "spectral",
+        pl.col("name") != "spectral,dim=128",
+        ~pl.col("name").str.starts_with("nmf"),
+        ~pl.col("name").str.starts_with("graphmae"),
+        ~pl.col("name").str.starts_with("cne1"),
+    )
 
     fig = plot_bars(df)
     fig.savefig(outfile, format=format, metadata=dict(CreationDate=None))
@@ -26,7 +40,7 @@ def plot_bars(df_full, x_sort_col="n_edges"):
 
     from ..plot import name2color, translate_plotname
 
-    df1 = df_full.filter(~pl.col("name").str.starts_with("spectral"))
+    df1 = df_full
 
     panels = ["128", "2"]
     mosaic = np.array([[d, f"legend{d}"] for d in panels]).reshape(1, -1)
