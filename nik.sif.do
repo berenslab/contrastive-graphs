@@ -17,6 +17,8 @@ From: nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
     export DEBIAN_FRONTEND=noninteractive
     export PIP_ROOT_USER_ACTION=ignore
     unset SSL_CERT_FILE
+    sed -i 's|http:|https:|' /etc/apt/sources.list \
+        /etc/apt/sources.list.d/*
     apt-get -qq update \
             && apt-get install -y  -qq --reinstall software-properties-common \
             && apt-get upgrade -y -qq \
