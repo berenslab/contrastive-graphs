@@ -3,10 +3,13 @@
 Jan Niklas Böhm\*, Marius Keute\*, Alica Guzmán, Sebastian Damrich,
 Andrew Draganov, Dmitry Kobak
 
+[OpenReview](https://openreview.net/forum?id=8APIU9cauZ)
+  ∙  [arXiv](https://arxiv.org/abs/2503.23822)
+
 ![alt="fig1 of the paper “Node Embeddings via Neighbor Embeddings”](https://github.com/berenslab/contrastive-graphs/releases/download/v1-data-alpha/fig1.png)
 
 This is the repository accompanying the paper: “Node Embeddings via
-Neighbor Embeddings” ([TMLR, 2025](https://arxiv.org/abs/2503.23822)).
+Neighbor Embeddings” (TMLR, 2025).
 It holds all of the code that was used for the experiments, as well as
 the code for plotting and constructing the table.
 
