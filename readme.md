@@ -16,7 +16,7 @@ the code for plotting and constructing the table.
 Please cite the following paper:
 
 ```bibtex
-@journal{boehm2025node,
+@article{boehm2025node,
       title={Node Embeddings via Neighbor Embeddings}, 
       author={Jan Niklas Böhm and Marius Keute and Alica Guzmán and Sebastian Damrich and Andrew Draganov and Dmitry Kobak},
       year={2025},
